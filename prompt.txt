@@ -1,0 +1,256 @@
+# ROLE
+You are a senior creative front-end engineer + motion designer. You build award-level, premium, Gen Z food-brand websites (think Awwwards "Site of the Day" energy) that are ALSO conversion machines. You write clean, typed, componentized React.
+
+# PROJECT
+Build the full client-side website (frontend only, no backend yet) for **Mug & Munch**, a real physical café in **Islamabad, Pakistan** that serves **coffees, burgers & wraps**.
+Goal #1: when a visitor lands, the colour, motion and micro-interactions should make them *want* to tap "Add to cart" within 30 seconds.
+Goal #2: it must feel local to Pakistani Gen Z (students, young professionals, late-night crowd) and work great on mid-range Android phones, because most traffic will be mobile.
+
+Work in the CURRENT folder. Build in the PHASES listed at the bottom. After each phase: run the dev server, fix all errors/warnings, update `claude.mind.md`, give me a short summary, then STOP and wait for me to say "next".
+
+---
+
+## 1. TECH STACK (install latest stable versions; check official docs if an API looks different from what you remember)
+- **Vite + React + TypeScript**: `npm create vite@latest . -- --template react-ts`
+- **Tailwind CSS v4** via the official Vite plugin: `npm i tailwindcss @tailwindcss/vite`. Add `tailwindcss()` to `vite.config.ts` plugins. In `src/index.css` use `@import "tailwindcss";` and a `@theme {}` block for design tokens. NO `tailwind.config.js`, NO postcss config, NO `npx tailwindcss init`.
+- **GSAP** (all plugins are free now): `npm i gsap @gsap/react`. Use `useGSAP()` with a `scope` ref for every component animation (automatic cleanup). Register plugins ONCE in `src/lib/gsap.ts`: ScrollTrigger, SplitText, Flip, Draggable, InertiaPlugin, Observer, CustomEase, MotionPathPlugin, DrawSVGPlugin, MorphSVGPlugin. Everything else imports gsap from that file.
+- **Lenis** smooth scroll: `npm i lenis`. Use `ReactLenis` from `lenis/react` with `root` and `options={{ autoRaf: false }}`, drive it from `gsap.ticker` (`lenis.raf(time * 1000)`), call `gsap.ticker.lagSmoothing(0)`, and call `ScrollTrigger.update` on every Lenis scroll (`useLenis(ScrollTrigger.update)`). Import `lenis/dist/lenis.css`. Add `data-lenis-prevent` on the cart drawer and modals.
+- **Motion** (formerly Framer Motion): `npm i motion`, import from `motion/react`. Use it ONLY for UI-state animations: `AnimatePresence` for drawer/modals/toasts, `layout` animations for cart list and filters, `whileTap` squish. GSAP owns scroll + timelines; Motion owns mount/unmount + layout. Never animate the same element with both.
+- **React Router** (`react-router`), lazy-load every page with `React.lazy` + `Suspense`.
+- **Zustand** + `persist` middleware for the cart (localStorage key `mm-cart`).
+- **react-hook-form + zod** for checkout validation.
+- **lucide-react** icons, **clsx + tailwind-merge** (`cn()` helper), **sonner** toasts, **canvas-confetti**.
+- Fonts self-hosted via `@fontsource-variable/*` (no Google Fonts CDN): **Bricolage Grotesque** (display, chunky headlines), **Plus Jakarta Sans** (body/UI), **Caveat** (handwritten doodle notes), **Noto Nastaliq Urdu** (only for small Urdu accent text).
+
+## 2. BRAND & VOICE
+- Name: **Mug & Munch**. Urdu accent wordmark: **مگ اینڈ منچ**.
+- Tagline: **"Sip. Bite. Repeat."**
+- Voice: English-first with playful Roman Urdu sprinkles that Pakistani Gen Z actually use. Examples (use or improve): "Bhook lagi? We got you.", "Yaar, ek aur?", "Garma garam, fresh off the grill", "Study grind fuel ☕", "Late-night munchies sorted", "Order karo, chill karo". Never cringe, never forced; max 1 Roman Urdu line per section.
+- Original mascot: **"Munchy"**, a chubby smiling coffee mug with tiny legs and big eyes (simple SVG you design yourself). The eyes follow the cursor on desktop and blink every few seconds. Do NOT copy or resemble any existing brand character.
+- Prices always in PKR, format `Rs 1,250` (helper `formatPKR()` using `en-PK` grouping).
+
+## 3. COLOUR SYSTEM (colour theory: appetite-driven warm colours + Gen Z dopamine accents on a coffee base)
+Define these in `@theme` as `--color-*` tokens and use ONLY tokens, never raw hex in components:
+| Token | Hex | Role |
+|---|---|---|
+| espresso | #1A0F0A | dark base, text on light, dark sections |
+| oat | #FFF4E6 | light base / main background |
+| chili | #FF4D2E | PRIMARY CTA (red-orange stimulates appetite), burgers category |
+| cheese | #FFC531 | highlights, badges, prices, deals |
+| caramel | #C77B3B | coffee category, warm secondary |
+| pickle | #B8F34A | acid-lime Gen Z accent, wraps category, "fresh" signals |
+| bubblegum | #FF8FC7 | cute/playful accents, stickers, love reactions |
+| ink | #2B1B14 | body text on oat |
+Rules:
+- 60/30/10: 60% oat or espresso, 30% one category colour, 10% chili for CTAs.
+- EVERY "Add to cart" / "Order now" button is chili with oat text (or cheese on espresso sections). The CTA is always the most saturated thing on screen.
+- Category colour-coding everywhere (chips, card glows, section backgrounds): Coffee = caramel, Burgers = chili, Wraps = pickle.
+- Sections alternate backgrounds (oat → espresso → cheese → oat …) to create scroll rhythm; use chunky gradient blobs + subtle grain texture (SVG noise overlay at ~6% opacity).
+- All text must pass WCAG AA contrast. Check pickle/cheese text on oat; use espresso text on them instead.
+
+## 4. TYPOGRAPHY & LAYOUT
+- Huge, tight display type (clamp up to ~14vw on hero), negative tracking, mixed with Caveat handwritten notes + hand-drawn SVG arrows pointing at bestsellers.
+- Bento-grid layouts, rounded-[2rem] cards, thick 2–3px espresso outlines + hard offset shadows (neo-brutalist sticker look) that shift on hover.
+- Doodle stickers (stars, sparkles, steam swirls, "NEW!", "🔥 hot") layered over the grid.
+- Mobile-first: design at 360px width first, then scale up. Touch targets ≥ 44px.
+
+## 5. PAGES / ROUTES
+`/` Home · `/menu` Menu · `/menu/:slug` item detail (opens as modal over menu when navigated from inside; full page on direct link) · `/deals` · `/checkout` · `/order-success` · `/our-story` · `/find-us` · `*` fun 404 ("This page got munched 🍔", Munchy looking guilty).
+
+Global: sticky glassy navbar (shrinks on scroll, hides on scroll down / shows on scroll up), cart button with live count, slide-in cart drawer, mobile bottom bar with a floating chili "View cart · Rs X" pill whenever cart > 0, floating WhatsApp button, footer.
+
+## 6. HOME PAGE SECTIONS (in order)
+1. **Preloader**: Munchy's mug fills with coffee (SVG clip-path liquid wave) while a counter goes 0→100; steam rises and the mug "lifts" to reveal the hero. Max 1.8s, only on first visit per session (sessionStorage).
+2. **Hero**: SplitText char-by-char reveal of "SIP. BITE. REPEAT." with elastic stagger; floating burger, iced latte, and wrap images with mouse-parallax depth (3 layers) and slow idle float; Munchy peeking from a corner; two magnetic buttons: "Order Now" (chili) + "See the Menu" (outline). Small line: "Islamabad's late-night coffee & smash spot" (editable).
+3. **Marquee strip**: two tilted infinite marquees going opposite directions (items + Roman Urdu phrases + emoji), speed reacts to scroll velocity, pauses on hover.
+4. **Bestsellers**: pinned horizontal-scroll section (ScrollTrigger pin + scrub) of big product cards with Caveat notes like "the one everyone orders 👀". Each card has quick "Add +".
+5. **Build Your Burger (interactive)**: user taps ingredients (bun, patty, cheese, jalapeño, sauce, lettuce, onion); each layer drops in from above with a squash-and-stretch bounce and stacks; price updates live; "Add my creation" adds a custom item to cart. Reset button makes the stack topple over.
+6. **Coffee Lab**: pick size (S/M/L) and the SVG cup liquid fill animates to the level; pick milk (regular/oat/almond) and the colour shifts; steam loops; hot/iced toggle drops ice cubes in with a splash. "Add to cart" from here.
+7. **Wrap It Up**: on scroll, an SVG tortilla rolls up around ingredients (scrubbed timeline), then wrap cards slide in.
+8. **What's Your Vibe? (mood picker)**: chips: "Sleepy 😴", "Hangry 😤", "Study grind 📚", "Date night 💕", "Midnight munchies 🌙". Selecting one uses Flip to reshuffle and highlight 3 recommended items with one-tap add.
+9. **Can't Decide? Snack Roulette**: a spinner that lands on a random menu item and offers "Add it" / "Spin again". No fake discounts.
+10. **Deals**: combo cards (e.g. Student Deal, Midnight Deal, Duo Deal for 2) in cheese, with "Save Rs X" badge computed from real item prices.
+11. **Social proof**: review "sticker" cards that can be dragged and tossed (Draggable + Inertia), plus an Instagram-style 3×3 grid placeholder with hover zoom.
+12. **Find Us teaser**: hours (with a live "Open now / Closed" badge from configurable hours in Asia/Karachi time), address placeholder, "Get directions" button (Google Maps link from config).
+13. **Footer**: giant "MUG & MUNCH" wordmark that reveals letter by letter on scroll, Urdu wordmark, socials, WhatsApp, quick links.
+
+## 7. CONVERSION FEATURES (honest persuasion only)
+- **Fly-to-cart**: on add, clone the product image and animate it along a curved arc (MotionPathPlugin) into the cart icon; cart icon does a jelly bounce; count changes with an odometer roll.
+- **First add of the session** triggers a small confetti burst + sonner toast "Nice pick! 🔥" with an "Undo" action.
+- **Free-delivery progress bar** in cart: "Rs 350 away from free delivery 🛵" (threshold in config).
+- **Upsell** in cart: "Goes great with…" (fries, drink, cookie) with one-tap add; logic in `src/lib/recommendations.ts`.
+- Quantity steppers with squish feedback; swipe-to-remove on mobile cart items.
+- Sticky add-to-cart bar on the item detail page when the main button scrolls out of view.
+- Item options: size, spice level (Mild / Medium / "Desi Hot 🌶️"), extras (extra cheese, extra patty, jalapeños); price updates live.
+- Badges: "Bestseller", "New", "Spicy", "Veg".
+- NO fake countdown timers, fake "only 2 left", or fake viewer counts; they kill trust.
+
+## 8. PAKISTAN-SPECIFIC CHECKOUT (UI only; mark integrations as TODO)
+- Order type: Delivery / Takeaway / Dine-in (table number field).
+- Delivery area dropdown of Islamabad sectors in config (F-6, F-7, F-8, F-10, F-11, G-9, G-10, G-11, E-11, I-8, Blue Area, DHA, Bahria Town); owner edits the list.
+- Phone validation for Pakistani mobiles: `03XXXXXXXXX` or `+923XXXXXXXXX`; auto-format as `03XX-XXXXXXX`.
+- Payment method radio cards with logos drawn as simple text badges (no copied logos): **Cash on Delivery (default, preselected)**, **JazzCash**, **Easypaisa**, **Card**. Wallet/card options show "Coming soon" note or a TODO stub; COD completes the mock order.
+- **"Order on WhatsApp" button**: builds a neatly formatted message from the cart (items, options, qty, subtotal, address, phone) and opens `https://wa.me/<NUMBER>?text=<encoded>`. The WhatsApp number comes from config.
+- Order summary: subtotal, delivery fee, tax line (rate from config, default 0 with a TODO comment for the owner to confirm), total.
+- Order success page: Munchy dances, order number, "We've got it! Garma garam on the way."
+
+## 9. CUTE + INTERACTIVE MICRO-ANIMATIONS CHECKLIST
+- Custom cursor (desktop with fine pointer only): small chili dot that grows into an "Add +" bubble over product cards and a "Drag" bubble over draggables.
+- Magnetic buttons, button squish on press, wobble on card hover (slight rotate + shadow shift).
+- Munchy: blinking, eye-tracking, waves when cart gets its first item, sleeps (zZz) after 30s idle.
+- Steam wisps on all coffee images (SVG path loops).
+- Section headings: SplitText reveals on scroll (lines masked, slide up).
+- Image reveals: clip-path wipe on scroll.
+- Easter egg: click the logo 5 times → coffee spills down the screen and mops itself up.
+- Page transitions: a chili/cheese colour wipe between routes.
+
+## 10. PERFORMANCE & ACCESSIBILITY (non-negotiable)
+- Wrap motion in `gsap.matchMedia()`; with `prefers-reduced-motion: reduce` disable Lenis, parallax, preloader, and custom cursor, and show content instantly.
+- Low-end guard: if `navigator.hardwareConcurrency <= 4` or touch device, skip custom cursor, reduce parallax layers and marquee duplicates.
+- Animate only transform and opacity. Use `will-change` sparingly. Call `ScrollTrigger.refresh()` after images load.
+- Images: WebP/AVIF, `loading="lazy"`, explicit width/height (no layout shift), `fetchpriority="high"` on the hero image.
+- Route-level code splitting; target Lighthouse mobile ≥ 90 for Performance, Accessibility, Best Practices, and SEO.
+- Semantic HTML, focus-visible rings in cheese, keyboard-operable drawer/modals (focus trap, Esc to close), alt text, aria-live for cart count.
+- SEO: per-page titles/meta, Open Graph image, `lang="en"`, JSON-LD `CafeOrCoffeeShop` schema with placeholders. Home title: "Mug & Munch | Coffee, Burgers & Wraps in Islamabad".
+
+## 11. DATA & CONFIG (owner-editable, no hardcoding in components)
+- `src/data/menu.ts`: typed items `{ id, slug, name, category: 'coffee'|'burger'|'wrap'|'sides'|'drinks'|'desserts', price, description, image, badges[], options, spiceLevels?, isVeg }`. Seed ~8 coffees, ~8 burgers, ~6 wraps, a few sides/desserts with realistic mid-premium Islamabad prices (e.g. latte Rs 650–850, smash burger Rs 950–1,450, wraps Rs 850–1,150). Add a comment: "PLACEHOLDER PRICES — owner to update".
+- `src/data/deals.ts`, `src/config/site.ts` (WhatsApp number, phone, address, Google Maps URL, Instagram handle, opening hours per day, free-delivery threshold, delivery fee, tax rate, delivery areas). All marked `// TODO: owner fills`.
+- Images: put placeholders in `public/images/{coffee,burgers,wraps,brand}/` using the item slug as file name (e.g. `classic-smash.webp`). Until real photos exist, render a styled fallback card (category-coloured gradient + big emoji + item name). Do NOT hotlink random stock photos.
+
+## 12. FOLDER STRUCTURE
+```
+src/
+  app/ (App.tsx, router.tsx, providers/ SmoothScroll, Cursor)
+  pages/ (Home, Menu, ItemDetail, Deals, Checkout, OrderSuccess, OurStory, FindUs, NotFound)
+  sections/home/ (Preloader, Hero, Marquee, Bestsellers, BuildYourBurger, CoffeeLab, WrapItUp, VibePicker, SnackRoulette, DealsStrip, Reviews, FindUsTeaser)
+  components/ui/ (Button, MagneticButton, Badge, Chip, QuantityStepper, Sticker, ProductCard, Modal, Drawer)
+  components/layout/ (Navbar, MobileBottomBar, CartDrawer, Footer, WhatsAppFab, PageTransition)
+  components/mascot/ (Munchy.tsx)
+  store/ (cart.ts)
+  lib/ (gsap.ts, utils.ts [cn, formatPKR], whatsapp.ts, hours.ts, recommendations.ts, motion-presets.ts)
+  hooks/ (useReducedMotion, useIsTouch, useMagnetic, useFlyToCart)
+  data/ (menu.ts, deals.ts, reviews.ts)
+  config/ (site.ts)
+  styles/ (index.css with @theme tokens, grain, keyframes)
+```
+
+## 13. CODE RULES
+- TypeScript strict, functional components, named exports, one component per file, PascalCase components, camelCase utils.
+- All GSAP inside `useGSAP` with `scope`; never use raw global selectors without scope.
+- Reusable animation presets live in `lib/motion-presets.ts` (eases, durations; e.g. a "bouncy" CustomEase); don't invent new random timings per component.
+- No inline hex colours; only theme tokens. No `any`.
+- Keep components under ~200 lines; split if bigger.
+- Before finishing any phase: `npm run build` must pass with zero TS errors.
+
+## 14. MEMORY FILES (create these in Phase 1 and keep them updated)
+### `CLAUDE.md` (project root, keep under 60 lines; Claude Code auto-loads it every session)
+It must contain: a one-paragraph project summary, the stack, run commands (`npm run dev`, `npm run build`, `npm run preview`), the 10 most important code rules from section 13, the colour token table, and as its LAST line exactly:
+`@claude.mind.md`
+(this import makes Claude Code load the full project brain automatically).
+Also add this instruction inside CLAUDE.md: "Before starting any task, read claude.mind.md. Never rebuild something marked ✅. After finishing any task, update claude.mind.md (status, file map, changelog)."
+
+### `claude.mind.md` (the full project brain)
+Sections:
+1. **Vision & audience** (short).
+2. **Feature status table**: every feature/section from this prompt with status ✅ done / 🟡 in progress / ⬜ todo, and the file path(s) that implement it.
+3. **File map**: where everything lives and what each key file does (1 line each).
+4. **Design system**: tokens, fonts, animation presets, reusable components and when to use them.
+5. **Config & data**: what the owner must fill in (`site.ts` TODOs, real photos, real prices, WhatsApp number).
+6. **Known issues / tech debt**.
+7. **Future goals (not built yet)**: Node/Supabase backend + real orders DB; real JazzCash/Easypaisa/card gateway integration; admin dashboard to edit menu & prices; live order tracking; "Munch Points" loyalty & referral; Urdu/English language toggle; PWA + "Add to home screen"; table QR ordering for dine-in; reservations; push/WhatsApp order status notifications; analytics (GA4/Meta Pixel) with consent; Foodpanda link-out; A/B testing CTA copy.
+8. **Changelog**: dated entries (Asia/Karachi date) of what changed each session.
+
+## 15. BUILD PHASES (stop after each one)
+- **Phase 1 – Foundation**: scaffold, install deps, Tailwind v4 tokens, fonts, `lib/gsap.ts`, Lenis provider synced to the GSAP ticker, router + lazy pages, layout (Navbar, Footer, MobileBottomBar, WhatsAppFab), config + data files, `CLAUDE.md` + `claude.mind.md`. Acceptance: smooth scroll works, routes load, build passes.
+- **Phase 2 – Cart & core commerce**: Zustand cart, ProductCard, Menu page (category filter chips with Motion layout animations, search), item detail modal/page with options, CartDrawer, fly-to-cart, confetti, toasts, free-delivery bar, upsell.
+- **Phase 3 – Home wow sections**: Preloader, Hero, Marquee, Bestsellers pin, Deals strip, Reviews, Find Us teaser, Footer wordmark, Munchy mascot.
+- **Phase 4 – Interactive toys**: Build Your Burger, Coffee Lab, Wrap It Up, Vibe Picker, Snack Roulette, custom cursor, page transitions, easter egg.
+- **Phase 5 – Checkout & Pakistan flow**: checkout form + validation, order types, sectors, payment cards, WhatsApp order message, success page, Deals, Our Story, Find Us, and 404 pages.
+- **Phase 6 – Polish & QA**: reduced-motion and low-end paths, accessibility pass, SEO + JSON-LD, image optimization, Lighthouse check on mobile (report the scores), test at 360px / 768px / 1440px, final `claude.mind.md` update.
+
+Start with Phase 1 now.
+
+
+
+_______________________________________________________________________________________________________________________________________
+
+
+
+# PHASE 2 — Cart, Core Commerce + Home Menu Section
+
+Before writing any code:
+1. Read `CLAUDE.md` and `claude.mind.md`. Check what Phase 1 actually built (files, tokens, components) and reuse it. Do NOT rebuild anything marked ✅.
+2. **COLOURS ARE LOCKED.** Do not edit, rename, add, or remove any colour token in the `@theme` block of `src/styles/index.css` (or wherever the tokens live). Use only the existing tokens. No raw hex values in components. If a component seems to need a new colour, use an existing token with opacity (e.g. `bg-chili/15`) instead.
+
+---
+
+## A. Cart store — `src/store/cart.ts`
+- Zustand + `persist` (localStorage key `mm-cart`).
+- `CartItem`: `{ lineId, itemId, slug, name, image, category, unitPrice, qty, options: { size?, spice?, extras?: string[], milk?, temp? }, isCustom?: boolean }`.
+- `lineId` = itemId + a stable hash of the selected options, so the same item with the same options merges and different options create separate lines.
+- Actions: `addItem`, `removeItem`, `updateQty`, `clear`, `undoLastAdd`.
+- Selectors: `count`, `subtotal`, `deliveryFee` (0 once subtotal ≥ threshold from `config/site.ts`), `amountToFreeDelivery`.
+- `isOpen` state for the drawer (not persisted), plus `hasAddedThisSession` (sessionStorage) for the first-add confetti.
+
+## B. `ProductCard` — `src/components/ui/ProductCard.tsx`
+- Neo-brutalist sticker card: `rounded-[2rem]`, 2–3px espresso border, hard offset shadow that shifts on hover, slight wobble rotate on hover (desktop), squish on tap (`whileTap`).
+- Category glow/accent from the existing tokens: Coffee = caramel, Burgers = chili, Wraps = pickle.
+- Contents: image (or the styled fallback: category gradient + big emoji + name), badges (Bestseller / New / Spicy / Veg), name, a 1-line description, price via `formatPKR()`, and a round chili **"+"** quick-add button.
+- Quick-add: if the item has required options, open the item modal; otherwise add instantly with fly-to-cart.
+- Clicking the card body opens the item detail.
+- Variants: `default` (grid) and `compact` (for cart upsell rows).
+- Fully keyboard-accessible; the "+" button has `aria-label="Add {name} to cart"`.
+
+## C. Home screen menu section — `src/sections/home/MenuPreview.tsx`
+Add it to the Home page directly after the hero (or after the current top section if the hero isn't built yet).
+- Heading with a SplitText line reveal on scroll: **"Kya khaoge aaj?"**, with a Caveat handwritten sub-note: "everything's made fresh, promise 🤞" and a hand-drawn SVG arrow pointing at the tabs.
+- Category tabs as pill chips: **Coffee ☕ / Burgers 🍔 / Wraps 🌯**. The active chip fills with that category's colour and has a sliding indicator (Motion `layoutId`).
+- On tab change, cards animate with Motion `layout` + `AnimatePresence` (old cards scale/fade out, new ones pop in with a small stagger).
+- Show 6 items per category from `data/menu.ts` (bestsellers first) in a responsive grid: 2 columns at 360px, 3 at tablet, 3–4 on desktop. Cards scroll-reveal with a gentle stagger (GSAP ScrollTrigger, once).
+- Below the grid: a big chili **"See full menu →"** button (magnetic on desktop) linking to `/menu`.
+- Section background: use the existing alternating section pattern and tokens; add 2–3 doodle stickers (sparkle, "🔥 hot", steam swirl) floating at the edges.
+- Respect reduced motion: no stagger or transforms, content is visible instantly.
+
+## D. Menu page — `/menu`
+- Sticky category chip bar (All, Coffee, Burgers, Wraps, Sides, Drinks, Desserts). It scrolls horizontally on mobile and scroll-spies the sections.
+- Search input with debounce (300ms) that filters by name/description and shows an empty state with Munchy: "Ye toh hamare paas nahi 😅".
+- Filter toggles: Veg, Spicy, Bestseller.
+- Grid of `ProductCard`s; filtering uses Motion layout animations.
+
+## E. Item detail — `/menu/:slug`
+- From inside the site it opens as a modal over the current page (background location pattern in React Router); on a direct link it renders as a full page.
+- Large image, name, description, badges.
+- Option groups from the data: size (radio pills), spice level (Mild / Medium / "Desi Hot 🌶️"), extras (checkbox pills with +Rs price), milk and hot/iced for coffee.
+- Live price updates with a number roll animation.
+- Quantity stepper and a sticky bottom "Add to cart · Rs X" bar that appears when the main button scrolls out of view.
+- Modal: focus trap, Esc to close, `data-lenis-prevent` on its scroll area, `AnimatePresence` enter/exit.
+
+## F. Cart drawer — `src/components/layout/CartDrawer.tsx`
+- Slides in from the right on desktop and as a bottom sheet on mobile. Uses `data-lenis-prevent` and a focus trap; Esc or a backdrop click closes it.
+- Line items show options as small chips, a quantity stepper, and swipe-to-remove on mobile (Motion drag with a threshold) plus a trash button.
+- Free-delivery progress bar: "Rs X away from free delivery 🛵". When reached, it fills fully and shows "Free delivery unlocked 🎉".
+- **"Goes great with…"** upsell row (compact cards) from `lib/recommendations.ts`. Rules: coffee in cart → suggest a dessert or cookie; burger → fries and a drink; wrap → a drink; never suggest items already in the cart.
+- Footer: subtotal, delivery fee, total, and a chili **"Checkout"** button (links to `/checkout`; the page itself is built in Phase 5).
+- Empty state: Munchy sleeping, "Cart khaali hai… abhi bhook nahi lagi?" with a "Browse menu" button.
+- Mobile bottom bar: a floating chili pill **"View cart · Rs X"** whenever the cart count is above 0.
+
+## G. Add-to-cart feedback — `src/hooks/useFlyToCart.ts`
+- Clone the product image and animate it along a curved arc (MotionPathPlugin) to the navbar or bottom-bar cart icon, scaling it down and fading it out.
+- Then the cart icon does a jelly bounce (GSAP elastic), and the count rolls like an odometer (`aria-live="polite"`).
+- On the first add of the session, fire a small canvas-confetti burst using existing token colours, read from the CSS variables at runtime.
+- On every add, show a sonner toast "Nice pick! 🔥 {name} added" with an **Undo** action (`undoLastAdd`).
+- With reduced motion: skip the arc and confetti; show the toast only.
+
+## H. Done criteria (check all before stopping)
+- [ ] No colour tokens changed (diff `index.css` and confirm).
+- [ ] Home page shows the MenuPreview section with working tabs on 360px, 768px, and 1440px widths.
+- [ ] Add/remove/qty/options all work, the cart persists after refresh, and the same item with the same options merges into one line.
+- [ ] The item modal opens from cards, and a direct link to `/menu/:slug` works as a full page.
+- [ ] Fly-to-cart, jelly bounce, confetti (first add only), and undo toast all work.
+- [ ] The free-delivery bar and upsell row behave correctly.
+- [ ] Keyboard: everything can be operated with Tab and Enter; Esc closes the modal and drawer.
+- [ ] `npm run build` passes with zero TypeScript errors and no console warnings.
+- [ ] `claude.mind.md` updated: Phase 2 features marked ✅ with file paths, file map updated, and a dated changelog entry (Asia/Karachi).
+
+Then give me a short summary of what was built and STOP. Wait for me to say "next".

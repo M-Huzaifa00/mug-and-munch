@@ -62,6 +62,35 @@ export const TOYS = {
   flip: 0.65,
 } as const
 
+/** Munch Run traveler (seconds unless noted). */
+export const MUNCH_RUN = {
+  /** Per-frame (60fps) lerp of current → target progress: gives the flight weight. */
+  lerp: 0.12,
+  /** Body morph window within a segment (progress). */
+  morphStart: 0.35,
+  morphEnd: 0.65,
+  maxTilt: 25,
+  /** Max stretch along travel + how much progress velocity (per second) maps to it. */
+  stretchMax: 0.22,
+  stretchGain: 0.35,
+  /** "Parked" when this close to a stop (progress). */
+  parkEpsilon: 0.004,
+  pop: 0.6,
+  takeoff: 0.16,
+  land: 0.55,
+  float: 1.8,
+  floatY: 4,
+  crumbLife: 0.8,
+  puff: 0.5,
+  noteDraw: 0.8,
+  dizzy: 0.6,
+  dizzyCooldown: 5,
+  tapJump: 0.42,
+  /** How long hero Munchy watches the take-off. */
+  lookFor: 1.2,
+  steam: 2,
+} as const
+
 /** Preloader / page transition timings. */
 export const SCENE = {
   preloaderMax: 1.8,

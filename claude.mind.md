@@ -121,6 +121,15 @@ Brief: owner's Phase 5 prompt. **WhatsApp is the ordering channel; no backend; n
 | 11 | Find Us (open badge, weekly hours + today, address notes, directions/call/WhatsApp, click-to-load map, delivery areas) | ✅ | `src/pages/FindUs.tsx`, `src/sections/findus/*`, `components/ui/StylisedMap.tsx` |
 | 12 | 404 (search → `/menu?q=`, 3 bestsellers), Menu reads `?q=`, SEO pass, prod hides placeholder WhatsApp links, `forms` chunk split, docs | ✅ | `src/pages/NotFound.tsx`, `src/pages/Menu.tsx`, `vite.config.ts` |
 
+### Feature: Munch Run ✅ (decorative traveler on Home, built between Phase 5 and 6)
+| Part | Status | Files |
+|---|---|---|
+| Config: stops (burger → wrap → coffee), anchor offsets per breakpoint, flight + departure lines, sizes, arcs, marquee hop, crumbs, dizzy, low-end cores | ✅ | `src/data/munchRun.ts`, `MUNCH_RUN` in `lib/motion-presets.ts` |
+| Art: 3 forms on one viewBox, ONE morphable body (`<use>` for hard shadow + oat cut-line + brand-ink fill), per-form details, shared face, ~3.9 KB | ✅ | `src/components/munchRun/MunchCharacter.tsx`, `forms/{shapes.ts, MunchFace.tsx, FormDetails.tsx}` |
+| Engine: fixed traveler, cached anchor doc positions (Stop 3 read live near the end for the desktop pin), smoothed progress, scoop curve, tilt/spin/stretch, progress-driven morph timelines, ticker only until Bestsellers scrolls away | ✅ | `useMunchRun.ts`, `munchRunMath.ts` (+tests), `munchTimelines.ts`, `readEls.ts` |
+| Choreography + delight: entrance pop + notes, take-off/landing squash + dust, marquee hop with shadow, crumbs, sparkle at the morph, idle float/blinks/glance, steam after landing, dizzy eyes, cart hop, tap-to-craft (cursor "Make one"), Munchy look-at | ✅ | `munchActions.ts`, `munchEffects.ts`, `MunchNote.tsx`, `MunchPuffs.tsx`, `components/mascot/{mascotLook.ts, mascotFollow.ts}`, `app/providers/Cursor.tsx` (`view` mode) |
+| Anchors + Home wiring (lazy chunk after preloader + idle), reduced-motion static stickers | ✅ | `MunchStop.tsx`, `MunchStatic.tsx`, `MunchRun.tsx`, `hooks/useIdleMount.ts`, `pages/Home.tsx`, `hero/HeroVisuals.tsx`, `MenuPreview.tsx`, `Bestsellers.tsx`, `Marquee.tsx` (`data-munch-hop`) |
+
 ### Phase 6: Polish & QA ⬜
 Reduced-motion + low-end audit, a11y pass, JSON-LD openingHours, image optimisation, Lighthouse mobile ≥ 90 ×4 (report scores), 360/768/1440 checks.
 
@@ -178,6 +187,7 @@ src/components/layout/cart/     CartContents, CartLineItem, CartSummary, CartUps
 src/components/item/*           ItemDetailContent, ItemOptionsForm, OptionPills, StickyAddBar, ItemModal
 src/components/menu/*           CategoryNav, MenuSearch, MenuSection, MenuEmpty, menuIds
 src/components/layout/          Navbar, NavLogo, CartButton, CartDrawer (+cart/*), MobileBottomBar, WhatsAppFab, Footer, FooterWordmark, PageLoader, PageTransition, CoffeeSpill, ScrollToTop, Seo, JsonLd, PagePlaceholder, navLinks
+src/components/munchRun/        MunchRun (layer), MunchCharacter, MunchStop (anchor, in the Home chunk), MunchStatic (reduced motion), MunchNote, MunchPuffs, useMunchRun (engine), munchRunMath, munchTimelines, munchActions, munchEffects, readEls, forms/*
 src/sections/home/              Preloader, hero/{Hero, HeroHeadline, HeroVisuals, HeroMascot, ScrollHint}, Marquee, MenuPreview, MenuPreviewTabs, Bestsellers, deals/{DealsStrip, DealCard}, reviews/{Reviews, ReviewsBoard, InstaGrid}, FindUsTeaser, sectionIds
 src/pages/*                     Home, Menu, ItemDetail, Deals, Checkout, OrderSuccess, OurStory, FindUs, NotFound, MascotLab (DEV)
 public/images/{coffee,burgers,wraps,sides,drinks,desserts,deals,brand}/  photos as <slug>.webp
@@ -197,6 +207,7 @@ public/images/{coffee,burgers,wraps,sides,drinks,desserts,deals,brand}/  photos 
 - **Dialogs:** `<AnimatePresence>{open && <Modal|Drawer …/>}</AnimatePresence>`; inner scroll areas `data-lenis-prevent`.
 - **GSAP rules:** inside `useGSAP({ scope })`; wrap motion in `gsap.matchMedia()` with `MQ.motionOk`; scoped selectors only; GSAP and Motion never on the same element. Tailwind v4 `translate/rotate/scale-*` are standalone CSS properties: transition them with `transition-[translate,scale,rotate]`, and don't mix with GSAP transforms on the same element.
 - **tailwind-merge:** custom tokens registered in `lib/utils.ts`.
+- **Munch Run:** decorative traveler (aria-hidden, never focusable); tweak stops, offsets, sizes and thresholds in `data/munchRun.ts`, timings in `MUNCH_RUN`. Anchors are `<MunchStop stop={n} />` spans inside the sections; move one by editing its `anchorClass`. Hero has no floating burger photo on purpose (the traveler is the burger).
 
 ## 5. Config & data the owner must fill
 - **#1 `site.contact.whatsappNumber`: the real WhatsApp business number** (digits, e.g. `923001234567`). Until then production shows "Online ordering is coming soon, call us" and hides every WhatsApp link; dev shows a warning banner + message preview.
@@ -219,6 +230,9 @@ public/images/{coffee,burgers,wraps,sides,drinks,desserts,deals,brand}/  photos 
 - The owner only learns about an order when the customer actually hits send in WhatsApp; "Yes, I've sent it" is the customer's word (no backend to verify). Not tested on a real Android phone yet (headless only): check that the CTA opens the WhatsApp app and "back" lands on /order-success.
 - Pickup slots / closed banner / deal "Available now" are computed once on page load (a tab left open for hours shows stale slots until refresh).
 - Vitest prints a Node "localStorage is not available" ExperimentalWarning (Node 26 + zustand persist import); tests pass.
+- Munch Run: no whoosh/pop sounds (the site has no sound system/toggle yet). Notes show only at >=768px. A departure line (just below the navbar) was added so each stop gets a dwell; segments end when the next anchor reaches the flight line. Low-end = <=4 cores (phones with more cores keep up to 4 crumbs). Not tested on real devices yet; in dev the chunk mounts a few seconds after load (idle + on-demand compile).
+- Munch Run perf (CPU 4x, 360px, production): ~48 fps avg vs ~50 without it (same 33 ms p95); see changelog.
+- 768px: navbar links wrap to two lines (pre-existing, Phase 6).
 - Coffee "Tweak" applies to every coffee in the maker list (maker and menu coffees are the same line by design).
 - Editing a creation into one identical to another line merges the two (qty adds up).
 - Bestsellers pin uses ScrollTrigger pin spacing, so full-page screenshots show an empty band above it (normal).
@@ -234,6 +248,10 @@ Node/Supabase backend + real orders DB · real JazzCash / Easypaisa / card gatew
 - **Online payments (JazzCash / Easypaisa / card) need the backend first** (`site.payments` flags + `TODO(payments)` in `PaymentOptions`).
 
 ## 8. Changelog (Asia/Karachi dates)
+### 2026-11-07: Munch Run
+- A burger (hero top-right) takes off on scroll, hops over the marquee, spins + morphs into a wrap (MenuPreview top-left), then into a coffee (Bestsellers top-right, lands before the desktop pin). Scroll up reverses it exactly.
+- Audit: replaced the hero's floating burger photo (latte now takes the big spot); MenuPreview gets more top padding for Stop 2; Bestsellers LogoStamp moved off Stop 3. Traveler z-[35]: under navbar (50), FAB / bottom bar / checkout bar (40), drawer + modals (70), toasts, cursor (99), page wipe (96).
+- Verified in Chrome: parks exactly on its anchors (delta 0) at 360/390/768/1024/1440/1920, incl. the desktop pin, back-to-top reverse, refresh and #craft-coffee hash loads; pointer-transparent in flight; hidden while drawer/modals lock scroll; tap opens the matching Craft tab; cart hop; Munchy look-at; full cleanup leaving Home; reduced motion = 3 static stickers; low-end (4 cores) = no crumbs. CPU 4x at 360px (prod): ~48 fps avg with Munch Run vs ~50 baseline, same p95. Chunk 7.4 KB gz, loaded after the preloader on idle. Colour tokens unchanged.
 ### 2026-11-07: Phase 5 complete: Craft your own, WhatsApp checkout, content pages
 - Phase 4 check: burger/coffee/wrap builders, Vibe Picker, Snack Roulette and custom cursor work; sounds were never built (not built now either); `lib/events.ts` created as a stub.
 - ONE "Craft your own" section (Coffee / Burger / Wrap switch, deep links `#craft-*`, state kept per tab, lazy Coffee/Wrap chunks) on a shared Builder Kit; old Build Studio + builder files removed.

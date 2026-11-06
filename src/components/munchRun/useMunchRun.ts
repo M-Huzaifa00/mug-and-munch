@@ -15,7 +15,12 @@ export interface MunchApi {
   tap: () => void
 }
 
-const center = (r: DOMRect) => ({ x: r.left + r.width / 2, y: r.top + r.height / 2 })
+interface Box {
+  top: number
+  left: number
+  width: number
+}
+const center = (r: Box) => ({ x: r.left + r.width / 2, y: r.top + r.width / 2 })
 const lowEnd = () => (navigator.hardwareConcurrency ?? 4) <= CFG.lowEndCores
 
 /**
@@ -65,7 +70,33 @@ export function useMunchRun(root: RefObject<HTMLDivElement | null>, onTap: (stop
           const r = hopEl?.getBoundingClientRect()
           if (r) Object.assign(hop, { top: r.top + window.scrollY, bottom: r.bottom + window.scrollY })
         }
-        measureHop()
+        // Anchor boxes cached as document positions (measured on refresh / layout resize): zero layout reads per frame.
+        // Only Stop 3 is read live near the end of the journey, because the desktop pin moves it.
+        const docBox: Box[] = [0, 1, 2].map(() => ({ top: 0, left: 0, width: 0 }))
+        const measure = () => {
+          ;[A1, A2, A3].forEach((a, i) => {
+            const r = a.getBoundingClientRect()
+            docBox[i] = { top: r.top + window.scrollY, left: r.left, width: r.width }
+          })
+          measureHop()
+        }
+        measure()
+        const ro = new ResizeObserver(() => measure())
+        ro.observe(document.body)
+        const screenBox = (i: number, sy: number): Box => {
+          const b = docBox[i] as Box
+          return { top: b.top - sy, left: b.left, width: b.width }
+        }
+        const live3 = (): Box => {
+          const r = A3.getBoundingClientRect()
+          return { top: r.top, left: r.left, width: r.width }
+        }
+        let lastSy = -1
+        const lastAim = { x: NaN, y: NaN }
+        const aimTo = (x: number, y: number) => {
+          if (x !== lastAim.x) aim.x((lastAim.x = x))
+          if (y !== lastAim.y) aim.y((lastAim.y = y))
+        }
         const shadow = els.svg.querySelectorAll('[data-part="shadow"]')
         let stopIdle: (() => void) | null = null
         let attached = false
@@ -86,21 +117,27 @@ export function useMunchRun(root: RefObject<HTMLDivElement | null>, onTap: (stop
           const sy = window.scrollY
           const line = vh * (mobile ? CFG.flightLine.mobile : CFG.flightLine.desktop)
           const depart = vh * (mobile ? CFG.departLine.mobile : CFG.departLine.desktop)
-          const r1 = A1.getBoundingClientRect()
-          const r2 = A2.getBoundingClientRect()
-          let r3: DOMRect | null = null
+          const r1 = screenBox(0, sy)
+          const r2 = screenBox(1, sy)
           let target = segmentProgress(sy, segmentRange(r1.top + sy, r2.top + sy, depart, line, true))
+          let r3 = screenBox(2, sy)
           if (target >= 1) {
-            r3 = A3.getBoundingClientRect()
             target = 1 + segmentProgress(sy, segmentRange(r2.top + sy, r3.top + sy, depart, line, false))
+            if (target > 1.85) {
+              // Near / at Stop 3: the desktop pin moves the anchor, so read it live.
+              r3 = live3()
+              target = 1 + segmentProgress(sy, segmentRange(r2.top + sy, r3.top + sy, depart, line, false))
+            }
           }
+          // Nothing moved → nothing to write (idle loops keep running on their own).
+          if (!st.snap && sy === lastSy && Math.abs(st.current - target) < 1e-4 && st.entered) return
+          lastSy = sy
           const prev = st.current
           st.current = st.snap ? target : smoothToward(st.current, target, MUNCH_RUN.lerp, Math.min(dt, 64))
           st.snap = false
           const { seg, local } = splitProgress(st.current)
-          if (seg === 1 && !r3) r3 = A3.getBoundingClientRect()
           const from = seg === 0 ? r1 : r2
-          const to = seg === 0 ? r2 : (r3 as DOMRect)
+          const to = seg === 0 ? r2 : r3
 
           // ---- position on the scoop curve ----
           const p0 = center(from)
@@ -163,8 +200,7 @@ export function useMunchRun(root: RefObject<HTMLDivElement | null>, onTap: (stop
               st.crumbDist = 0
               crumbs.spawn(pos.x, pos.y + size * 0.3, seg === 0 ? 'sesame' : 'herb')
             }
-            aim.x(Math.sign(p1.x - p0.x) * 2.4)
-            aim.y(1.5)
+            aimTo(Math.sign(p1.x - p0.x) * 2.4, 1.5)
             const lv = lenisRef.current?.velocity ?? 0
             const now = performance.now()
             if (!weak && Math.abs(lv) > CFG.dizzyVelocity && now > st.dizzyAt) {
@@ -172,11 +208,9 @@ export function useMunchRun(root: RefObject<HTMLDivElement | null>, onTap: (stop
               dizzy(els)
             }
           } else if (st.pointer) {
-            aim.x(gsap.utils.clamp(-2.4, 2.4, (st.pointer.x - pos.x) / 120))
-            aim.y(gsap.utils.clamp(-2, 2, (st.pointer.y - pos.y) / 120))
+            aimTo(Math.round(gsap.utils.clamp(-2.4, 2.4, (st.pointer.x - pos.x) / 120) * 10) / 10, Math.round(gsap.utils.clamp(-2, 2, (st.pointer.y - pos.y) / 120) * 10) / 10)
           } else {
-            aim.x(0)
-            aim.y(-1.2)
+            aimTo(0, -1.2)
           }
           if (performance.now() < st.lookUntil) mascotLookAt(pos.x, pos.y)
           if ((parked === null) !== (st.parked === null)) els.button.style.pointerEvents = parked === null ? 'none' : 'auto'
@@ -207,7 +241,7 @@ export function useMunchRun(root: RefObject<HTMLDivElement | null>, onTap: (stop
         attach(window.scrollY < range.start)
         const onRefresh = () => {
           st.snap = true
-          measureHop()
+          measure()
         }
         ScrollTrigger.addEventListener('refresh', onRefresh)
 
@@ -217,7 +251,10 @@ export function useMunchRun(root: RefObject<HTMLDivElement | null>, onTap: (stop
         obs.observe(html, { attributes: true, attributeFilter: ['style'] })
 
         const onPointer = (e: PointerEvent) => {
-          if (e.pointerType === 'mouse') st.pointer = { x: e.clientX, y: e.clientY }
+          if (e.pointerType !== 'mouse') return
+          st.pointer = { x: e.clientX, y: e.clientY }
+          // Parked: glance toward the cursor (idle frames skip the tick, so aim here).
+          if (st.parked !== null) aimTo(Math.round(gsap.utils.clamp(-2.4, 2.4, (e.clientX - st.last.x) / 120) * 10) / 10, Math.round(gsap.utils.clamp(-2, 2, (e.clientY - st.last.y) / 120) * 10) / 10)
         }
         if (fine) window.addEventListener('pointermove', onPointer, { passive: true })
 
@@ -246,6 +283,7 @@ export function useMunchRun(root: RefObject<HTMLDivElement | null>, onTap: (stop
           ScrollTrigger.removeEventListener('refresh', onRefresh)
           range.kill()
           obs.disconnect()
+          ro.disconnect()
           unsub()
           window.removeEventListener('pointermove', onPointer)
           tl.forEach((t) => t.kill())

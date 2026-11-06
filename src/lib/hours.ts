@@ -50,21 +50,37 @@ function nowInCafeTz(date: Date): { day: number; minutes: number } {
   }
 }
 
+
 const hoursFor = (dayIndex: number): DayHours => site.hours[DAYS[(dayIndex + 7) % 7] ?? 'mon']
 
-export type OpenStatus = { isOpen: boolean; label: string }
+export type OpenStatus = {
+  isOpen: boolean
+  /** e.g. "till 2 AM" / "opens 2 PM" / "opens tomorrow 12 PM" */
+  detail: string
+  /** e.g. "Open now 🟢 · till 2 AM" */
+  label: string
+}
+
+const status = (isOpen: boolean, detail: string): OpenStatus => ({
+  isOpen,
+  detail,
+  label: `${isOpen ? 'Open now 🟢' : 'Closed 🔴'}${detail ? ` · ${detail}` : ''}`,
+})
+
+/** Today's weekday key in Asia/Karachi. */
+export function getTodayKey(date: Date = new Date()): DayKey {
+  return DAYS[nowInCafeTz(date).day] ?? 'mon'
+}
 
 export function getOpenStatus(date: Date = new Date()): OpenStatus {
   const { day, minutes } = nowInCafeTz(date)
 
-  // 1) Still inside yesterday's after-midnight window?
+  // 1) Still inside yesterday's after-midnight window (e.g. Mon 12 PM → Tue 2 AM)?
   const yesterday = hoursFor(day - 1)
   if (yesterday) {
     const open = toMinutes(yesterday.open)
     const close = toMinutes(yesterday.close)
-    if (close <= open && minutes < close) {
-      return { isOpen: true, label: `Open now · till ${formatTime(yesterday.close)}` }
-    }
+    if (close <= open && minutes < close) return status(true, `till ${formatTime(yesterday.close)}`)
   }
 
   // 2) Today's window.
@@ -73,12 +89,8 @@ export function getOpenStatus(date: Date = new Date()): OpenStatus {
     const open = toMinutes(today.open)
     const close = toMinutes(today.close)
     const overnight = close <= open
-    if (minutes >= open && (overnight || minutes < close)) {
-      return { isOpen: true, label: `Open now · till ${formatTime(today.close)}` }
-    }
-    if (minutes < open) {
-      return { isOpen: false, label: `Closed · opens ${formatTime(today.open)}` }
-    }
+    if (minutes >= open && (overnight || minutes < close)) return status(true, `till ${formatTime(today.close)}`)
+    if (minutes < open) return status(false, `opens ${formatTime(today.open)}`)
   }
 
   // 3) Find the next opening day.
@@ -86,8 +98,8 @@ export function getOpenStatus(date: Date = new Date()): OpenStatus {
     const next = hoursFor(day + i)
     if (next) {
       const when = i === 1 ? 'tomorrow' : DAY_LABELS[DAYS[(day + i) % 7] ?? 'mon']
-      return { isOpen: false, label: `Closed · opens ${when} ${formatTime(next.open)}` }
+      return status(false, `opens ${when} ${formatTime(next.open)}`)
     }
   }
-  return { isOpen: false, label: 'Closed' }
+  return status(false, '')
 }

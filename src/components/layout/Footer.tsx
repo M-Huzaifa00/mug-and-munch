@@ -6,6 +6,7 @@ import { whatsappLink, WHATSAPP_GREETING } from '@/lib/whatsapp'
 import { OpenBadge } from '@/components/ui/OpenBadge'
 import { Logo } from '@/components/brand/Logo'
 import { InstagramIcon, TikTokIcon, WhatsAppIcon } from '@/components/ui/SocialIcons'
+import { FooterWordmark } from './FooterWordmark'
 import { NAV_LINKS } from './navLinks'
 
 const linkCls = 'inline-flex min-h-11 items-center gap-2 font-semibold text-oat/85 transition-colors hover:text-cheese'
@@ -96,12 +97,7 @@ export function Footer() {
         </div>
       </div>
 
-      <p
-        aria-hidden="true"
-        className="text-mega pointer-events-none px-2 text-center font-display font-extrabold whitespace-nowrap text-oat select-none"
-      >
-        {site.brandName.toUpperCase()}
-      </p>
+      <FooterWordmark />
 
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 border-t border-oat/15 px-4 py-6 text-sm text-oat/70 sm:flex-row sm:px-6">
         <p>

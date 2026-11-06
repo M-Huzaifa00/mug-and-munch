@@ -11,6 +11,7 @@ import { ProductCard } from '@/components/ui/ProductCard'
 import { RevealHeading } from '@/components/ui/RevealHeading'
 import { Sticker } from '@/components/ui/Sticker'
 import { MenuPreviewTabs } from './MenuPreviewTabs'
+import { SECTION_IDS } from './sectionIds'
 
 const TABS: Category[] = ['coffee', 'burger', 'wrap']
 const PANEL_ID = 'menu-preview-panel'
@@ -51,6 +52,7 @@ export function MenuPreview() {
   return (
     <section
       ref={sectionRef}
+      id={SECTION_IDS.menuPreview}
       aria-labelledby="menu-preview-title"
       className="grain relative overflow-hidden bg-cheese px-4 py-20 sm:px-6 md:py-28"
     >

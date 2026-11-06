@@ -6,6 +6,6 @@ export function whatsappLink(message = ''): string {
   return message ? `${base}?text=${encodeURIComponent(message)}` : base
 }
 
-export const WHATSAPP_GREETING = 'Assalam o Alaikum Mug & Munch! 👋 I want to place an order.'
+export const WHATSAPP_GREETING = `Assalam o Alaikum ${site.brandName}! 👋 I want to place an order.`
 
 // TODO (Phase 5): buildOrderMessage(cart, customer) → formatted order text for checkout.

@@ -7,6 +7,7 @@ import '@fontsource-variable/caveat'
 import '@fontsource-variable/noto-nastaliq-urdu'
 import 'lenis/dist/lenis.css'
 import './styles/index.css'
+import './styles/brand.css'
 
 import { App } from './app/App'
 

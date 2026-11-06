@@ -7,7 +7,7 @@ import { site } from '@/config/site'
 export function FindUs() {
   return (
     <>
-      <Seo title="Find Us" description={`Mug & Munch location, hours and directions in ${site.address.area}, Islamabad.`} path="/find-us" />
+      <Seo title="Find Us" description={`${site.brandName} location, hours and directions in ${site.address.area}, Islamabad.`} path="/find-us" />
       <PagePlaceholder kicker="pull up, yaar" title="Find Us" emoji="📍" phase={5}>
         <div className="mt-8 flex flex-wrap items-center gap-4">
           <OpenBadge />

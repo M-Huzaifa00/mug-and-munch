@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
-import { toast } from 'sonner'
 import { confettiBurst } from '@/lib/celebrate'
+import { notify } from '@/lib/notify'
 import { useCart, type AddItemInput } from '@/store/cart'
 import { useFlyToCart } from './useFlyToCart'
 import { useReducedMotion } from './useReducedMotion'
@@ -38,11 +38,7 @@ export function useAddToCart() {
       }
 
       // Single toast id → the visible Undo always refers to the latest add.
-      toast(`Nice pick! 🔥 ${input.name} added`, {
-        id: 'cart-add',
-        duration: 4000,
-        action: { label: 'Undo', onClick: () => undoLastAdd() },
-      })
+      notify(`Nice pick! 🔥 ${input.name} added`, { id: 'cart-add', undo: () => undoLastAdd() })
     },
     [fly, reduced],
   )

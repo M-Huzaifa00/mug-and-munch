@@ -20,7 +20,7 @@ export function Home() {
   return (
     <>
       <Seo
-        description="Mug & Munch: Islamabad's late-night coffee & smash spot. Lattes, smash burgers and wraps for delivery, takeaway or dine-in."
+        description={`${site.brandName}: Islamabad's late-night coffee & smash spot. Lattes, smash burgers and wraps for delivery, takeaway or dine-in.`}
         path="/"
       />
 

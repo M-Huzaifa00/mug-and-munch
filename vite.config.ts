@@ -1,4 +1,4 @@
-import { readdirSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
@@ -64,9 +64,27 @@ function menuPhotos(): Plugin {
   }
 }
 
+/**
+ * Fills %BRAND_NAME% / %ALT_NAME% / %SITE_URL% in index.html from src/config/site.ts,
+ * so the static fallback tags (title, og:*) never hardcode the brand.
+ */
+function siteHtmlVars(): Plugin {
+  const siteFile = fileURLToPath(new URL('./src/config/site.ts', import.meta.url))
+  const read = (key: string) => readFileSync(siteFile, 'utf8').match(new RegExp(`${key}:\\s*'([^']+)'`))?.[1] ?? ''
+  const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
+  return {
+    name: 'mm-site-html-vars',
+    transformIndexHtml: (html) =>
+      html
+        .replaceAll('%BRAND_NAME%', esc(read('brandName')))
+        .replaceAll('%ALT_NAME%', esc(read('alternateName')))
+        .replaceAll('%SITE_URL%', esc(read('url'))),
+  }
+}
+
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss(), menuPhotos()],
+  plugins: [react(), tailwindcss(), menuPhotos(), siteHtmlVars()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

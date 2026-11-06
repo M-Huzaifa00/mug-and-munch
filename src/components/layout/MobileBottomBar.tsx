@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'motion/react'
-import { ShoppingBag } from 'lucide-react'
+import { BrandImage } from '@/components/brand/BrandImage'
 import { NavLink } from 'react-router'
 import { useIsItemPage } from '@/hooks/useIsItemPage'
 import { useCart, useCartCount, useCartSubtotal } from '@/store/cart'
@@ -39,7 +39,9 @@ export function MobileBottomBar() {
                 <RollingNumber value={Math.min(count, 99)} />
               </span>
               <span className="flex flex-1 items-center justify-center gap-2">
-                <ShoppingBag size={20} strokeWidth={2.6} aria-hidden="true" />
+                <span className="flex size-8 items-center justify-center rounded-full border-2 border-espresso bg-oat">
+                  <BrandImage kind="icon" height={22} alt="" />
+                </span>
                 <span>
                   View cart · <RollingNumber value={subtotal} format={formatPKR} />
                 </span>

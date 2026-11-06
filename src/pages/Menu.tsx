@@ -1,3 +1,4 @@
+import { site } from '@/config/site'
 import { useMemo, useState } from 'react'
 import { LayoutGroup } from 'motion/react'
 import { CATEGORY_ORDER, menu, type Category } from '@/data/menu'
@@ -43,7 +44,7 @@ export function Menu() {
 
   return (
     <>
-      <Seo title="Menu" description="Coffee, smash burgers, wraps, sides, drinks and desserts at Mug & Munch Islamabad." path="/menu" />
+      <Seo title="Menu" description={`Coffee, smash burgers, wraps, sides, drinks and desserts at ${site.brandName} Islamabad.`} path="/menu" />
       <div className="grain bg-oat px-4 pt-28 pb-24 sm:px-6">
         <div className="mx-auto max-w-7xl">
           <p className="font-hand text-3xl text-ink">pick your poison</p>

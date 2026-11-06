@@ -1,4 +1,4 @@
-import { lazy, type ComponentType } from 'react'
+import { createElement, lazy, type ComponentType } from 'react'
 import type { RouteObject } from 'react-router'
 
 /** React.lazy for named exports: lazyNamed(() => import('./X'), 'X'). */
@@ -29,5 +29,7 @@ export const PAGE_ROUTES: RouteObject[] = [
   { path: 'order-success', element: <OrderSuccess /> },
   { path: 'our-story', element: <OurStory /> },
   { path: 'find-us', element: <FindUs /> },
+  // Dev-only review page; the whole branch (and its chunk) is dropped from production builds.
+  ...(import.meta.env.DEV ? [{ path: 'mascot-lab', element: createElement(lazyNamed(() => import('@/pages/MascotLab'), 'MascotLab')) }] : []),
   { path: '*', element: <NotFound /> },
 ]

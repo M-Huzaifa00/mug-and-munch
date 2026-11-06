@@ -1,8 +1,9 @@
 import { AnimatePresence } from 'motion/react'
 import { X } from 'lucide-react'
-import { toast } from 'sonner'
+import { notify } from '@/lib/notify'
 import { useCart, useCartCount, type CartItem } from '@/store/cart'
 import { ButtonLink } from '@/components/ui/Button'
+import { Logo } from '@/components/brand/Logo'
 import { Munchy } from '@/components/mascot/Munchy'
 import { CartLineItem } from './CartLineItem'
 import { CartSummary } from './CartSummary'
@@ -19,10 +20,7 @@ export function CartContents({ onClose }: { onClose: () => void }) {
     const { items: current, removeItem, restoreItem } = useCart.getState()
     const index = current.findIndex((i) => i.lineId === item.lineId)
     removeItem(item.lineId)
-    toast(`Removed ${item.name}`, {
-      id: 'cart-remove',
-      action: { label: 'Undo', onClick: () => restoreItem(item, index) },
-    })
+    notify(`Removed ${item.name}`, { id: 'cart-remove', undo: () => restoreItem(item, index) })
   }
 
   return (
@@ -43,7 +41,10 @@ export function CartContents({ onClose }: { onClose: () => void }) {
 
       {items.length === 0 ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-2 px-6 py-12 text-center">
-          <Munchy mood="sleepy" className="h-36 w-32" label="Munchy napping next to an empty cart" />
+          <div className="flex items-end gap-3">
+            <Munchy mood="sleepy" className="h-36 w-32" label="Munchy napping next to an empty cart" />
+            <Logo variant="icon" size={64} alt="" className="mb-2 rotate-6" />
+          </div>
           <p className="font-display text-2xl font-extrabold text-espresso">Cart khaali hai…</p>
           <p className="text-ink/80">abhi bhook nahi lagi?</p>
           <ButtonLink to="/menu" size="md" className="mt-3" onClick={onClose}>

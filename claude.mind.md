@@ -1,7 +1,7 @@
 ﻿# claude.mind.md: Mug & Munch project brain
 
 > Read this before every task. Never rebuild anything marked ✅. Update status, file map and changelog after every task.
-> Current phase: **Phase 2 ✅ done** → waiting for "next" to start **Phase 3 (Home wow sections)**.
+> Current phase: **Phase 3 🟡 in progress**: logo system done; mascot static draft waiting for owner approval on `/mascot-lab` (dev only) before animation + home sections.
 > Repo: https://github.com/M-Huzaifa00/mug-and-munch (branch `main`).
 > **Colours are LOCKED:** never edit/add/remove tokens in the `@theme` block of `src/styles/index.css`. Need a new shade? Use opacity (`bg-chili/15`).
 
@@ -13,6 +13,16 @@
 - **Goal #2:** Feels local to Pakistani Gen Z (students, young professionals, late-night crowd); fast on mid-range Android (mobile-first, 360px design width).
 - **Voice:** English-first, max 1 Roman Urdu line per section ("Bhook lagi? We got you.", "Yaar, ek aur?", "Order karo, chill karo"). Tagline **Sip. Bite. Repeat.** Urdu wordmark **مگ اینڈ منچ**.
 - **Persuasion:** honest only. No fake timers, stock counts, viewer counts or reviews.
+
+## 1b. Logo Analysis (owner logo: `public/brand/logo.png`, 3242×3948, transparent PNG ✅ ≥512px ✅)
+- **Composition:** stacked lockup. Top = character illustration; bottom = wordmark "MUG n MUNCH" (empty band at rows 2782–3028 separates them; `scripts/brand-assets.mjs` auto-detects it to crop `icon` and `wordmark`).
+- **Character:** a cheeky kid's head, tilted ~15° left. Big round face; voluminous **curly hair drawn as a cloud of round solid curls** (heavy mass on the left covering the cheek/ear, scalloped fringe top-right); a **soft white cap** with a brim line and a small nub on top; **wink** (left eye = solid teardrop with a tiny highlight notch, right eye = closed ">" wink with lash); **curly "ↄ" nose**; wide **grin with tongue licking the left corner**; small ear with a "+" mark.
+- **Accessory:** balancing a **checkered-paper tray** on the cap: a coffee cup (coffee-bean emblem, handle left, **three flame-shaped steam wisps**), a sesame-bun burger (wavy lettuce, patty), a wrap in a paper cone (wavy top, dots). Checkered paper drapes down the right side of the head.
+- **Line style:** thick, even monoline (~1.1% of width), fully rounded caps/joins, retro 50s/60s diner-mascot / sticker look; flat, no gradients; a thin white sticker cut-line around the art; solid ink fills for hair, coffee, eye.
+- **Typography:** "MUG" + "MUNCH" in heavy geometric sans caps (slightly rounded corners, tight spacing) joined by a tall brush-script "n" with a long descender swash.
+- **Colours:** one ink, deep brick-maroon ≈ `#901F10` (rgb 144,32,16), white fills (opaque `#FFFFFF`), one tiny cream patch ≈ `#F0E8E0`.
+- **Token mapping (tokens are LOCKED):** maroon is not a token. Closest expression from tokens = `color-mix(in oklab, chili 53%, espresso)` ≈ `#8A311F` (ΔOKLab 0.028 vs 0.25 for pure chili, 0.28 for pure espresso; 7.6:1 on oat) → exported as `BRAND_INK` in `src/lib/brand.ts`. White → `oat`. Maroon on espresso = 2.1:1 ✗ → on dark sections the logo sits on an **oat badge** (`tone="light"`), never recoloured.
+- **Naming note:** the wordmark reads "MUG n MUNCH"; site copy currently says "Mug & Munch" (owner to confirm which to use in text).
 
 ## 2. Feature status
 ✅ done · 🟡 in progress / partial · ⬜ todo
@@ -56,8 +66,18 @@
 | UI kit: Badge, Chip, QuantityStepper, Sticker, HandArrow, MagneticButton, Modal, Drawer, RevealHeading, RollingNumber | ✅ | `src/components/ui/*` |
 | Munchy mascot: static moods happy / sleepy / oops | 🟡 | `src/components/mascot/Munchy.tsx` (Phase 3 adds blink, eye-tracking, wave, idle sleep) |
 
-### Phase 3: Home wow sections ⬜
-Preloader (mug fill, 0→100, once per session) · Hero (SplitText, 3-layer parallax, magnetic CTAs, Munchy peeking) · Marquee (2 tilted, scroll-velocity) · Bestsellers (pinned horizontal) · Deals strip · Reviews (Draggable + Inertia stickers, IG grid) · Find Us teaser · Footer wordmark letter reveal · Munchy mascot (blink, eye tracking, wave, sleep zZz). All ⬜. Home currently shows a static hero + placeholder bands (`src/pages/Home.tsx`).
+### Phase 3: Brand logo, mascot & Home wow sections 🟡
+| Feature | Status | Files |
+|---|---|---|
+| Brand asset pipeline (sharp): logo/icon/wordmark WebP ×4 sizes, favicon.ico (16/32/48), favicon-32.png, apple-touch-icon (180, oat), og-image (1200×630), generated aspect ratios | ✅ | `scripts/brand-assets.mjs` (`npm run brand`), `public/brand/*`, `public/favicon*`, `src/components/brand/brandAssets.ts` (generated) |
+| `Logo` (full / icon / wordmark / horizontal / stamp; size; tone dark/light → oat badge) + `BrandImage` (srcset, exact w/h) + `LogoStamp` (rotating text ring, GSAP, reduced-motion static) | ✅ | `src/components/brand/*`, `src/lib/brand.ts` |
+| index.html icons, og:image, twitter:image, theme-color = espresso | ✅ | `index.html` |
+| Logo placements: navbar (icon+wordmark, wordmark tucks away on scroll, wiggle on hover), Suspense loader (pulsing), footer (full on oat badge + stamp), mobile cart pill (tiny icon), fallback-card watermark, toasts (`notify()`), 404 + empty cart | ✅ | `NavLogo.tsx`, `PageLoader.tsx`, `Footer.tsx`, `MobileBottomBar.tsx`, `ProductImage.tsx`, `src/lib/notify.tsx`, `NotFound.tsx`, `cart/CartContents.tsx` |
+| JSON-LD CafeOrCoffeeShop (logo from `site.logoUrl`) | ✅ | `src/components/layout/JsonLd.tsx`, `site.ts` (`logoUrl`, `ogImage`) |
+| Logo placements still to do: preloader, page-transition wipe, order-success page, stamp doodles in sections, logo 5-click coffee-spill easter egg | ⬜ | |
+| Mascot (name: **Munchy**, default; owner may rename): layered SVG with data-part groups, 9 moods as static poses, ink options | 🟡 awaiting approval | `src/components/mascot/Mascot.tsx`, `MascotFace.tsx`, `mascotPoses.ts`, `src/pages/MascotLab.tsx` (DEV-only route `/mascot-lab`) |
+| Mascot GSAP animation per mood + cart-event reactions + replace Phase 2 `Munchy` placeholders | ⬜ | (old placeholder: `src/components/mascot/Munchy.tsx`) |
+| Preloader · Hero · Marquee · Bestsellers (pin desktop / snap mobile) · Deals strip · Reviews (Draggable+Inertia) · Find Us teaser · Footer wordmark reveal · page transitions | ⬜ | |
 
 ### Phase 4: Interactive toys ⬜
 Build Your Burger · Coffee Lab · Wrap It Up · Vibe Picker (Flip) · Snack Roulette · custom cursor · page transitions (chili/cheese wipe) · logo 5-click coffee-spill easter egg. All ⬜.
@@ -164,6 +184,12 @@ public/images/{coffee,burgers,wraps,sides,drinks,desserts,brand}/  photos go her
 Node/Supabase backend + real orders DB · real JazzCash / Easypaisa / card gateway integration · admin dashboard to edit menu & prices · live order tracking · "Munch Points" loyalty & referral · Urdu/English language toggle · PWA + "Add to home screen" · table QR ordering for dine-in · reservations · push/WhatsApp order-status notifications · analytics (GA4 / Meta Pixel) with consent · Foodpanda link-out · A/B testing CTA copy.
 
 ## 8. Changelog (Asia/Karachi dates)
+### 2026-11-06: Phase 3 (part 1): logo system + mascot draft
+- Owner logo added (`public/brand/logo.png`), analysed (section 1b). `sharp` + `scripts/brand-assets.mjs` generate all brand assets; old placeholder mug logo + favicon.svg removed.
+- `Logo`/`BrandImage`/`LogoStamp` components; logo wired into navbar, loader, footer, cart pill, fallback cards, toasts, 404, empty cart, JSON-LD.
+- Mascot drafted from the logo character (static poses for all 9 moods) on DEV-only `/mascot-lab`, with 3 ink options. Waiting for owner approval before animating.
+- Colour tokens untouched.
+
 ### 2026-11-06: Phase 2 Cart, core commerce + Home menu section
 - Cart store rewritten to the Phase 2 API (items/addItem/removeItem/updateQty/undoLastAdd, isOpen, hasAddedThisSession, deliveryFee + amountToFreeDelivery selectors). Persist version 2.
 - ProductCard + ProductImage (styled fallback; `virtual:photos` Vite plugin so missing photos are never requested).

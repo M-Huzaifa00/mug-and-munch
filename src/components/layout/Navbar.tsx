@@ -3,7 +3,7 @@ import { useScrollState } from '@/hooks/useScrollState'
 import { cn } from '@/lib/utils'
 import { ButtonLink } from '@/components/ui/Button'
 import { CartButton } from './CartButton'
-import { Logo } from './Logo'
+import { NavLogo } from './NavLogo'
 import { NAV_LINKS } from './navLinks'
 
 /**
@@ -29,7 +29,7 @@ export function Navbar() {
           scrolled ? 'glass border-espresso py-1.5 shadow-hard' : 'border-transparent py-2.5',
         )}
       >
-        <Logo />
+        <NavLogo compact={scrolled} />
 
         <ul className="hidden items-center gap-1 md:flex">
           {NAV_LINKS.map((link) => (

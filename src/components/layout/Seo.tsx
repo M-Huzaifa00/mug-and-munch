@@ -8,7 +8,7 @@ interface SeoProps {
   path: string
 }
 
-export const DEFAULT_TITLE = 'Mug & Munch | Coffee, Burgers & Wraps in Islamabad'
+export const DEFAULT_TITLE = `${site.brandName} | Coffee, Burgers & Wraps in Islamabad`
 
 function setMeta(selector: string, attr: 'name' | 'property', key: string, content: string) {
   let el = document.head.querySelector<HTMLMetaElement>(selector)
@@ -26,7 +26,7 @@ function setMeta(selector: string, attr: 'name' | 'property', key: string, conte
  */
 export function Seo({ title, description, path }: SeoProps) {
   useEffect(() => {
-    const fullTitle = title ? `${title} | ${site.name}` : DEFAULT_TITLE
+    const fullTitle = title ? `${title} | ${site.brandName}` : DEFAULT_TITLE
     document.title = fullTitle
     setMeta('meta[name="description"]', 'name', 'description', description)
     setMeta('meta[property="og:title"]', 'property', 'og:title', fullTitle)

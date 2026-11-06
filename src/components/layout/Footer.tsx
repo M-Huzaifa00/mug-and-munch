@@ -4,6 +4,7 @@ import { instagramUrl, site, tiktokUrl } from '@/config/site'
 import { DAY_LABELS, formatDayHours, WEEK_ORDER } from '@/lib/hours'
 import { whatsappLink, WHATSAPP_GREETING } from '@/lib/whatsapp'
 import { OpenBadge } from '@/components/ui/OpenBadge'
+import { Logo } from '@/components/brand/Logo'
 import { InstagramIcon, TikTokIcon, WhatsAppIcon } from '@/components/ui/SocialIcons'
 import { NAV_LINKS } from './navLinks'
 
@@ -16,8 +17,12 @@ export function Footer() {
     <footer className="grain overflow-hidden bg-espresso text-oat">
       <div className="mx-auto max-w-7xl px-4 pt-16 pb-8 sm:px-6">
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
-          <div>
-            <p className="font-display text-4xl font-extrabold tracking-tighter text-cheese">{site.tagline}</p>
+          <div className="relative">
+            <div className="flex items-start gap-4">
+              <Logo variant="full" size={150} tone="light" className="-rotate-3" />
+              <Logo variant="stamp" size={104} className="mt-16 hidden rotate-6 sm:inline-flex md:hidden lg:inline-flex" />
+            </div>
+            <p className="mt-6 font-display text-4xl font-extrabold tracking-tighter text-cheese">{site.tagline}</p>
             <p lang="ur" dir="rtl" className="mt-3 w-fit font-urdu text-2xl leading-[2.2] text-oat/90">
               {site.nameUrdu}
             </p>
@@ -95,12 +100,12 @@ export function Footer() {
         aria-hidden="true"
         className="text-mega pointer-events-none px-2 text-center font-display font-extrabold whitespace-nowrap text-oat select-none"
       >
-        MUG<span className="text-chili">&amp;</span>MUNCH
+        {site.brandName.toUpperCase()}
       </p>
 
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 border-t border-oat/15 px-4 py-6 text-sm text-oat/70 sm:flex-row sm:px-6">
         <p>
-          © {YEAR} {site.name}. All rights munched.
+          © {YEAR} {site.brandName}. All rights munched.
         </p>
         <p>Made with ☕ in {site.address.city}</p>
       </div>

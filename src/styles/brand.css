@@ -1,0 +1,7 @@
+/* Brand styles (NOT design tokens: the @theme colour tokens in index.css are locked).
+   --brand-ink = the logo's brick-maroon, built ONLY from existing tokens
+   (53% chili + 47% espresso in OKLab ≈ #8A311F; 7.6:1 on oat).
+   Use it only for mascot / illustration line work. */
+:root {
+  --brand-ink: color-mix(in oklab, var(--color-chili) 53%, var(--color-espresso));
+}

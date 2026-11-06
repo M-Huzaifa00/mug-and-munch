@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import photos from 'virtual:photos'
 import { CATEGORY_META, type Category } from '@/data/menu'
+import { brandSrc } from '@/lib/brand'
 import { cn } from '@/lib/utils'
 
 interface ProductImageProps {
@@ -45,6 +46,20 @@ export function ProductImage({ name, emoji, image, category, size = 'lg', showNa
     <div role="img" aria-label={name} className={cn('relative flex size-full flex-col items-center justify-center overflow-hidden', gradient, className)}>
       <span aria-hidden="true" className="absolute -top-6 -left-6 size-24 rounded-full bg-oat/35 blur-xl" />
       <span aria-hidden="true" className="absolute -right-8 -bottom-10 size-32 rounded-full bg-cheese/40 blur-2xl" />
+      {/* faint logo watermark */}
+      <img
+        src={brandSrc('icon', size === 'lg' ? 128 : 64)}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        decoding="async"
+        width={103}
+        height={128}
+        className={cn(
+          'pointer-events-none absolute rotate-12 opacity-[0.13] mix-blend-multiply',
+          size === 'lg' ? '-right-3 -bottom-4 h-[70%] w-auto' : '-right-1 -bottom-1 h-[80%] w-auto',
+        )}
+      />
       <span
         aria-hidden="true"
         className={cn(

@@ -1,10 +1,10 @@
-import { MugMark } from './Logo'
+import { BrandImage } from '@/components/brand/BrandImage'
 
-/** Suspense fallback while a lazy route chunk loads. */
+/** Suspense fallback while a lazy route chunk loads: pulsing logo. */
 export function PageLoader() {
   return (
     <div className="flex min-h-[70dvh] items-center justify-center" role="status" aria-live="polite">
-      <MugMark className="animate-wiggle size-16" />
+      <BrandImage kind="icon" height={96} alt="" className="animate-pulse" />
       <span className="sr-only">Loading…</span>
     </div>
   )

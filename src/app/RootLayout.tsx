@@ -5,6 +5,7 @@ import { getBackgroundLocation, getModalSlug } from '@/lib/routing'
 import { ItemModal } from '@/components/item/ItemModal'
 import { CartDrawer } from '@/components/layout/CartDrawer'
 import { Footer } from '@/components/layout/Footer'
+import { JsonLd } from '@/components/layout/JsonLd'
 import { MobileBottomBar } from '@/components/layout/MobileBottomBar'
 import { Navbar } from '@/components/layout/Navbar'
 import { PageLoader } from '@/components/layout/PageLoader'
@@ -27,6 +28,7 @@ export function RootLayout() {
       >
         Skip to content
       </a>
+      <JsonLd />
       <ScrollToTop />
       <Navbar />
       <main id="main" className="flex-1">

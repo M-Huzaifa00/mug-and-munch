@@ -12,22 +12,20 @@ const eye = (x: number, y: number, dx: number) => (
   </>
 )
 
-const MOUTHS: Record<MouthPose, ReactNode> = {
-  tongue: (
-    <>
-      <path d="M120 212c16 16 54 16 72-8" />
-      <path d="M128 216c-2-11 10-14 14-4l6 12c-8 2-14 0-20-8z" fill="currentColor" strokeWidth="3" />
-    </>
-  ),
-  open: (
-    <>
-      <path d="M124 206c10 22 56 22 66-6z" fill="currentColor" />
-      <path d="M140 220c6-6 18-6 24 0-6 6-18 6-24 0z" className="fill-chili" stroke="none" />
-    </>
-  ),
-  o: <ellipse cx="152" cy="212" rx="5" ry="6" fill="currentColor" />,
-  frown: <path d="M130 220c10-12 34-14 48-4" />,
-  wobbly: <path d="M130 214c5-5 10 5 15 0s10 5 15 0 10 5 15 0" />,
+/** Main mouth outline per pose: ONE path so GSAP MorphSVG can morph between moods. */
+const MOUTH_D: Record<MouthPose, string> = {
+  tongue: 'M120 212c16 16 54 16 72-8',
+  open: 'M124 206c10 22 56 22 66-6z',
+  o: 'M152 206c3 0 5 3 5 6s-2 6-5 6-5-3-5-6 2-6 5-6z',
+  frown: 'M130 220c10-12 34-14 48-4',
+  wobbly: 'M130 214c5-5 10 5 15 0s10 5 15 0 10 5 15 0',
+}
+const FILLED: Record<MouthPose, boolean> = { tongue: false, open: true, o: true, frown: false, wobbly: false }
+
+/** Extra mouth details layered on the outline. */
+const MOUTH_EXTRA: Partial<Record<MouthPose, ReactNode>> = {
+  tongue: <path data-part="tongue" d="M128 216c-2-11 10-14 14-4l6 12c-8 2-14 0-20-8z" fill="currentColor" strokeWidth="3" />,
+  open: <path data-part="tongue" d="M140 220c6-6 18-6 24 0-6 6-18 6-24 0z" className="fill-chili" stroke="none" />,
 }
 
 /** Face features. Groups carry data-part for GSAP (blink, follow, mouth morph). */
@@ -57,8 +55,9 @@ export function MascotFace({ pose }: { pose: MascotPose }) {
         <ellipse cx="116" cy="200" rx="8" ry="4.5" />
         <ellipse cx="188" cy="190" rx="8" ry="4.5" />
       </g>
-      <g data-part="mouth" fill="none">
-        {MOUTHS[pose.mouth]}
+      <g data-part="mouth">
+        <path data-part="mouthShape" d={MOUTH_D[pose.mouth]} fill={FILLED[pose.mouth] ? 'currentColor' : 'none'} />
+        {MOUTH_EXTRA[pose.mouth]}
       </g>
       {pose.extra === 'tear' && <path data-part="tear" d="M170 176c3 6 6 10 3 13-3 2-7 0-6-4z" className="fill-oat" strokeWidth="2.5" />}
       {pose.extra === 'crumbs' && (

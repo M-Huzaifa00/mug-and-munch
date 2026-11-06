@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router'
 import { getItemBySlug } from '@/data/menu'
 import { ButtonLink } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
-import { Munchy } from '@/components/mascot/Munchy'
+import { Mascot } from '@/components/mascot/Mascot'
 import { ItemDetailContent } from './ItemDetailContent'
 
 /**
@@ -20,7 +20,7 @@ export function ItemModal({ slug }: { slug: string }) {
         <ItemDetailContent key={item.id} item={item} mode="modal" onAdded={close} />
       ) : (
         <div className="flex flex-col items-center gap-3 p-10 text-center">
-          <Munchy mood="oops" />
+          <Mascot mood="sad" className="h-40" />
           <h2 id="item-title" className="font-display text-3xl font-extrabold text-espresso">
             Ye toh hamare paas nahi 😅
           </h2>

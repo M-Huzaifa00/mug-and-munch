@@ -1,16 +1,16 @@
 import { ButtonLink } from '@/components/ui/Button'
 import { Logo } from '@/components/brand/Logo'
 import { Seo } from '@/components/layout/Seo'
-import { Munchy } from '@/components/mascot/Munchy'
+import { Mascot } from '@/components/mascot/Mascot'
 
-/** TODO (Phase 3, after mascot approval): swap Munchy for <Mascot mood="guilty" />. */
+/** Fun 404: guilty Munchy (crumbs on the face) next to the logo. */
 export function NotFound() {
   return (
     <>
       <Seo title="Page not found" description="This page got munched." path="/404" />
       <section className="grain flex min-h-[80dvh] flex-col items-center justify-center bg-oat px-4 pt-28 pb-16 text-center">
         <div className="flex items-end gap-4">
-          <Munchy mood="oops" className="h-36 w-32" />
+          <Mascot mood="guilty" className="h-44" label="Munchy looking guilty with crumbs" />
           <Logo variant="icon" size={88} alt="" className="-rotate-6" />
         </div>
         <p className="mt-6 font-hand text-3xl text-ink">oops… sorry yaar</p>

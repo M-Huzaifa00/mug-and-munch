@@ -34,6 +34,27 @@ export const STAGGER = {
   cards: 0.1,
 } as const
 
+/** Munchy mascot timings (seconds). */
+export const MASCOT = {
+  bob: 1.6,
+  blinkMin: 3,
+  blinkMax: 6,
+  blink: 0.08,
+  steam: 2.2,
+  morph: 0.35,
+  peekIn: 0.9,
+  peekLook: 0.5,
+  peekHold: 2.4,
+  peekRepeatDelay: 5,
+  followRange: 4,
+} as const
+
+/** Preloader / page transition timings. */
+export const SCENE = {
+  preloaderMax: 1.8,
+  transition: 0.6,
+} as const
+
 /* ---------- Motion (motion/react) transitions ---------- */
 export const SPRING: Record<'soft' | 'bouncy' | 'snappy', Transition> = {
   soft: { type: 'spring', stiffness: 260, damping: 30 },

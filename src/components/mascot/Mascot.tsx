@@ -1,11 +1,17 @@
-import { useId } from 'react'
+import { useId, useRef } from 'react'
 import { BRAND_INK } from '@/lib/brand'
 import { cn } from '@/lib/utils'
 import { MascotFace } from './MascotFace'
 import { ARM_PIVOT, ARM_ROTATION, MASCOT_POSES, type MascotMood } from './mascotPoses'
+import { useMascotAnimation } from './useMascotAnimation'
+import { useMascotReactions } from './useMascotReactions'
 
 interface MascotProps {
   mood?: MascotMood
+  /** React to cart events (wave on first add, excited on every add, sleep after 30s idle). */
+  reactive?: boolean
+  /** peek mood: called after Munchy has slid in and looked around (otherwise it hides again). */
+  onPeekEnd?: () => void
   className?: string
   /** Accessible label; omit to make it decorative. */
   label?: string
@@ -22,23 +28,33 @@ const arm = (side: 'armL' | 'armR', rotation: number, d: string, hand: [number, 
 }
 
 /**
- * The Mug n Munch kid: curly hair, cap, wink + tongue grin, balancing the café tray.
- * Hand-built from the logo. Static pose per mood (animation layer added after approval).
+ * Munchy, the Mug n Munch kid: curly hair, cap, wink + tongue grin, balancing the café tray.
+ * Hand-built from the logo. Each mood = static pose (reduced motion) + GSAP timeline.
  */
-export function Mascot({ mood = 'idle', className, label }: MascotProps) {
-  const pose = MASCOT_POSES[mood]
+export function Mascot({ mood = 'idle', reactive = false, onPeekEnd, className, label }: MascotProps) {
+  const activeMood = useMascotReactions(mood, reactive)
+  const pose = MASCOT_POSES[activeMood]
+  const svgRef = useRef<SVGSVGElement>(null)
+  useMascotAnimation(svgRef, activeMood, onPeekEnd)
   const checkId = `mm-chk-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`
   const a11y = label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': true as const }
 
   return (
-    <svg viewBox="0 0 240 304" className={cn('h-48 w-auto overflow-visible', className)} style={{ color: BRAND_INK }} {...a11y}>
+    <svg
+      ref={svgRef}
+      viewBox="0 0 240 304"
+      className={cn('h-48 w-auto overflow-visible', className)}
+      style={{ color: BRAND_INK }}
+      data-mood={activeMood}
+      {...a11y}
+    >
       <defs>
         <pattern id={checkId} width="10" height="10" patternUnits="userSpaceOnUse">
           <rect width="10" height="10" className="fill-oat" />
           <path d="M0 0h5v5H0zM5 5h5v5H5z" fill="currentColor" />
         </pattern>
       </defs>
-      <g fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round">
+      <g data-part="rig" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round">
         <g data-part="legs">
           <path d="M108 270v18M136 270v18" />
           <path d="M94 300c0-9 6-13 14-13s11 5 11 13zM126 300c0-8 3-13 11-13s14 4 14 13z" fill="currentColor" />

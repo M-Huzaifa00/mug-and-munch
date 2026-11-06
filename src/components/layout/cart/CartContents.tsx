@@ -4,7 +4,7 @@ import { notify } from '@/lib/notify'
 import { useCart, useCartCount, type CartItem } from '@/store/cart'
 import { ButtonLink } from '@/components/ui/Button'
 import { Logo } from '@/components/brand/Logo'
-import { Munchy } from '@/components/mascot/Munchy'
+import { Mascot } from '@/components/mascot/Mascot'
 import { CartLineItem } from './CartLineItem'
 import { CartSummary } from './CartSummary'
 import { CartUpsell } from './CartUpsell'
@@ -42,7 +42,7 @@ export function CartContents({ onClose }: { onClose: () => void }) {
       {items.length === 0 ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-2 px-6 py-12 text-center">
           <div className="flex items-end gap-3">
-            <Munchy mood="sleepy" className="h-36 w-32" label="Munchy napping next to an empty cart" />
+            <Mascot mood="sleep" className="h-40" label="Munchy napping next to an empty cart" />
             <Logo variant="icon" size={64} alt="" className="mb-2 rotate-6" />
           </div>
           <p className="font-display text-2xl font-extrabold text-espresso">Cart khaali hai…</p>

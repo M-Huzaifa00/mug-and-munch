@@ -2,9 +2,16 @@ import { Logo } from '@/components/brand/Logo'
 import { Mascot } from '@/components/mascot/Mascot'
 import { MASCOT_MOODS } from '@/components/mascot/mascotPoses'
 import { Seo } from '@/components/layout/Seo'
+import { Button } from '@/components/ui/Button'
+import { getItemBySlug } from '@/data/menu'
+import { useAddToCart } from '@/hooks/useAddToCart'
+import { toCartInput } from '@/lib/itemOptions'
+
+const burger = getItemBySlug('classic-smash')
 
 /** DEV-ONLY review page (route only registered when import.meta.env.DEV). */
 export function MascotLab() {
+  const add = useAddToCart()
   return (
     <>
       <Seo title="Mascot lab" description="Internal review page." path="/mascot-lab" />
@@ -36,8 +43,22 @@ export function MascotLab() {
             </div>
           </section>
 
+          <section aria-labelledby="react" className="sticker flex flex-wrap items-center gap-8 rounded-blob bg-cheese p-6">
+            <Mascot mood="follow" reactive className="h-56" label="Reactive Munchy" />
+            <div>
+              <h2 id="react" className="font-display text-3xl font-extrabold text-espresso">Cart reactions</h2>
+              <p className="max-w-md text-ink">Follows your cursor. First add of the session → wave, every add → excited, 30s idle → sleep.</p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <Button onClick={() => add(toCartInput(burger!))}>Add a burger</Button>
+                <Button variant="outline" onClick={() => sessionStorage.removeItem('mm-first-add')}>
+                  Reset “first add”
+                </Button>
+              </div>
+            </div>
+          </section>
+
           <section aria-labelledby="moods">
-            <h2 id="moods" className="font-display text-3xl font-extrabold text-espresso">All 9 moods (static poses)</h2>
+            <h2 id="moods" className="font-display text-3xl font-extrabold text-espresso">All 9 moods (animated; static with reduced motion)</h2>
             <ul className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
               {MASCOT_MOODS.map((mood) => (
                 <li key={mood} className="sticker flex flex-col items-center rounded-blob bg-oat p-3">

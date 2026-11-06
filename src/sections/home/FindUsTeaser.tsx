@@ -4,7 +4,7 @@ import { formatDayHours, getTodayKey } from '@/lib/hours'
 import { buttonClasses } from '@/components/ui/buttonClasses'
 import { OpenBadge } from '@/components/ui/OpenBadge'
 import { RevealHeading } from '@/components/ui/RevealHeading'
-import { LogoStamp } from '@/components/brand/LogoStamp'
+import { StylisedMap } from '@/components/ui/StylisedMap'
 import { Mascot } from '@/components/mascot/Mascot'
 import { SECTION_IDS } from './sectionIds'
 
@@ -50,18 +50,9 @@ export function FindUsTeaser() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`Open ${site.brandName} on Google Maps (opens in new tab)`}
-          className="sticker group relative block aspect-square overflow-hidden rounded-blob bg-pickle/40"
+          className="sticker group relative block aspect-square overflow-hidden rounded-blob"
         >
-          <span
-            aria-hidden="true"
-            className="absolute inset-0 [background-image:linear-gradient(var(--color-oat)_10px,transparent_10px),linear-gradient(90deg,var(--color-oat)_10px,transparent_10px)] [background-size:90px_90px] [background-position:22px_30px]"
-          />
-          <span aria-hidden="true" className="absolute top-[38%] left-[-10%] h-5 w-[120%] -rotate-12 bg-cheese" />
-          <span className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-full flex-col items-center transition-transform duration-300 ease-bouncy group-hover:-translate-y-[110%]">
-            <span className="sticker rounded-full bg-oat px-3 py-1 font-display font-extrabold whitespace-nowrap text-espresso">{site.address.area}</span>
-            <MapPin size={56} className="fill-chili text-espresso" aria-hidden="true" />
-          </span>
-          <LogoStamp size={100} className="absolute right-4 bottom-4 rotate-6" />
+          <StylisedMap hoverLift />
         </a>
       </div>
     </section>

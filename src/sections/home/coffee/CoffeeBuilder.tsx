@@ -4,9 +4,7 @@ import { useAddToCart } from '@/hooks/useAddToCart'
 import { toCartInput, unitPriceFor, type OptionSelection } from '@/lib/itemOptions'
 import { cn, formatPKR } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
-import { RevealHeading } from '@/components/ui/RevealHeading'
 import { RollingNumber } from '@/components/ui/RollingNumber'
-import { Sticker } from '@/components/ui/Sticker'
 import { OptionPills } from '@/components/item/OptionPills'
 import { CoffeeCup, type CupMilk, type CupSize } from './CoffeeCup'
 
@@ -16,8 +14,8 @@ const LATTE = getItemBySlug('classic-latte')
 const pills = (choices: { id: string; label: string; priceDelta: number }[] = []) =>
   choices.map((c) => ({ id: c.id, label: c.label, hint: c.priceDelta ? `+${formatPKR(c.priceDelta)}` : undefined }))
 
-/** Pick size / milk / hot-iced, watch the cup change, add the exact drink. */
-export function CoffeeLab() {
+/** Coffee panel of the Build Studio (sits on oat): pick size / milk / hot-iced, watch the cup change, add the exact drink. */
+export function CoffeeBuilder() {
   const [size, setSize] = useState<CupSize>('m')
   const [milk, setMilk] = useState<CupMilk>('regular')
   const [iced, setIced] = useState(false)
@@ -30,9 +28,7 @@ export function CoffeeLab() {
   const add = () => addToCart(toCartInput(LATTE, selection), { source: cup.current })
 
   return (
-    <section aria-labelledby="coffee-title" className="grain relative overflow-hidden bg-oat px-4 py-20 sm:px-6 md:py-28">
-      <Sticker kind="steam" className="top-12 right-[8%] hidden md:block" tilt={8} />
-      <div className="mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-2">
+    <div className="grid items-center gap-10 text-espresso md:grid-cols-2">
         <div ref={cup} className="relative mx-auto flex h-[300px] items-end justify-center md:h-[440px]">
           <span aria-hidden="true" className="absolute bottom-6 size-[85%] rounded-full bg-caramel/25 blur-2xl" />
           <div className="relative h-full" role="img" aria-label={`${iced ? 'Iced' : 'Hot'} latte, ${size === 's' ? 'small' : size === 'm' ? 'medium' : 'large'}, ${milk} milk`}>
@@ -41,11 +37,6 @@ export function CoffeeLab() {
         </div>
 
         <div>
-          <RevealHeading id="coffee-title" className="text-display font-extrabold text-espresso">
-            Coffee Lab
-          </RevealHeading>
-          <p className="mt-1 mb-6 -rotate-1 font-hand text-2xl text-ink sm:text-3xl">study grind fuel ☕ mix yours</p>
-
           <div className="space-y-5">
             <OptionPills legend="Size" name="lab-size" options={pills(LATTE.options.sizes)} selected={[size]} onToggle={(id) => setSize(id as CupSize)} />
             <OptionPills legend="Milk" name="lab-milk" options={pills(LATTE.options.milks)} selected={[milk]} onToggle={(id) => setMilk(id as CupMilk)} />
@@ -73,7 +64,6 @@ export function CoffeeLab() {
             Add to cart · <RollingNumber value={price} format={formatPKR} />
           </Button>
         </div>
-      </div>
-    </section>
+    </div>
   )
 }

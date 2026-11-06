@@ -8,7 +8,6 @@ import { gsap } from '@/lib/gsap'
 import { TOYS } from '@/lib/motion-presets'
 import { formatPKR } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
-import { RevealHeading } from '@/components/ui/RevealHeading'
 import { RollingNumber } from '@/components/ui/RollingNumber'
 import { IngredientPicker } from '../builders/IngredientPicker'
 import { BurgerLayer } from './BurgerLayer'
@@ -18,8 +17,11 @@ interface Layer {
   id: BurgerLayerId
 }
 
-/** Tap ingredients → layers drop & stack; live price; "Add my creation"; reset topples the tower. */
-export function BuildYourBurger() {
+/**
+ * Burger panel of the Build Studio (sits on espresso): tap ingredients → layers drop & stack;
+ * live price; "Add my creation"; reset topples the tower.
+ */
+export function BurgerBuilder() {
   const [layers, setLayers] = useState<Layer[]>([])
   const [round, setRound] = useState(0)
   const [announce, setAnnounce] = useState('')
@@ -74,13 +76,8 @@ export function BuildYourBurger() {
   }
 
   return (
-    <section aria-labelledby="burger-title" className="grain relative overflow-hidden bg-espresso px-4 py-20 text-oat sm:px-6 md:py-28">
-      <div className="mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-2">
+    <div className="grid items-center gap-10 text-oat md:grid-cols-2">
         <div className="order-2 md:order-1">
-          <RevealHeading id="burger-title" className="text-display font-extrabold text-oat">
-            Build your burger
-          </RevealHeading>
-          <p className="mt-1 mb-6 -rotate-1 font-hand text-2xl text-cheese sm:text-3xl">garma garam, fresh off the grill 🔥</p>
           <IngredientPicker
             ingredients={BURGER_BUILDER.ingredients}
             picks={ids}
@@ -102,7 +99,7 @@ export function BuildYourBurger() {
           </p>
         </div>
 
-        <div ref={stage} className="relative order-1 mx-auto flex h-[340px] w-full max-w-[300px] items-end justify-center md:order-2 md:h-[460px]">
+        <div ref={stage} className="relative order-1 mx-auto flex h-[250px] w-full max-w-[260px] items-end justify-center sm:h-[340px] sm:max-w-[300px] md:order-2 md:h-[460px]">
           <span aria-hidden="true" className="absolute bottom-0 h-8 w-[118%] rounded-[50%] border-[2.5px] border-oat bg-caramel" />
           {/* Bottom-up DOM order + column-reverse → each upper layer paints over the one below (cheese drips on the patty). */}
           <div ref={stack} className="relative mb-4 flex w-full flex-col-reverse justify-start" role="img" aria-label={`Your burger: ${fillings} fillings`}>
@@ -115,7 +112,6 @@ export function BuildYourBurger() {
             <p className="absolute top-6 text-center font-hand text-2xl text-cheese">tap an ingredient to start ✨</p>
           )}
         </div>
-      </div>
-    </section>
+    </div>
   )
 }

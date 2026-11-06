@@ -3,11 +3,7 @@ import { site } from '@/config/site'
 import { shouldShowPreloader } from '@/lib/preloader'
 import { Seo } from '@/components/layout/Seo'
 import { Bestsellers } from '@/sections/home/Bestsellers'
-import { BuildYourBurger } from '@/sections/home/burger/BuildYourBurger'
-import { CoffeeLab } from '@/sections/home/coffee/CoffeeLab'
-import { SnackRoulette } from '@/sections/home/roulette/SnackRoulette'
-import { VibePicker } from '@/sections/home/vibe/VibePicker'
-import { WrapItUp } from '@/sections/home/wrap/WrapItUp'
+import { BuildStudio } from '@/sections/home/builders/BuildStudio'
 import { DealsStrip } from '@/sections/home/deals/DealsStrip'
 import { FindUsTeaser } from '@/sections/home/FindUsTeaser'
 import { Hero } from '@/sections/home/hero/Hero'
@@ -15,10 +11,12 @@ import { Marquee } from '@/sections/home/Marquee'
 import { MenuPreview } from '@/sections/home/MenuPreview'
 import { Preloader } from '@/sections/home/Preloader'
 import { Reviews } from '@/sections/home/reviews/Reviews'
+import { SnackRoulette } from '@/sections/home/roulette/SnackRoulette'
+import { VibePicker } from '@/sections/home/vibe/VibePicker'
 
 /**
- * Home: Preloader → Hero → Marquee → MenuPreview → Bestsellers → Deals → Reviews → Find Us → (Footer).
- * Phase 4 toys (Build Your Burger, Coffee Lab, Wrap It Up, Vibe Picker, Roulette) slot in later.
+ * Home: Preloader → Hero → Marquee → MenuPreview → Bestsellers → Build Studio (burger / coffee / wrap tabs)
+ * → Vibe Picker → Snack Roulette → Deals → Reviews → Find Us → (Footer).
  */
 export function Home() {
   const [preloading, setPreloading] = useState(shouldShowPreloader)
@@ -34,9 +32,7 @@ export function Home() {
       <Marquee />
       <MenuPreview />
       <Bestsellers />
-      <BuildYourBurger />
-      <CoffeeLab />
-      <WrapItUp />
+      <BuildStudio />
       <VibePicker />
       <SnackRoulette />
       <DealsStrip />

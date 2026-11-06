@@ -4,6 +4,7 @@ import { gsap } from '@/lib/gsap'
 import { EASE, SCENE } from '@/lib/motion-presets'
 import { getBackgroundLocation, getModalSlug, ITEM_PATH } from '@/lib/routing'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { TRANSITION_EVENT, type TransitionNavigateDetail } from '@/hooks/useTransitionNavigate'
 import { Logo } from '@/components/brand/Logo'
 
 const HALF = SCENE.transition / 2
@@ -23,8 +24,9 @@ function lift(el: HTMLElement) {
 /**
  * Route change wipe: chili + cheese panels cover the screen with the logo popping in the middle,
  * then lift away on the new page (~0.6s). Internal <a> clicks are intercepted in the capture phase
- * (React Router's Link skips navigation when defaultPrevented). Item links are excluded so they keep
- * opening as a modal. Reduced motion: no interception, instant navigation.
+ * (React Router's Link skips navigation when defaultPrevented); programmatic navigation uses
+ * useTransitionNavigate() (TRANSITION_EVENT). Item links are excluded so they keep opening as a modal.
+ * Reduced motion: no interception, instant navigation.
  */
 export function PageTransition() {
   const navigate = useNavigate()
@@ -37,20 +39,14 @@ export function PageTransition() {
 
   useEffect(() => {
     if (reduced) return
-    const onClick = (e: MouseEvent) => {
-      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || covering.current) return
-      const a = e.target instanceof Element ? e.target.closest('a') : null
-      if (!a || (a.target && a.target !== '_self') || a.hasAttribute('download')) return
-      const url = new URL(a.href, window.location.href)
-      if (url.origin !== window.location.origin || url.pathname === window.location.pathname) return
-      if (matchPath(ITEM_PATH, url.pathname)) return
 
-      e.preventDefault()
-      covering.current = true
+    /** Cover the screen, then navigate. Returns false when it can't (already covering / no overlay). */
+    const cover = (to: string, replace = false): boolean => {
       const el = root.current
-      if (!el) return
+      if (!el || covering.current) return false
+      covering.current = true
       gsap
-        .timeline({ onComplete: () => void navigate(url.pathname + url.search + url.hash) })
+        .timeline({ onComplete: () => void navigate(to, { replace }) })
         .set(el, { autoAlpha: 1, pointerEvents: 'auto' })
         .fromTo(within(el, '[data-panel]'), { yPercent: 100 }, { yPercent: 0, duration: HALF, ease: 'power3.inOut', stagger: 0.06 })
         .fromTo(within(el, '[data-mark]'), { scale: 0, rotate: -25 }, { scale: 1, rotate: 0, duration: HALF * 0.8, ease: EASE.bouncy }, '-=0.15')
@@ -62,9 +58,34 @@ export function PageTransition() {
           lift(el)
         }
       }, 2000)
+      return true
     }
+
+    const onClick = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || covering.current) return
+      const a = e.target instanceof Element ? e.target.closest('a') : null
+      if (!a || (a.target && a.target !== '_self') || a.hasAttribute('download')) return
+      const url = new URL(a.href, window.location.href)
+      if (url.origin !== window.location.origin || url.pathname === window.location.pathname) return
+      if (matchPath(ITEM_PATH, url.pathname)) return
+      e.preventDefault()
+      cover(url.pathname + url.search + url.hash)
+    }
+
+    const onProgrammatic = (e: Event) => {
+      const detail = (e as CustomEvent<TransitionNavigateDetail>).detail
+      const url = new URL(detail.to, window.location.href)
+      // Same page (e.g. a hash change on Home) → let the caller navigate without a wipe.
+      if (url.pathname === window.location.pathname) return
+      detail.handled = cover(url.pathname + url.search + url.hash, detail.replace)
+    }
+
     document.addEventListener('click', onClick, true)
-    return () => document.removeEventListener('click', onClick, true)
+    window.addEventListener(TRANSITION_EVENT, onProgrammatic)
+    return () => {
+      document.removeEventListener('click', onClick, true)
+      window.removeEventListener(TRANSITION_EVENT, onProgrammatic)
+    }
   }, [reduced, navigate])
 
   // New page rendered → lift the panels.

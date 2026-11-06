@@ -15,7 +15,7 @@ export const DAY_LABELS: Record<DayKey, string> = {
 
 export const WEEK_ORDER: DayKey[] = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
 
-const toMinutes = (hhmm: string): number => {
+export const toMinutes = (hhmm: string): number => {
   const [h = '0', m = '0'] = hhmm.split(':')
   return Number(h) * 60 + Number(m)
 }
@@ -35,7 +35,7 @@ export function formatDayHours(hours: DayHours): string {
 }
 
 /** Current weekday index (0 = Sun) and minutes since midnight, in the café's timezone. */
-function nowInCafeTz(date: Date): { day: number; minutes: number } {
+export function nowInCafeTz(date: Date): { day: number; minutes: number } {
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: site.timezone,
     weekday: 'short',
@@ -50,8 +50,7 @@ function nowInCafeTz(date: Date): { day: number; minutes: number } {
   }
 }
 
-
-const hoursFor = (dayIndex: number): DayHours => site.hours[DAYS[(dayIndex + 7) % 7] ?? 'mon']
+export const hoursFor = (dayIndex: number): DayHours => site.hours[DAYS[(dayIndex + 7) % 7] ?? 'mon']
 
 export type OpenStatus = {
   isOpen: boolean

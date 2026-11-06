@@ -1,3 +1,4 @@
+import { useIsCheckout } from '@/hooks/useIsCheckout'
 import { useIsItemPage } from '@/hooks/useIsItemPage'
 import { whatsappLink, WHATSAPP_GREETING } from '@/lib/whatsapp'
 import { cn } from '@/lib/utils'
@@ -12,6 +13,8 @@ export function WhatsAppFab() {
   const count = useCartCount()
   const isItemPage = useIsItemPage()
   const lifted = count > 0 || isItemPage
+  // Hidden on checkout: the WhatsApp order CTA lives there (no competing chat button).
+  if (useIsCheckout()) return null
 
   return (
     <a

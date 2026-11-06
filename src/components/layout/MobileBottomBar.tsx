@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { BrandImage } from '@/components/brand/BrandImage'
 import { NavLink } from 'react-router'
+import { useIsCheckout } from '@/hooks/useIsCheckout'
 import { useIsItemPage } from '@/hooks/useIsItemPage'
 import { useCart, useCartCount, useCartSubtotal } from '@/store/cart'
 import { cn, formatPKR } from '@/lib/utils'
@@ -15,11 +16,13 @@ export function MobileBottomBar() {
   const openCart = useCart((s) => s.openCart)
   // The full item page has its own sticky "Add to cart" bar in this spot.
   const isItemPage = useIsItemPage()
+  // Checkout has its own sticky "Send order on WhatsApp" bar.
+  const isCheckout = useIsCheckout()
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 md:hidden">
       <AnimatePresence>
-        {count > 0 && !isItemPage && (
+        {count > 0 && !isItemPage && !isCheckout && (
           <motion.div
             key="cart-pill"
             initial={{ y: 80, opacity: 0 }}

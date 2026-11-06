@@ -1,7 +1,9 @@
 ﻿# claude.mind.md: Mug & Munch project brain
 
 > Read this before every task. Never rebuild anything marked ✅. Update status, file map and changelog after every task.
-> Current phase: **Phase 1 ✅ done** → waiting for "next" to start **Phase 2 (Cart & core commerce)**.
+> Current phase: **Phase 2 ✅ done** → waiting for "next" to start **Phase 3 (Home wow sections)**.
+> Repo: https://github.com/M-Huzaifa00/mug-and-munch (branch `main`).
+> **Colours are LOCKED:** never edit/add/remove tokens in the `@theme` block of `src/styles/index.css`. Need a new shade? Use opacity (`bg-chili/15`).
 
 ---
 
@@ -28,28 +30,31 @@
 | Scroll-to-top on route change (Lenis aware) | ✅ | `src/components/layout/ScrollToTop.tsx` |
 | Per-page title/description/OG/canonical | ✅ | `src/components/layout/Seo.tsx` |
 | Sticky glassy navbar (shrink, hide on scroll down, show on up) | ✅ | `Navbar.tsx`, `src/hooks/useScrollState.ts` |
-| Cart button with live count (aria-live) | ✅ | `src/components/layout/CartButton.tsx` (links to /checkout until drawer exists) |
-| Mobile bottom tab bar + floating "View cart · Rs X" pill | ✅ | `src/components/layout/MobileBottomBar.tsx` |
+| Cart button with live count (aria-live) | ✅ | `src/components/layout/CartButton.tsx` (opens drawer since Phase 2) |
+| Mobile bottom tab bar + floating "View cart · Rs X" pill | ✅ | `src/components/layout/MobileBottomBar.tsx` (pill opens drawer; hidden on full item page) |
 | Floating WhatsApp button | ✅ | `src/components/layout/WhatsAppFab.tsx` |
 | Footer (tagline, Urdu wordmark, hours, live open badge, socials, giant wordmark static) | ✅ | `src/components/layout/Footer.tsx` |
 | Live Open/Closed badge (Asia/Karachi, overnight hours) | ✅ | `src/lib/hours.ts`, `src/components/ui/OpenBadge.tsx` |
 | Config + data (site, menu 33 items, deals w/ computed savings, placeholder reviews) | ✅ | `src/config/site.ts`, `src/data/*.ts` |
-| Cart store (Zustand persist `mm-cart`, merge by options, undo restore) | ✅ | `src/store/cart.ts` |
+| Cart store (rewritten to Phase 2 API, see below) | ✅ | `src/store/cart.ts` |
 | Button / ButtonLink / buttonClasses | ✅ | `src/components/ui/Button.tsx`, `buttonClasses.ts` |
 | Vendor chunk splitting (react / gsap / motion / vendor) | ✅ | `vite.config.ts` |
 
-### Phase 2: Cart & core commerce ⬜
+### Phase 2: Cart, core commerce + Home menu section ✅
 | Feature | Status | Files |
 |---|---|---|
-| ProductCard + image-with-fallback (category gradient + emoji + name) | ⬜ | |
-| Menu page: category chips (Motion layout), search | ⬜ | `src/pages/Menu.tsx` (placeholder) |
-| Item detail: modal over /menu from inside, full page on direct link; size/temp/milk/spice/extras with live price | ⬜ | `src/pages/ItemDetail.tsx` (placeholder) |
-| Sticky add-to-cart bar on item page | ⬜ | |
-| CartDrawer (focus trap, Esc, data-lenis-prevent), steppers, swipe-to-remove | ⬜ | |
-| Fly-to-cart (MotionPath arc → `[data-cart-target]`), jelly bounce, odometer count | ⬜ | |
-| First-add confetti + "Nice pick! 🔥" toast with Undo | ⬜ | |
-| Free-delivery progress bar, upsell "Goes great with…" | ⬜ | `src/lib/recommendations.ts` |
-| Remaining ui: Badge, Chip, QuantityStepper, Sticker, Modal, Drawer, MagneticButton | ⬜ | |
+| Cart store: `items`, `addItem` (returns `{lineId, isFirstAdd}`), `removeItem`, `updateQty`, `restoreItem`, `clear`, `undoLastAdd`, `isOpen`/`openCart`/`closeCart` (not persisted), `hasAddedThisSession` (sessionStorage `mm-first-add`); lineId = itemId + djb2 hash of options; selectors count/subtotal/deliveryFee/amountToFreeDelivery | ✅ | `src/store/cart.ts` |
+| Option pricing/labels/defaults (`defaultSelection`, `unitPriceFor`, `optionLabels`, `toCartInput`, `hasRequiredOptions` = has >1 size) | ✅ | `src/lib/itemOptions.ts` |
+| ProductCard (default + compact), stretched link → item, chili "+" quick-add, category hover glow, Motion wobble/squish | ✅ | `src/components/ui/ProductCard.tsx` |
+| Image-with-fallback (only requests photos that exist, via `virtual:photos` Vite plugin) | ✅ | `src/components/ui/ProductImage.tsx`, `vite.config.ts`, `src/types/virtual.d.ts` |
+| Home "Kya khaoge aaj?" section: SplitText heading, Caveat note + self-drawing arrow, tabs with sliding `layoutId` fill + arrow keys, popLayout card swap, GSAP scroll reveal, doodle stickers, magnetic "See full menu" | ✅ | `src/sections/home/MenuPreview.tsx`, `MenuPreviewTabs.tsx` |
+| Menu page: sticky glass chip bar (All + 6 categories, horizontal scroll, scroll-spy, follows navbar), 300ms debounced search, Veg/Spicy/Bestseller filters, Motion layout grid, Munchy empty state | ✅ | `src/pages/Menu.tsx`, `src/components/menu/*`, `src/lib/menuFilter.ts` |
+| Item detail: modal over current page (background location) / full page on direct link; size, hot/iced, milk, spice, extras; rolling live price; qty; sticky "Add to cart · Rs X" bar | ✅ | `src/components/item/*`, `src/pages/ItemDetail.tsx`, `src/lib/routing.ts`, `src/app/RootLayout.tsx`, `src/app/routes.tsx` |
+| CartDrawer: right panel (md+) / bottom sheet with drag handle (mobile), focus trap, Esc/backdrop close, option chips, steppers, swipe-to-remove + trash with Undo toast, free-delivery bar, upsell row, summary, Munchy empty state | ✅ | `src/components/layout/CartDrawer.tsx`, `src/components/layout/cart/*` |
+| Upsell rules (coffee → dessert, burger → fries + drink, wrap → drink, never in-cart items) | ✅ | `src/lib/recommendations.ts` |
+| Fly-to-cart arc (MotionPathPlugin) → jelly bounce (GSAP elastic) → odometer count; first-add confetti in token colours; "Nice pick! 🔥" toast + Undo; reduced motion = toast only | ✅ | `src/hooks/useFlyToCart.ts`, `src/hooks/useAddToCart.ts`, `src/lib/celebrate.ts`, `src/components/ui/RollingNumber.tsx` |
+| UI kit: Badge, Chip, QuantityStepper, Sticker, HandArrow, MagneticButton, Modal, Drawer, RevealHeading, RollingNumber | ✅ | `src/components/ui/*` |
+| Munchy mascot: static moods happy / sleepy / oops | 🟡 | `src/components/mascot/Munchy.tsx` (Phase 3 adds blink, eye-tracking, wave, idle sleep) |
 
 ### Phase 3: Home wow sections ⬜
 Preloader (mug fill, 0→100, once per session) · Hero (SplitText, 3-layer parallax, magnetic CTAs, Munchy peeking) · Marquee (2 tilted, scroll-velocity) · Bestsellers (pinned horizontal) · Deals strip · Reviews (Draggable + Inertia stickers, IG grid) · Find Us teaser · Footer wordmark letter reveal · Munchy mascot (blink, eye tracking, wave, sleep zZz). All ⬜. Home currently shows a static hero + placeholder bands (`src/pages/Home.tsx`).
@@ -66,22 +71,35 @@ Reduced-motion + low-end paths audit, a11y pass, JSON-LD `CafeOrCoffeeShop`, OG 
 ## 3. File map
 ```
 index.html                      lang=en, default title/meta/OG (Seo.tsx updates per page)
-vite.config.ts                  react + tailwind plugins, @ alias, vendor chunk groups
+vite.config.ts                  react + tailwind plugins, @ alias, vendor chunk groups, `virtual:photos` plugin (lists real files in public/images)
 src/main.tsx                    fonts, lenis.css, global css, mounts <App/>
-src/styles/index.css            @theme tokens, base styles, focus ring, utilities (grain, sticker, glass, pb-safe-bar), keyframes, reduced-motion CSS
-src/app/App.tsx                 SmoothScroll + RouterProvider + sonner Toaster
-src/app/router.tsx              createBrowserRouter, lazyNamed() helper, all routes
-src/app/RootLayout.tsx          skip link, Navbar, <main> + Suspense/Outlet, Footer, MobileBottomBar, WhatsAppFab
+src/styles/index.css            @theme tokens (LOCKED), base styles, focus ring, utilities (grain, sticker, glass, pb-safe-bar), keyframes, reduced-motion CSS
+src/types/virtual.d.ts          types for `virtual:photos`
+src/app/App.tsx                 MotionConfig reducedMotion="user" + SmoothScroll + RouterProvider + sonner Toaster (mobileOffset below navbar)
+src/app/router.tsx              createBrowserRouter([{ path: '*', Component: RootLayout }])
+src/app/routes.tsx              PAGE_ROUTES (lazy pages via lazyNamed)
+src/app/RootLayout.tsx          useRoutes(PAGE_ROUTES, background ?? location) + ItemModal overlay + CartDrawer + layout chrome
 src/app/providers/SmoothScroll.tsx  ReactLenis root, gsap.ticker raf, lagSmoothing(0), useLenis(ScrollTrigger.update)
 src/lib/gsap.ts                 registers ScrollTrigger, SplitText, Flip, Draggable, Inertia, Observer, CustomEase, MotionPath, DrawSVG, MorphSVG + useGSAP; MQ media queries
 src/lib/motion-presets.ts       EASE, DUR, STAGGER (GSAP); SPRING, TAP_SQUISH, FADE_UP (Motion)
-src/lib/utils.ts                cn(), formatPKR() → "Rs 1,250", clamp()
+src/lib/utils.ts                cn() (tailwind-merge extended with our tokens), formatPKR() → "Rs 1,250", clamp()
+src/lib/itemOptions.ts          option selection → unit price, labels, cart input
+src/lib/menuFilter.ts           filterMenu(query, filters), getPreviewItems(category), FILTER_LABELS
+src/lib/recommendations.ts      getUpsells(cartItems, limit) "Goes great with…"
+src/lib/routing.ts              background-location helpers: modalStateFrom, getBackgroundLocation, getModalSlug, ITEM_PATH
+src/lib/celebrate.ts            confettiBurst(x, y): lazy canvas-confetti, colours read from CSS tokens
 src/lib/hours.ts                getOpenStatus() in Asia/Karachi (overnight-aware), formatTime/DayHours, DAY_LABELS, WEEK_ORDER
 src/lib/whatsapp.ts             whatsappLink(message), WHATSAPP_GREETING
 src/hooks/useReducedMotion.ts   reactive prefers-reduced-motion
 src/hooks/useIsTouch.ts         touch detection + isLowEndDevice() (cores <= 4 or touch)
-src/hooks/useScrollState.ts     rAF-throttled scrolled/hidden flags for navbar
-src/store/cart.ts               useCart (lines, addLine, setQty, increment, decrement, remove, restore, clear), useCartCount, useCartSubtotal
+src/hooks/useScrollState.ts     rAF-throttled scrolled/hidden flags for navbar; SHOW_NAV_EVENT forces navbar back
+src/hooks/useAddToCart.ts       THE way to add from UI: store + fly + confetti (first add) + toast w/ Undo
+src/hooks/useFlyToCart.ts       MotionPath arc clone → [data-cart-target], jellyBounce()
+src/hooks/useFocusTrap.ts       Tab trap + Esc + focus restore (stack-aware)
+src/hooks/useScrollLock.ts      ref-counted Lenis stop + overflow hidden
+src/hooks/useMagnetic.ts        GSAP quickTo magnetic pull (fine pointer + motion ok)
+src/hooks/useMediaQuery.ts, useDebouncedValue.ts, useIsItemPage.ts
+src/store/cart.ts               useCart (items, addItem, removeItem, updateQty, restoreItem, clear, undoLastAdd, isOpen, openCart, closeCart, hasAddedThisSession) + selectors/hooks useCartCount, useCartSubtotal, useDeliveryFee, useAmountToFreeDelivery
 src/config/site.ts              ALL owner settings (contact, address, hours, fees, tax, delivery areas, socials)
 src/data/menu.ts                MenuItem types, option sets, 33 items, CATEGORY_META colour-coding, SPICE_LABELS, lookups
 src/data/deals.ts               combos + getDealOriginalPrice/getDealSavings (computed, never hardcoded)
@@ -90,7 +108,13 @@ src/components/ui/Button.tsx    Button (button) + ButtonLink (router Link)
 src/components/ui/buttonClasses.ts  variant/size class builder (also for external <a>)
 src/components/ui/OpenBadge.tsx live open/closed pill
 src/components/ui/SocialIcons.tsx   Instagram/TikTok/WhatsApp line glyphs (lucide v1 has no brand icons)
-src/components/layout/*         Navbar, CartButton, Logo (+MugMark), navLinks, MobileBottomBar, WhatsAppFab, Footer, PageLoader, ScrollToTop, Seo, PagePlaceholder
+src/components/ui/ProductCard.tsx, ProductImage.tsx, Badge.tsx, Chip.tsx, QuantityStepper.tsx, RollingNumber.tsx,
+  Sticker.tsx, HandArrow.tsx, MagneticButton.tsx, Modal.tsx, Drawer.tsx, RevealHeading.tsx
+src/components/mascot/Munchy.tsx    SVG mascot, moods happy|sleepy|oops, pupils tagged data-pupil
+src/components/item/*           ItemDetailContent, ItemOptionsForm, OptionPills, StickyAddBar, ItemModal
+src/components/menu/*           CategoryNav (sticky + scroll-spy), MenuSearch, MenuSection, MenuEmpty, menuIds
+src/components/layout/*         Navbar, CartButton, CartDrawer (+ cart/CartContents, CartLineItem, CartSummary, CartUpsell, FreeDeliveryBar), Logo (+MugMark), navLinks, MobileBottomBar, WhatsAppFab, Footer, PageLoader, ScrollToTop, Seo, PagePlaceholder
+src/sections/home/MenuPreview.tsx, MenuPreviewTabs.tsx
 src/pages/*                     Home, Menu, ItemDetail, Deals, Checkout, OrderSuccess, OurStory, FindUs, NotFound (named exports)
 public/images/{coffee,burgers,wraps,sides,drinks,desserts,brand}/  photos go here as <slug>.webp
 ```
@@ -108,7 +132,14 @@ public/images/{coffee,burgers,wraps,sides,drinks,desserts,brand}/  photos go her
 - **CSS loops:** `animate-float`, `animate-steam`, `animate-wiggle`, `animate-pulse-ring` (all disabled by reduced motion).
 - **Components:** use `Button`/`ButtonLink` for every CTA (`variant="primary"` = chili). External links that look like buttons: `<a className={buttonClasses(...)}>`. Pages start with `<Seo title description path />`.
 - **Layout offsets:** navbar is fixed → page tops need `pt-28`+; mobile bottom bar is fixed → root uses `pb-safe-bar md:pb-0`.
-- **Fly-to-cart target:** any element with `[data-cart-target]` (the navbar CartButton).
+- **Fly-to-cart target:** `[data-cart-target]` (navbar CartButton); `[data-cart-jelly]` inside it bounces. Navbar has `[data-nav-header]`.
+- **Adding to cart:** always `useAddToCart()(toCartInput(item, selection), { qty, source: imageEl })`. Never call `addItem` directly from UI (you'd lose fly/confetti/toast).
+- **Linking to an item:** `<Link to={'/menu/' + slug} state={modalStateFrom(location)}>` → opens the modal over the current page. Plain links / direct URLs → full page.
+- **Dialogs:** `<AnimatePresence>{open && <Modal|Drawer onClose labelledBy>…</Modal>}</AnimatePresence>`. Both trap focus, close on Esc/backdrop, lock scroll. Mark inner scroll areas `data-lenis-prevent`.
+- **ProductCard** for any menu item tile (`variant="compact"` in rows). **Chip** for pills/tabs/toggles (`layoutId` for a sliding fill). **RollingNumber** for any changing price/count. **RevealHeading** for section headings. **Sticker** for doodles. **MagneticButton** wraps big CTAs.
+- **Tailwind v4 gotcha:** `translate-*`, `rotate-*`, `scale-*` use the standalone CSS `translate`/`rotate`/`scale` properties, so transition them with `transition-[translate,scale,rotate]`, not `transition-[transform]`. GSAP writes `transform`, so they don't fight.
+- **tailwind-merge:** custom tokens are registered in `lib/utils.ts`. Add new custom utilities there too, or `cn()` may drop classes (e.g. `text-display` vs `text-espresso`).
+- **Motion vs GSAP on cards:** Motion = presence/layout wrapper + card hover/tap; GSAP scroll reveal = a separate inner wrapper (`[data-reveal-card]`). Never the same element.
 
 ## 5. Config & data the owner must fill
 - `src/config/site.ts`: WhatsApp number (digits, e.g. 923001234567), phone, email, address line + area, Google Maps link, lat/lng, Instagram + TikTok handles, real opening hours, free-delivery threshold, delivery fee, **tax rate (confirm with accountant, currently 0)**, delivery areas list, real domain (`url`).
@@ -119,8 +150,10 @@ public/images/{coffee,burgers,wraps,sides,drinks,desserts,brand}/  photos go her
 - OG image: `public/images/brand/og.jpg` (1200×630).
 
 ## 6. Known issues / tech debt
-- Cart button + mobile pill link to `/checkout` until CartDrawer lands (Phase 2).
-- `/menu/:slug` is always a full page; modal-over-menu pattern comes in Phase 2.
+- History state survives a page refresh, so refreshing while the item modal is open re-opens it over the page (standard behaviour). A fresh/direct link always gets the full page.
+- Quick-add policy: items with >1 size open the modal (coffees); everything else adds instantly with defaults (spice = Medium). Change in `hasRequiredOptions()`.
+- Delivery fee shows in the drawer for every cart; order-type logic (takeaway/dine-in = no fee) comes with checkout in Phase 5.
+- Motion prints a dev-only "Reduced Motion enabled" console warning when the OS setting is on; it is not in production builds.
 - GSAP (~86 KB gz with all 10 plugins) loads in the app shell because every plugin is registered in one file. Phase 6: consider lazy-registering heavy plugins (Draggable, Inertia, MorphSVG) if Lighthouse needs it.
 - Motion is ~46 KB gz; Phase 6: consider `LazyMotion` + `m` components.
 - Noto Nastaliq Urdu Arabic subset is 239 KB (only downloads when Urdu glyphs render, i.e. the footer). Phase 6: subset to the wordmark glyphs.
@@ -131,6 +164,18 @@ public/images/{coffee,burgers,wraps,sides,drinks,desserts,brand}/  photos go her
 Node/Supabase backend + real orders DB · real JazzCash / Easypaisa / card gateway integration · admin dashboard to edit menu & prices · live order tracking · "Munch Points" loyalty & referral · Urdu/English language toggle · PWA + "Add to home screen" · table QR ordering for dine-in · reservations · push/WhatsApp order-status notifications · analytics (GA4 / Meta Pixel) with consent · Foodpanda link-out · A/B testing CTA copy.
 
 ## 8. Changelog (Asia/Karachi dates)
+### 2026-11-06: Phase 2 Cart, core commerce + Home menu section
+- Cart store rewritten to the Phase 2 API (items/addItem/removeItem/updateQty/undoLastAdd, isOpen, hasAddedThisSession, deliveryFee + amountToFreeDelivery selectors). Persist version 2.
+- ProductCard + ProductImage (styled fallback; `virtual:photos` Vite plugin so missing photos are never requested).
+- Home MenuPreview ("Kya khaoge aaj?") after the hero; placeholder bands re-coloured to keep alternation.
+- Menu page (sticky scroll-spy chips, debounced search, filters, empty state), item modal/full page with options + sticky add bar, CartDrawer with swipe-to-remove, free-delivery bar, upsell.
+- Fly-to-cart, jelly bounce, odometer counts, first-add confetti, Undo toasts. Munchy mascot (static moods).
+- Fixed Phase 1 bug: `transition-[transform]` didn't animate Tailwind v4 translate utilities (navbar hide + button hover now animate).
+- tailwind-merge taught our custom tokens (it was dropping `text-display`).
+- Colour tokens untouched (index.css byte-identical to Phase 1).
+- Verified with a CDP QA script at 360/768/1440 in dev AND production build: tabs, quick-add, merge, Undo, modal (focus trap, Esc, focus restore), live price, drawer, persistence after reload, direct link, sticky bar, search/filters/scroll-spy, keyboard-only flows, reduced motion (no fly/confetti, toast only). 0 console errors/warnings in production.
+- Pushed to GitHub `main`.
+
 ### 2026-11-06: Phase 1 Foundation
 - Scaffolded Vite 8 + React 19 + TS 7 (strict, `noUncheckedIndexedAccess`), installed all deps (Tailwind 4.3, GSAP 3.15, Lenis 1.3, Motion 14, React Router 8, Zustand 5, RHF 7 + Zod 4, lucide 1.x, sonner 2).
 - Design tokens, fonts, utilities, keyframes in `src/styles/index.css`.

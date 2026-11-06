@@ -15,7 +15,7 @@ Vite 8 + React 19 + TypeScript (strict) · Tailwind v4 (`@tailwindcss/vite`, tok
 
 ## Top 10 code rules
 1. TypeScript strict, no `any`; functional components, **named exports**, one component per file, PascalCase components, camelCase utils.
-2. Colours: ONLY theme tokens (`bg-chili`, `text-espresso`…); no raw hex in components.
+2. Colours: ONLY theme tokens (`bg-chili`, `text-espresso`…); no raw hex in components. Tokens are **LOCKED**: never edit the `@theme` colours; use opacity (`bg-chili/15`) for new shades.
 3. All GSAP inside `useGSAP({ scope })`; import gsap/plugins from `@/lib/gsap` only; no unscoped global selectors.
 4. GSAP owns scroll + timelines; Motion owns mount/unmount, layout, whileTap. Never both on one element.
 5. Timings/eases come from `src/lib/motion-presets.ts` (EASE, DUR, STAGGER, SPRING); don't invent new ones.

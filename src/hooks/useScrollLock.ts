@@ -13,14 +13,12 @@ export function useScrollLock(active: boolean) {
     locks += 1
     if (locks === 1) {
       lenis?.stop()
-      html.style.scrollbarGutter = 'stable'
       html.style.overflow = 'hidden'
     }
     return () => {
       locks -= 1
       if (locks === 0) {
         html.style.overflow = ''
-        html.style.scrollbarGutter = ''
         lenis?.start()
       }
     }

@@ -20,7 +20,12 @@ export interface ItemOptions {
   temps?: OptionChoice[]
   milks?: OptionChoice[]
   extras?: OptionChoice[]
+  /** Sweetness levels in % (coffee). Default level = SWEETNESS_DEFAULT. */
+  sweetness?: readonly number[]
 }
+
+export const SWEETNESS_LEVELS = [0, 25, 50, 75, 100] as const
+export const SWEETNESS_DEFAULT = 50
 
 export interface MenuItem {
   id: string
@@ -58,6 +63,8 @@ const COFFEE_EXTRAS: OptionChoice[] = [
   { id: 'extra-shot', label: 'Extra shot', priceDelta: 150 },
   { id: 'caramel-syrup', label: 'Caramel syrup', priceDelta: 100 },
   { id: 'hazelnut-syrup', label: 'Hazelnut syrup', priceDelta: 100 },
+  { id: 'vanilla-syrup', label: 'Vanilla syrup', priceDelta: 100 },
+  { id: 'whipped-cream', label: 'Whipped cream', priceDelta: 120 },
 ]
 const BURGER_EXTRAS: OptionChoice[] = [
   { id: 'extra-cheese', label: 'Extra cheese', priceDelta: 150 },
@@ -72,8 +79,8 @@ const WRAP_EXTRAS: OptionChoice[] = [
 ]
 const SPICE: SpiceLevel[] = ['mild', 'medium', 'desi-hot']
 
-const COFFEE_OPTIONS: ItemOptions = { sizes: COFFEE_SIZES, temps: TEMPS, milks: MILKS, extras: COFFEE_EXTRAS }
-const BLACK_COFFEE_OPTIONS: ItemOptions = { sizes: COFFEE_SIZES, temps: TEMPS, extras: COFFEE_EXTRAS }
+const COFFEE_OPTIONS: ItemOptions = { sizes: COFFEE_SIZES, temps: TEMPS, milks: MILKS, extras: COFFEE_EXTRAS, sweetness: SWEETNESS_LEVELS }
+const BLACK_COFFEE_OPTIONS: ItemOptions = { sizes: COFFEE_SIZES, temps: TEMPS, extras: COFFEE_EXTRAS, sweetness: SWEETNESS_LEVELS }
 
 const FOLDER: Record<Category, string> = {
   coffee: 'coffee',
@@ -96,7 +103,7 @@ export const menu: MenuItem[] = [
   make({ slug: 'pistachio-latte', name: 'Pistachio Latte', category: 'coffee', price: 850, emoji: '💚', badges: ['new'], isVeg: true, options: COFFEE_OPTIONS, note: 'new obsession unlocked', description: 'Nutty pistachio cream, espresso, a sprinkle of crushed pista.' }),
   make({ slug: 'flat-white', name: 'Flat White', category: 'coffee', price: 700, emoji: '🤍', badges: [], isVeg: true, options: COFFEE_OPTIONS, description: 'Ristretto shots, velvet microfoam. Strong and smooth.' }),
   make({ slug: 'americano', name: 'Americano', category: 'coffee', price: 550, emoji: '🖤', badges: [], isVeg: true, options: BLACK_COFFEE_OPTIONS, description: 'Espresso + water. No drama, just caffeine.' }),
-  make({ slug: 'cold-brew', name: 'Cold Brew', category: 'coffee', price: 750, emoji: '🧊', badges: [], isVeg: true, options: { sizes: COFFEE_SIZES, extras: COFFEE_EXTRAS }, note: 'study grind fuel ☕', description: 'Steeped 18 hours. Smooth, low-acid, seriously strong.' }),
+  make({ slug: 'cold-brew', name: 'Cold Brew', category: 'coffee', price: 750, emoji: '🧊', badges: [], isVeg: true, options: { sizes: COFFEE_SIZES, extras: COFFEE_EXTRAS, sweetness: SWEETNESS_LEVELS }, note: 'study grind fuel ☕', description: 'Steeped 18 hours. Smooth, low-acid, seriously strong.' }),
 
   /* ---------- Burgers ---------- */
   make({ slug: 'classic-smash', name: 'Classic Smash', category: 'burger', price: 950, emoji: '🍔', badges: ['bestseller'], isVeg: false, options: { extras: BURGER_EXTRAS }, spiceLevels: SPICE, note: 'start here, trust us', description: 'Smashed beef patty, American cheese, pickles, house sauce, potato bun.' }),

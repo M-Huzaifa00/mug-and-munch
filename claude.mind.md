@@ -1,4 +1,4 @@
-﻿# claude.mind.md: Mug n Munch project brain
+# claude.mind.md: Mug n Munch project brain
 
 > Read this before every task. Never rebuild anything marked ✅. Update status, file map and changelog after every task.
 > Current phase: **Phase 4 ✅ done** → **Phase 5 🟡 in progress** (Craft section, WhatsApp checkout, content pages). See the Phase 5 table for the exact resume point.
@@ -105,8 +105,23 @@
 | Sounds | ⬜ not built (not in the original Phase 4 list) | — |
 | `lib/events.ts` analytics stub | ⬜ → created in Phase 5 Step 1 | — |
 
-### Phase 5: Checkout & Pakistan flow ⬜
-Checkout form (rhf + zod), order type (delivery/takeaway/dine-in + table), sector dropdown, PK phone validation + `03XX-XXXXXXX` format, payment cards (COD default; JazzCash/Easypaisa/Card "coming soon"), WhatsApp order message (`src/lib/whatsapp.ts` TODO), order summary (subtotal/delivery/tax/total), success page details (Munchy dance already there), Deals page, Our Story, Find Us page. Pages exist as placeholders.
+### Phase 5: Craft section, WhatsApp checkout & content pages 🟡
+Brief: owner's Phase 5 prompt. **WhatsApp is the ordering channel; no backend; never fake an "order placed".** Resume at the first row that isn't ✅.
+| Step | Scope | Status | Files |
+|---|---|---|---|
+| 0 | Phase 4 check + `lib/events.ts` `track()` stub | ✅ | `src/lib/events.ts` |
+| 1 | Builder Kit + ONE "Craft your own" section (id `craft`, tabs + hash deep links, state kept per tab, lazy makers) + Burger maker | ✅ | `src/components/builder/*`, `src/sections/home/craft/*`, `src/data/builder.ts` |
+| 2 | Coffee maker (drink/size/milk/temp/add-ons/sweetness; merges with menu coffee) | ✅ | `craft/CoffeeMaker.tsx`, `src/data/coffeeBuilder.ts` |
+| 3 | Wrap maker (base/protein/cheese/veggies/sauces/spice; roll on add) | ✅ | `craft/WrapMaker.tsx`, `src/data/wrapBuilder.ts` |
+| 4 | Order logic: site fields, phone, orderTotals, orderType in store, orderNumber, order, orderApi stub, Vitest | ⬜ | `src/lib/*` |
+| 5 | describeLine, priceLine re-pricing, merge rules, Edit/Tweak, custom chips, empty-cart links | ⬜ | `src/lib/lineDescription.ts`, `itemOptions.ts` |
+| 6 | Checkout page (order types, validation, payment cards, review) | ⬜ | `src/pages/Checkout.tsx`, `src/components/checkout/*`, `src/lib/checkoutSchema.ts` |
+| 7 | WhatsApp order message + click flow | ⬜ | `src/lib/whatsapp.ts` |
+| 8 | Order success (pending-send / sent) | ⬜ | `src/pages/OrderSuccess.tsx` |
+| 9 | Deals page | ⬜ | `src/pages/Deals.tsx` |
+| 10 | Our Story | ⬜ | `src/pages/OurStory.tsx`, `src/data/story.ts` |
+| 11 | Find Us page | ⬜ | `src/pages/FindUs.tsx` |
+| 12 | 404 polish, SEO pass, Future Goals, docs | ⬜ | |
 
 ### Phase 6: Polish & QA ⬜
 Reduced-motion + low-end audit, a11y pass, JSON-LD openingHours, image optimisation, Lighthouse mobile ≥ 90 ×4 (report scores), 360/768/1440 checks.

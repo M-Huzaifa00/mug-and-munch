@@ -1,5 +1,5 @@
 import { useRef, type ReactNode } from 'react'
-import type { BurgerLayerId } from '@/data/toys'
+import type { BurgerLayerId } from '@/data/builder'
 import { BRAND_INK } from '@/lib/brand'
 import { gsap, MQ, useGSAP } from '@/lib/gsap'
 import { EASE, TOYS } from '@/lib/motion-presets'

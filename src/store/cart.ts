@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { site } from '@/config/site'
 import type { Category, SpiceLevel } from '@/data/menu'
+import type { WrapChoice } from '@/data/wrapBuilder'
 
 export interface CartOptions {
   size?: string
@@ -9,6 +10,14 @@ export interface CartOptions {
   extras?: string[]
   milk?: string
   temp?: string
+  /** Coffee sweetness % (menu + coffee maker). */
+  sweetness?: number
+  /** Custom burger: layers bottom → top (order matters), bun excluded. */
+  layers?: string[]
+  /** Custom wrap: every choice. */
+  wrap?: WrapChoice
+  /** Custom creation name ("Name it"). */
+  name?: string
 }
 
 export interface CartItem {
@@ -41,8 +50,24 @@ function hash(input: string): string {
   return (h >>> 0).toString(36)
 }
 
+/**
+ * Same item + same options → same line (qty merges).
+ * Menu extras are order-insensitive; custom burger layers are ORDERED; custom names count.
+ */
 export function buildLineId(itemId: string, o: CartOptions): string {
-  const normalized = [o.size ?? '', o.temp ?? '', o.milk ?? '', o.spice ?? '', [...(o.extras ?? [])].sort().join('+')]
+  const w = o.wrap
+  const wrap = w ? [w.base, w.protein, w.double ? 'x2' : '', [...w.cheeses].sort().join('+'), [...w.veggies].sort().join('+'), [...w.sauces].sort().join('+'), w.spice].join(',') : ''
+  const normalized = [
+    o.size ?? '',
+    o.temp ?? '',
+    o.milk ?? '',
+    o.spice ?? '',
+    [...(o.extras ?? [])].sort().join('+'),
+    o.sweetness ?? '',
+    (o.layers ?? []).join('>'),
+    wrap,
+    (o.name ?? '').trim().toLowerCase(),
+  ]
   return `${itemId}::${hash(normalized.join('|'))}`
 }
 

@@ -2,27 +2,28 @@ import { useRef, type KeyboardEvent } from 'react'
 import { cn } from '@/lib/utils'
 import { Chip } from '@/components/ui/Chip'
 
-export interface BuildTab<Id extends string> {
-  id: Id
+export type CraftTab = 'coffee' | 'burger' | 'wrap'
+
+export interface CraftSwitchTab {
+  id: CraftTab
   label: string
   emoji: string
   activeBg: string
   activeText: string
 }
 
-interface BuildTabsProps<Id extends string> {
-  tabs: readonly BuildTab<Id>[]
-  active: Id
-  onChange: (id: Id) => void
-  panelId: string
+interface CraftSwitchProps {
+  tabs: readonly CraftSwitchTab[]
+  active: CraftTab
+  onChange: (id: CraftTab) => void
   className?: string
 }
 
-/** Tab element id. BuildStudio's tabpanel uses the same `build-tab-<id>` format for aria-labelledby. */
-const buildTabId = (id: string) => `build-tab-${id}`
-
-/** WAI-ARIA tabs (roving tabindex, ←/→/Home/End) with a sliding fill. */
-export function BuildTabs<Id extends string>({ tabs, active, onChange, panelId, className }: BuildTabsProps<Id>) {
+/**
+ * Segmented control (WAI-ARIA tabs): ←/→/Home/End move + select, Enter/Space select (native button).
+ * The active pill slides between tabs (Motion layoutId) and fills with the category colour.
+ */
+export function CraftSwitch({ tabs, active, onChange, className }: CraftSwitchProps) {
   const refs = useRef<(HTMLButtonElement | null)[]>([])
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -41,7 +42,12 @@ export function BuildTabs<Id extends string>({ tabs, active, onChange, panelId, 
   }
 
   return (
-    <div role="tablist" aria-label="What do you want to build?" onKeyDown={onKeyDown} className={cn('flex gap-1.5 sm:flex-wrap sm:gap-3', className)}>
+    <div
+      role="tablist"
+      aria-label="What do you want to craft?"
+      onKeyDown={onKeyDown}
+      className={cn('inline-flex w-full gap-1 rounded-full border-[2.5px] border-oat/40 bg-espresso p-1 sm:w-auto', className)}
+    >
       {tabs.map((t, i) => {
         const selected = t.id === active
         return (
@@ -51,18 +57,20 @@ export function BuildTabs<Id extends string>({ tabs, active, onChange, panelId, 
               refs.current[i] = el
             }}
             role="tab"
-            id={buildTabId(t.id)}
+            id={`craft-tab-${t.id}`}
             aria-selected={selected}
-            aria-controls={panelId}
+            aria-controls={`craft-panel-${t.id}`}
             tabIndex={selected ? 0 : -1}
             active={selected}
             activeBg={t.activeBg}
             activeText={t.activeText}
-            layoutId="build-studio-tab"
+            layoutId="craft-switch"
             onClick={() => onChange(t.id)}
-            className="min-h-12 flex-1 px-2.5 text-[0.9rem] sm:flex-none sm:px-5 sm:text-lg"
+            className={cn('min-h-12 flex-1 border-transparent px-3 text-[0.95rem] sm:flex-none sm:px-6 sm:text-lg', !selected && 'bg-transparent text-oat hover:bg-oat/10')}
           >
-            {t.label} <span aria-hidden="true">{t.emoji}</span>
+            <span className={cn(!selected && 'text-oat')}>
+              {t.label} <span aria-hidden="true">{t.emoji}</span>
+            </span>
           </Chip>
         )
       })}

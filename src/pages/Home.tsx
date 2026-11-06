@@ -3,6 +3,7 @@ import { site } from '@/config/site'
 import { shouldShowPreloader } from '@/lib/preloader'
 import { Seo } from '@/components/layout/Seo'
 import { Bestsellers } from '@/sections/home/Bestsellers'
+import { BuildYourBurger } from '@/sections/home/burger/BuildYourBurger'
 import { DealsStrip } from '@/sections/home/deals/DealsStrip'
 import { FindUsTeaser } from '@/sections/home/FindUsTeaser'
 import { Hero } from '@/sections/home/hero/Hero'
@@ -29,6 +30,7 @@ export function Home() {
       <Marquee />
       <MenuPreview />
       <Bestsellers />
+      <BuildYourBurger />
       <DealsStrip />
       <Reviews />
       <FindUsTeaser />

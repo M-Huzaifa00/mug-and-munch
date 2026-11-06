@@ -49,6 +49,19 @@ export const MASCOT = {
   followRange: 4,
 } as const
 
+/** Phase 4 toys (seconds). */
+export const TOYS = {
+  drop: 0.45,
+  squash: 0.08,
+  settle: 0.4,
+  topple: 0.75,
+  pour: 0.9,
+  iceDrop: 0.5,
+  spinTurns: 6,
+  spin: 3.6,
+  flip: 0.65,
+} as const
+
 /** Preloader / page transition timings. */
 export const SCENE = {
   preloaderMax: 1.8,

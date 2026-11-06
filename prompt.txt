@@ -253,4 +253,107 @@ Add it to the Home page directly after the hero (or after the current top sectio
 - [ ] `npm run build` passes with zero TypeScript errors and no console warnings.
 - [ ] `claude.mind.md` updated: Phase 2 features marked ✅ with file paths, file map updated, and a dated changelog entry (Asia/Karachi).
 
-Then give me a short summary of what was built and STOP. Wait for me to say "next".
+Then give me a short summary of what was built and STOP. Wait for me to say "next".|
+
+
+
+Answers:
+
+1. Mascot: Approved. (If needed, replace this line with changes, e.g. "make it chubbier, bigger eyes, shorter arms".)
+2. Line colour: Option A, the chili/espresso mix (~#8A311F). Don't add new colour tokens. Define it once as a CSS variable built from existing tokens (e.g. `color-mix(in oklab, var(--color-chili) X%, var(--color-espresso))`) in the brand styles, and use it only for mascot/illustration line work.
+3. Mascot name: keep "Munchy".
+4. Brand name: switch all visible text to **"Mug n Munch"** to match the logo. Move the name into `site.ts` as `brandName` and use that everywhere instead of hardcoding it (titles, meta, footer wordmark, JSON-LD, WhatsApp message, OG image text). In the JSON-LD, add `"alternateName": "Mug & Munch"` so both spellings match in search. Regenerate the OG image with `npm run brand`.
+5. Git: make a local commit after each completed step with a clear message (e.g. `feat(phase3): hero section`). Push to `main` only at the end of each phase, after `npm run build` and lint pass. Never push broken builds.
+
+Now continue Phase 3 from Step 2 (animate the mascot with all 9 moods), then Step 3 (all home sections), then Step 4. Check every item in the Phase 3 done criteria, update `claude.mind.md`, commit and push, then give me a short summary and STOP.
+
+
+
+# PHASE 4 — Interactive Toys, Custom Cursor & Delight Layer
+
+Before writing any code:
+1. Read `CLAUDE.md` and `claude.mind.md`. Reuse everything marked ✅ and don't rebuild it.
+2. **COLOURS ARE LOCKED.** Only existing tokens (opacity variants are fine) and the mascot line-colour variable. No raw hex.
+3. Brand name always comes from `site.ts` → `brandName`. Never hardcode it.
+4. Git: commit locally after each step; push to `main` at the end of the phase only after build + lint pass.
+
+---
+
+## Final Home section order after this phase
+Preloader → Hero → Marquee → MenuPreview → Bestsellers → **Build Your Burger** → **Coffee Lab** → **Wrap It Up** → **Vibe Picker** → Deals → Reviews → Find Us → Footer.
+Snack Roulette is NOT a section: it's a floating button + modal (keeps the page from getting too long on mobile).
+Every new section is lazy-loaded (`React.lazy`) and only mounts its animations when near the viewport (IntersectionObserver, rootMargin ~300px).
+
+## Shared rules for all toys
+- Illustrations are clean inline SVGs in the same drawing style as Munchy (same line colour and line weight, rounded shapes) so everything feels like one brand.
+- Prices and options come from `data/menu.ts` / new data files. Never hardcode prices in components.
+- Every "Add" uses the existing cart store, fly-to-cart, toast with Undo, and makes Munchy go `excited`.
+- Custom creations are cart lines with `isCustom: true` and their choices stored in `options`, so they show clearly in the cart and in the WhatsApp order message.
+- Everything works by keyboard (buttons, not just drag) and has visible focus.
+- Reduced motion: no physics/bounce/scrub; state changes appear instantly.
+- Mobile first: test at 360px. Controls sit under the visual, in a horizontal scroll tray if needed.
+
+## STEP 1 — Build Your Burger (`sections/home/BuildYourBurger.tsx`, data in `data/builder.ts`)
+- Ingredients with price each: bun (brioche / sesame), patty (chicken / beef, single / double), cheese slice, jalapeños, caramelised onions, lettuce, tomato, pickles, sauces (house sauce, chipotle, garlic mayo). Bottom and top bun are automatic.
+- Tapping an ingredient drops its SVG layer from above onto the stack with gravity + squash-and-stretch on landing (GSAP; `CustomBounce` or `bounce.out` + scaleY squash). Items wobble slightly as the stack grows.
+- Tap a layer in the stack to remove it (it pops off and falls away). Max 10 layers with a friendly message: "Bas karo yaar, it won't fit 😂".
+- Live price with number roll. Fun auto-generated name the user can edit (e.g. "The F-7 Special", "Midnight Monster", "Blue Area Banger"); the list lives in the data file.
+- **Reset**: the stack topples over sideways and falls, then the empty plate wobbles.
+- **"Add my creation"** → custom cart line named by the user's burger name.
+- Mobile: the stack stays visible (sticky within the section) while the ingredient tray scrolls horizontally below it.
+
+## STEP 2 — Coffee Lab (`sections/home/CoffeeLab.tsx`)
+- Base drink chips from the coffee items in `data/menu.ts` (e.g. Latte, Cappuccino, Spanish Latte, Mocha, Caramel Latte, Americano).
+- **Size** S/M/L: the SVG cup grows slightly and the liquid level animates to the new height (wave on the liquid surface keeps moving).
+- **Milk** regular / oat / almond: the liquid colour shifts smoothly (between token-based shades).
+- **Hot / Iced** toggle: Hot shows the steam loop; Iced swaps to a clear cup, and ice cubes drop in one by one with a small splash, then bob.
+- **Extra shot** and **syrups** (caramel, hazelnut, vanilla): a drizzle animation runs down the inside of the cup.
+- Sweetness slider (0–100%) shown as a small face that gets happier.
+- Live price. "Add to cart" creates a cart line whose `itemId` + options match the normal menu item, so it merges with the same drink added from the menu.
+
+## STEP 3 — Wrap It Up (`sections/home/WrapItUp.tsx`)
+- A scroll-scrubbed timeline: a flat SVG tortilla with fillings scattered on it, then fillings settle into the middle, then the tortilla rolls up and gets a paper wrap band with the logo icon on it.
+- Desktop: pinned and scrubbed. Mobile: shorter scrub with no pin, or plays once when in view.
+- After the roll finishes, wrap ProductCards slide in with a stagger and quick-add.
+- Caveat note: "wrapped fresh, eaten faster 🌯".
+
+## STEP 4 — Vibe Picker (`sections/home/VibePicker.tsx`, data in `data/vibes.ts`)
+- Chips: "Sleepy 😴", "Hangry 😤", "Study grind 📚", "Date night 💕", "Midnight munchies 🌙", "Gym done 💪".
+- Each vibe maps to 3 item ids plus a one-liner in Roman Urdu/English (e.g. Hangry → "Pehle khana, phir baat").
+- Selecting a vibe: the grid reshuffles with GSAP `Flip`, the 3 picks are highlighted and the others dim; Munchy changes mood to match (sleepy → `sleep`, hangry → `excited`, date → blush).
+- **"Add the whole vibe"** button adds all 3 as separate lines (one toast summarising it, one Undo that removes all 3).
+
+## STEP 5 — Snack Roulette (`components/features/SnackRoulette.tsx`)
+- A floating "Can't decide? 🎲" button above the mobile bottom bar (desktop: bottom-left), appearing after the user scrolls past the hero. It hides while the cart drawer or any modal is open.
+- Opens a modal with a slot-machine reel that spins through item images/names and slows down to land on one (weighted slightly toward bestsellers). Category filter: Anything / Coffee / Burgers / Wraps.
+- Short vibration on landing (`navigator.vibrate(30)`) where supported.
+- Buttons: "Add it" and "Spin again". No discounts or prizes.
+
+## STEP 6 — Custom cursor (`app/providers/Cursor.tsx`)
+- Only on devices with `(pointer: fine)` and no reduced motion; the native cursor stays everywhere else.
+- A small chili dot + a lagging ring, moved with `gsap.quickTo` (no React re-renders on mousemove).
+- States set via `data-cursor` attributes: `add` over product cards ("Add +" bubble), `drag` over draggables ("Drag"), `view` over images ("View"), `link` (ring grows), `hidden` inside inputs.
+- Blends correctly on both oat and espresso backgrounds; never hides text the user is reading.
+
+## STEP 7 — UI sounds (optional, OFF by default)
+- A small speaker toggle in the navbar; the choice is saved in localStorage.
+- Sounds are synthesised with the Web Audio API (no audio files): soft "pop" on add, "plop" for burger layers, "clink" for ice, "tick" for roulette.
+- Never play anything until the user turns sound on.
+
+## STEP 8 — Event tracking stubs (`lib/events.ts`)
+- `track(name, payload)` that only `console.debug`s in dev and does nothing in production for now. Call it on: add_to_cart, remove_from_cart, builder_add, coffee_lab_add, vibe_selected, roulette_spin, whatsapp_order_click.
+- Add "Connect GA4 / Meta Pixel with consent" to Future Goals in `claude.mind.md`.
+
+## DONE CRITERIA (check all before stopping)
+- [ ] Colour tokens unchanged; brand name only from `site.ts`.
+- [ ] All 4 sections + roulette + cursor work at 360px, 768px, and 1440px.
+- [ ] Custom burger, custom coffee, and vibe adds show correctly in the cart; the same coffee from the menu and the lab merges into one line.
+- [ ] Every toy works by keyboard only; reduced motion shows instant states.
+- [ ] No jank with Chrome DevTools CPU 4× slowdown; new sections don't load JS until near the viewport (check the Network tab).
+- [ ] The cursor never appears on touch devices.
+- [ ] Sound is off by default and nothing plays before the toggle.
+- [ ] `npm run build` + lint pass with zero errors and no console warnings.
+- [ ] `claude.mind.md` updated: Phase 4 marked ✅ with file paths, file map, new data files listed, and a dated changelog entry (Asia/Karachi).
+- [ ] Committed per step and pushed to `main` at the end.
+
+Give me a short summary and STOP. Wait for me to say "next".

@@ -2,14 +2,15 @@ import { useRef, useState } from 'react'
 import { BURGER_BUILDER, type BurgerLayerId } from '@/data/toys'
 import { useAddToCart } from '@/hooks/useAddToCart'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
-import { burgerPrice, burgerToCartInput, countOf, ingredient } from '@/lib/burgerBuilder'
+import { canAdd } from '@/lib/builder'
+import { burgerPrice, burgerToCartInput } from '@/lib/burgerBuilder'
 import { gsap } from '@/lib/gsap'
 import { TOYS } from '@/lib/motion-presets'
 import { formatPKR } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
 import { RevealHeading } from '@/components/ui/RevealHeading'
 import { RollingNumber } from '@/components/ui/RollingNumber'
-import { BurgerControls } from './BurgerControls'
+import { IngredientPicker } from '../builders/IngredientPicker'
 import { BurgerLayer } from './BurgerLayer'
 
 interface Layer {
@@ -33,8 +34,8 @@ export function BuildYourBurger() {
   const fillings = ids.filter((id) => id !== 'bun').length
 
   const addLayer = (id: BurgerLayerId) => {
-    const ing = ingredient(id)
-    if (!ing || ids.includes('bun') || ids.length >= BURGER_BUILDER.maxLayers || countOf(ids, id) >= ing.max) return
+    const ing = BURGER_BUILDER.ingredients.find((i) => i.id === id)
+    if (!ing || ids.includes('bun') || !canAdd(BURGER_BUILDER.ingredients, ids, id, BURGER_BUILDER.maxLayers)) return
     const key = nextKey.current
     nextKey.current += 1
     setLayers((prev) => [...prev, { key, id }])
@@ -80,7 +81,14 @@ export function BuildYourBurger() {
             Build your burger
           </RevealHeading>
           <p className="mt-1 mb-6 -rotate-1 font-hand text-2xl text-cheese sm:text-3xl">garma garam, fresh off the grill 🔥</p>
-          <BurgerControls layers={ids} onAdd={addLayer} />
+          <IngredientPicker
+            ingredients={BURGER_BUILDER.ingredients}
+            picks={ids}
+            maxTotal={BURGER_BUILDER.maxLayers}
+            onAdd={addLayer}
+            locked={ids.includes('bun')}
+            accent={['bun']}
+          />
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <Button size="lg" onClick={finish} disabled={fillings === 0} className="flex-1 whitespace-nowrap sm:flex-none">
               Add my creation · <RollingNumber value={price} format={formatPKR} />

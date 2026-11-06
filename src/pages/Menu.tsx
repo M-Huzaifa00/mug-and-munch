@@ -1,5 +1,6 @@
 import { site } from '@/config/site'
 import { useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router'
 import { LayoutGroup } from 'motion/react'
 import { CATEGORY_ORDER, menu, type Category } from '@/data/menu'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
@@ -15,7 +16,9 @@ import { MenuSection } from '@/components/menu/MenuSection'
 const FILTERS: MenuFilter[] = ['veg', 'spicy', 'bestseller']
 
 export function Menu() {
-  const [query, setQuery] = useState('')
+  // ?q= (e.g. from the 404 search) pre-fills the search box.
+  const [params] = useSearchParams()
+  const [query, setQuery] = useState(() => (params.get('q') ?? '').slice(0, 60))
   const [filters, setFilters] = useState<ReadonlySet<MenuFilter>>(new Set())
   const debouncedQuery = useDebouncedValue(query, 300)
 

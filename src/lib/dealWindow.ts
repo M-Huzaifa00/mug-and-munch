@@ -4,6 +4,8 @@ import { formatTime, nowInCafeTz, toMinutes } from '@/lib/hours'
 export interface DealWindowStatus {
   /** "Available 11 PM – 2 AM" */
   label: string
+  /** "11 PM – 2 AM" */
+  range: string
   /** Inside the window right now (Asia/Karachi). */
   isNow: boolean
 }
@@ -15,5 +17,6 @@ export function getDealWindow(deal: Pick<Deal, 'window'>, date: Date = new Date(
   const start = toMinutes(deal.window.start)
   const end = toMinutes(deal.window.end)
   const isNow = end <= start ? minutes >= start || minutes < end : minutes >= start && minutes < end
-  return { label: `Available ${formatTime(deal.window.start)} – ${formatTime(deal.window.end)}`, isNow }
+  const range = `${formatTime(deal.window.start)} – ${formatTime(deal.window.end)}`
+  return { label: `Available ${range}`, range, isNow }
 }

@@ -1,6 +1,6 @@
 import { useIsCheckout } from '@/hooks/useIsCheckout'
 import { useIsItemPage } from '@/hooks/useIsItemPage'
-import { whatsappLink, WHATSAPP_GREETING } from '@/lib/whatsapp'
+import { isWhatsappConfigured, whatsappLink, WHATSAPP_GREETING } from '@/lib/whatsapp'
 import { cn } from '@/lib/utils'
 import { useCartCount } from '@/store/cart'
 import { WhatsAppIcon } from '@/components/ui/SocialIcons'
@@ -15,6 +15,8 @@ export function WhatsAppFab() {
   const lifted = count > 0 || isItemPage
   // Hidden on checkout: the WhatsApp order CTA lives there (no competing chat button).
   if (useIsCheckout()) return null
+  // Never link a real visitor to the placeholder number (dev keeps it visible for review).
+  if (import.meta.env.PROD && !isWhatsappConfigured()) return null
 
   return (
     <a

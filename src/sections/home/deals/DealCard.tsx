@@ -72,8 +72,7 @@ export function DealCard({ deal, index }: { deal: Deal; index: number }) {
       </ul>
       {win && (
         <p className="mt-2 text-xs font-bold text-espresso">
-          {win.isNow ? 'Available now 🟢 · ' : ''}
-          {win.label}
+          {win.isNow ? `Available now 🟢 · ${win.range}` : win.label}
         </p>
       )}
       {deal.availability && <p className="mt-2 text-xs font-semibold text-ink/80">{deal.availability}</p>}

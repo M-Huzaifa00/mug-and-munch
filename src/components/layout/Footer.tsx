@@ -2,7 +2,7 @@ import { ArrowUpRight, MapPin, Phone } from 'lucide-react'
 import { Link } from 'react-router'
 import { instagramUrl, site, tiktokUrl } from '@/config/site'
 import { DAY_LABELS, formatDayHours, WEEK_ORDER } from '@/lib/hours'
-import { whatsappLink, WHATSAPP_GREETING } from '@/lib/whatsapp'
+import { isWhatsappConfigured, whatsappLink, WHATSAPP_GREETING } from '@/lib/whatsapp'
 import { OpenBadge } from '@/components/ui/OpenBadge'
 import { Logo } from '@/components/brand/Logo'
 import { InstagramIcon, TikTokIcon, WhatsAppIcon } from '@/components/ui/SocialIcons'
@@ -11,6 +11,8 @@ import { NAV_LINKS } from './navLinks'
 
 const linkCls = 'inline-flex min-h-11 items-center gap-2 font-semibold text-oat/85 transition-colors hover:text-cheese'
 const YEAR = new Date().getFullYear()
+/** Production never links to the placeholder WhatsApp number. */
+const SHOW_WHATSAPP = import.meta.env.DEV || isWhatsappConfigured()
 
 /** TODO (Phase 3): letter-by-letter scroll reveal on the giant wordmark. */
 export function Footer() {
@@ -66,11 +68,13 @@ export function Footer() {
           <div>
             <h2 className="mb-3 font-sans text-sm font-bold tracking-widest text-caramel uppercase">Say hi</h2>
             <ul>
-              <li>
-                <a href={whatsappLink(WHATSAPP_GREETING)} target="_blank" rel="noopener noreferrer" className={linkCls}>
-                  <WhatsAppIcon size={18} /> WhatsApp
-                </a>
-              </li>
+              {SHOW_WHATSAPP && (
+                <li>
+                  <a href={whatsappLink(WHATSAPP_GREETING)} target="_blank" rel="noopener noreferrer" className={linkCls}>
+                    <WhatsAppIcon size={18} /> WhatsApp
+                  </a>
+                </li>
+              )}
               <li>
                 <a href={site.contact.phoneHref} className={linkCls}>
                   <Phone size={18} aria-hidden="true" /> {site.contact.phoneDisplay}

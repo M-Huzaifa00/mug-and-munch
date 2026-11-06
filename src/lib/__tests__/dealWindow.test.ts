@@ -6,7 +6,7 @@ const midnight = { window: { start: '23:00', end: '02:00' } }
 
 describe('getDealWindow (Asia/Karachi)', () => {
   it('labels the window', () => {
-    expect(getDealWindow(midnight, pkt('2026-11-09T12:00'))).toEqual({ label: 'Available 11 PM – 2 AM', isNow: false })
+    expect(getDealWindow(midnight, pkt('2026-11-09T12:00'))).toEqual({ label: 'Available 11 PM – 2 AM', range: '11 PM – 2 AM', isNow: false })
   })
   it('is "now" inside an overnight window, on both sides of midnight', () => {
     expect(getDealWindow(midnight, pkt('2026-11-09T23:30'))?.isNow).toBe(true)

@@ -59,7 +59,7 @@ export function ProductCard({ item, variant = 'default', className, onNavigate }
 
   if (variant === 'compact') {
     return (
-      <article className={cn('relative flex w-60 shrink-0 items-center gap-3 rounded-2xl border-2 border-espresso bg-oat p-2 shadow-hard-sm', className)}>
+      <article data-cursor="add" className={cn('relative flex w-60 shrink-0 items-center gap-3 rounded-2xl border-2 border-espresso bg-oat p-2 shadow-hard-sm', className)}>
         <div ref={imageRef} className="size-14 shrink-0 overflow-hidden rounded-xl border-2 border-espresso">
           <ProductImage name={item.name} emoji={item.emoji} image={item.image} category={item.category} size="sm" showName={false} />
         </div>
@@ -78,6 +78,7 @@ export function ProductCard({ item, variant = 'default', className, onNavigate }
 
   return (
     <motion.article
+      data-cursor="add"
       whileHover={{ y: -6, rotate: -1.2 }}
       whileTap={{ scale: 0.97 }}
       transition={SPRING.bouncy}

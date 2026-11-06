@@ -58,7 +58,11 @@ export function ReviewsBoard({ reviews }: { reviews: Review[] }) {
         xTo(e.clientX - r.left + 14)
         yTo(e.clientY - r.top + 14)
       }
-      const show = () => gsap.to(hint.current, { autoAlpha: 1, scale: 1, duration: 0.2 })
+      // The global custom cursor already shows a "Drag" bubble when it's active → don't double up.
+      const show = () => {
+        if (document.documentElement.dataset.customCursor === 'on') return
+        gsap.to(hint.current, { autoAlpha: 1, scale: 1, duration: 0.2 })
+      }
       const hide = () => gsap.to(hint.current, { autoAlpha: 0, scale: 0.6, duration: 0.2 })
       el.addEventListener('pointermove', move)
       el.addEventListener('pointerenter', show)
@@ -88,6 +92,7 @@ export function ReviewsBoard({ reviews }: { reviews: Review[] }) {
           <article
             key={r.id}
             data-review
+            data-cursor="drag"
             className={cn(
               'sticker absolute w-[min(78vw,280px)] cursor-grab rounded-3xl p-4 text-espresso select-none active:cursor-grabbing',
               spot?.pos,

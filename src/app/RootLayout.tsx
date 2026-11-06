@@ -13,6 +13,7 @@ import { Navbar } from '@/components/layout/Navbar'
 import { PageLoader } from '@/components/layout/PageLoader'
 import { ScrollToTop } from '@/components/layout/ScrollToTop'
 import { WhatsAppFab } from '@/components/layout/WhatsAppFab'
+import { Cursor } from './providers/Cursor'
 import { PAGE_ROUTES } from './routes'
 
 export function RootLayout() {
@@ -42,6 +43,7 @@ export function RootLayout() {
       <CartDrawer />
       <PageTransition />
       <CoffeeSpill />
+      <Cursor />
       <AnimatePresence>{modalSlug && <ItemModal key="item-modal" slug={modalSlug} />}</AnimatePresence>
     </div>
   )

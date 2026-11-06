@@ -99,6 +99,8 @@ export default defineConfig({
             { name: 'react', test: /node_modules[\\/](react|react-dom|react-router|scheduler)[\\/]/, priority: 30 },
             { name: 'gsap', test: /node_modules[\\/](gsap|@gsap)[\\/]/, priority: 20 },
             { name: 'motion', test: /node_modules[\\/](motion|framer-motion|motion-dom|motion-utils)[\\/]/, priority: 20 },
+            // Checkout-only (zod + RHF): keep out of the shell vendor chunk.
+            { name: 'forms', test: /node_modules[\\/](zod|react-hook-form|@hookform)[\\/]/, priority: 25 },
             { name: 'vendor', test: /node_modules[\\/]/, priority: 10 },
           ],
         },

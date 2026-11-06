@@ -1,7 +1,8 @@
 # claude.mind.md: Mug n Munch project brain
 
 > Read this before every task. Never rebuild anything marked ✅. Update status, file map and changelog after every task.
-> Current phase: **Phase 4 ✅ done** → **Phase 5 🟡 in progress** (Craft section, WhatsApp checkout, content pages). See the Phase 5 table for the exact resume point.
+> Current phase: **Phase 5 ✅ done** (Craft section, WhatsApp checkout, content pages) → **Phase 6 ⬜ next** (polish & QA). Wait for the owner's "next".
+> Tests: `npm test` (Vitest) must pass with build + lint before every push. **Ordering = WhatsApp only, no backend; never fake an "order placed".**
 > Repo: https://github.com/M-Huzaifa00/mug-and-munch (branch `main`). Git rule: local commit after each completed step; push to `main` only at the end of a phase after build + lint pass. Never push broken builds.
 > **Colours are LOCKED:** never edit/add/remove tokens in the `@theme` block of `src/styles/index.css`. Need a new shade? Use opacity (`bg-chili/15`). Brand ink lives in `src/styles/brand.css` as `--brand-ink` (a color-mix of tokens), mascot/illustration lines only.
 > **Brand name:** visible text is **"Mug n Munch"** from `site.brandName` (never hardcode); `site.alternateName` = "Mug & Munch" (JSON-LD only).
@@ -94,18 +95,15 @@
 ### Phase 4: Interactive toys ✅
 | Feature | Status | Files |
 |---|---|---|
-| Build Studio: ONE section, tabs Burger / Coffee / Wrap (owner request: combine the three builders) | ✅ (Phase 5 Step 1 turns it into the "Craft your own" section) | `src/sections/home/builders/BuildStudio.tsx`, `BuildTabs.tsx`, `IngredientPicker.tsx` |
-| Burger builder: layers drop with squash & stretch, live price, auto top bun, reset topples | ✅ | `src/sections/home/burger/BurgerBuilder.tsx`, `BurgerLayer.tsx`, `src/lib/burgerBuilder.ts` |
-| Coffee builder (real Classic Latte options): pour to size, milk tint, steam, ice drop + splash + straw | ✅ | `src/sections/home/coffee/CoffeeBuilder.tsx`, `CoffeeCup.tsx` |
-| Wrap builder (owner request: pick fillings, not a scroll animation): fillings drop, "Roll it & add" (MorphSVG roll, seams, frills, band) | ✅ | `src/sections/home/wrap/WrapBuilder.tsx`, `WrapStage.tsx`, `WrapFilling.tsx`, `wrapAnimations.ts`, `src/lib/wrapBuilder.ts` |
-| Shared builder maths | ✅ | `src/lib/builder.ts`, data in `src/data/toys.ts` |
+| Build Studio + Burger / Coffee / Wrap builders | ✅ → **merged into Phase 5 "Craft your own"** (old `sections/home/{builders,burger,coffee,wrap}/*` deleted) | now `src/sections/home/craft/*` |
+| Shared builder maths | ✅ | `src/lib/builder.ts` (data now in `data/builder.ts`, `coffeeBuilder.ts`, `wrapBuilder.ts`; `data/toys.ts` = Vibe + Roulette only) |
 | Vibe Picker (5 moods, GSAP Flip reshuffle, 3 picks highlighted, one-tap add + "Add all 3") | ✅ | `src/sections/home/vibe/VibePicker.tsx` |
 | Snack Roulette (lands exactly under the pointer, desktop flick via Draggable + Inertia, normal prices) | ✅ | `src/sections/home/roulette/*` |
 | Custom cursor ("Add +" / "Drag" bubbles; fine pointer, motion ok, cores > 4) | ✅ | `src/app/providers/Cursor.tsx` (`data-cursor` attrs on ProductCard, review stickers, wheel) |
 | Sounds | ⬜ not built (not in the original Phase 4 list) | — |
 | `lib/events.ts` analytics stub | ⬜ → created in Phase 5 Step 1 | — |
 
-### Phase 5: Craft section, WhatsApp checkout & content pages 🟡
+### Phase 5: Craft section, WhatsApp checkout & content pages ✅
 Brief: owner's Phase 5 prompt. **WhatsApp is the ordering channel; no backend; never fake an "order placed".** Resume at the first row that isn't ✅.
 | Step | Scope | Status | Files |
 |---|---|---|---|
@@ -119,9 +117,9 @@ Brief: owner's Phase 5 prompt. **WhatsApp is the ordering channel; no backend; n
 | 7 | WhatsApp order message + synchronous click flow (dev: message preview while the number is a placeholder; prod: call fallback) | ✅ | `src/lib/whatsapp.ts` |
 | 8 | Order success (pending-send / sent / no order) | ✅ | `src/pages/OrderSuccess.tsx` |
 | 9 | Deals page (filter chips, Motion layout grid, item links → modal, Karachi-time windows, reactive Munchy) | ✅ | `src/pages/Deals.tsx`, `src/lib/dealWindow.ts`, `data/deals.ts` (type + window) |
-| 10 | Our Story | ⬜ | `src/pages/OurStory.tsx`, `src/data/story.ts` |
-| 11 | Find Us page | ⬜ | `src/pages/FindUs.tsx` |
-| 12 | 404 polish, SEO pass, Future Goals, docs | ⬜ | |
+| 10 | Our Story (owner facts render only when filled; clip-path panels, DrawSVG steps, photo slots, Munchy, CTAs) | ✅ | `src/pages/OurStory.tsx`, `src/data/story.ts`, `src/sections/story/*` |
+| 11 | Find Us (open badge, weekly hours + today, address notes, directions/call/WhatsApp, click-to-load map, delivery areas) | ✅ | `src/pages/FindUs.tsx`, `src/sections/findus/*`, `components/ui/StylisedMap.tsx` |
+| 12 | 404 (search → `/menu?q=`, 3 bestsellers), Menu reads `?q=`, SEO pass, prod hides placeholder WhatsApp links, `forms` chunk split, docs | ✅ | `src/pages/NotFound.tsx`, `src/pages/Menu.tsx`, `vite.config.ts` |
 
 ### Phase 6: Polish & QA ⬜
 Reduced-motion + low-end audit, a11y pass, JSON-LD openingHours, image optimisation, Lighthouse mobile ≥ 90 ×4 (report scores), 360/768/1440 checks.
@@ -146,15 +144,37 @@ src/lib/brand.ts                BRAND_INK, brandSrc(kind, height)
 src/lib/notify.tsx              branded sonner toast (logo icon + Undo)
 src/lib/preloader.ts            shouldShowPreloader(), markPreloaderSeen() (sessionStorage mm-preloaded)
 src/lib/easterEgg.ts            registerLogoClick() → SPILL_EVENT on 5 clicks / 2s
-src/lib/hours.ts                getOpenStatus() {isOpen, detail, label}, getTodayKey(), formatDayHours, DAY_LABELS, WEEK_ORDER
-src/lib/utils.ts, itemOptions.ts, menuFilter.ts, recommendations.ts, routing.ts, celebrate.ts, whatsapp.ts
-src/hooks/*                     useReducedMotion, useIsTouch (+isLowEndDevice), useScrollState, useAddToCart, useFlyToCart, useFocusTrap, useScrollLock, useMagnetic, useMediaQuery, useDebouncedValue, useIsItemPage
-src/store/cart.ts               Zustand cart (persist mm-cart)
-src/config/site.ts              owner settings incl. brandName, alternateName, logoUrl, ogImage
-src/data/menu.ts, deals.ts, reviews.ts (PLACEHOLDER reviews + visibleReviews())
+src/lib/hours.ts                getOpenStatus() {isOpen, detail, label}, getTodayKey(), formatDayHours, DAY_LABELS, WEEK_ORDER (+ exported toMinutes, nowInCafeTz, hoursFor)
+src/lib/utils.ts, menuFilter.ts, recommendations.ts, routing.ts, celebrate.ts, events.ts (track stub)
+src/lib/itemOptions.ts          selections, unitPriceFor, optionLabels, toCartInput, priceLine() + repriceLines() (re-price any line from current data)
+src/lib/lineDescription.ts      describeLine(line) → {kind, title, tag, details, emoji, edit}: ONE formatter for drawer / checkout / WhatsApp / success
+src/lib/builder.ts, burgerBuilder.ts, wrapBuilder.ts   maker pricing + cart inputs
+src/lib/phone.ts                normalizePkMobile, formatPkMobileInput, formatPkMobile, toWaDigits
+src/lib/orderTotals.ts          getOrderTotals({items, orderType}) → subtotal, deliveryFee, tax, total, amountToFreeDelivery, belowMinimum (single source of money)
+src/lib/orderNumber.ts          createOrderNumber() → MM-YYMMDD-XXXX (Asia/Karachi)
+src/lib/order.ts                Order type, buildOrder(values, items, {number}), save/loadLastOrder (localStorage mm-last-order)
+src/lib/orderApi.ts             submitOrder() STUB, TODO(backend); imported/called nowhere
+src/lib/checkoutSchema.ts       zod discriminatedUnion on orderType, CheckoutForm (flat), EMPTY_CHECKOUT, paymentLabel()
+src/lib/whatsapp.ts             isWhatsappConfigured, cafeWaDigits, buildWhatsAppOrderMessage, getWhatsAppOrderUrl (null while placeholder), whatsappAboutOrderLink, dev warning
+src/lib/pickupSlots.ts          getPickupPlan() → ASAP + 30-min slots (overnight aware; next opening when closed)
+src/lib/dealWindow.ts           getDealWindow() → "Available 11 PM – 2 AM" / isNow (Karachi)
+src/lib/__tests__/*             Vitest: phone, orderTotals, builder, lines (describeLine/priceLine/merge), whatsapp (+snapshots), pickupSlots, dealWindow
+src/hooks/*                     useReducedMotion, useIsTouch (+isLowEndDevice), useScrollState, useAddToCart (+replaceLineId), useFlyToCart, useFocusTrap, useScrollLock, useMagnetic, useMediaQuery, useDebouncedValue, useIsItemPage, useIsCheckout, useTransitionNavigate
+src/store/cart.ts               Zustand cart (persist mm-cart: items + orderType); replaceItem, reprice, editing/startEditing/stopEditing, useOrderTotals
+src/config/site.ts              owner settings incl. brandName, alternateName, logoUrl, ogImage, orderPrefix, tableCount, etaMinutes, payments, addressNotes, commerce.minDeliveryOrder
+src/data/menu.ts, deals.ts (type + window), reviews.ts (PLACEHOLDER reviews + visibleReviews()), toys.ts (Vibe + Roulette)
+src/data/builder.ts, coffeeBuilder.ts, wrapBuilder.ts   maker data (PLACEHOLDER PRICES)
+src/data/story.ts               Our Story copy + owner facts (render only when filled)
+src/components/builder/         IngredientTile, IngredientIcon, TileGroup, TileTray, BuilderActions
+src/components/checkout/        CheckoutCard, CheckoutField, fieldStyles, OrderTypeSwitch, OrderTypeFields, DetailsFields, PaymentOptions, OrderReview, CheckoutTotals, SendOrderButton, ErrorSummary, CheckoutBanners, CheckoutEmpty, MessagePreview (DEV), OrderSnapshot, useCheckoutForm, useSendOrder
+src/sections/home/craft/        CraftSection, CraftSwitch, BurgerMaker, BurgerLayer, CoffeeMaker, CoffeeCup, SweetnessPills, WrapMaker, WrapStage, WrapFilling, wrapAnimations, makerLayout, MakerLoading, EditBanner, useCraftEdit
+src/sections/story/             StoryPanels, StorySteps
+src/sections/findus/            HoursTable, MapFacade
+REMOVED in Phase 5              sections/home/{builders,burger,coffee,wrap}/* (BuildStudio, BuildTabs→CraftSwitch, IngredientPicker, BurgerBuilder, BurgerControls, CoffeeBuilder, WrapBuilder, WrapItUp…)
 src/components/brand/           Logo, BrandImage, LogoStamp, brandAssets.ts (generated)
 src/components/mascot/          Mascot, MascotFace, mascotPoses, useMascotAnimation, useMascotReactions, mascotFollow
-src/components/ui/              Button, buttonClasses, OpenBadge, SocialIcons, ProductCard, ProductImage, Badge, Chip, QuantityStepper, RollingNumber, Sticker, HandArrow, MagneticButton, Modal, Drawer, RevealHeading
+src/components/ui/              Button, buttonClasses, OpenBadge, SocialIcons, ProductCard, ProductImage, Badge, Chip, QuantityStepper, RollingNumber, Sticker, HandArrow, MagneticButton, Modal, Drawer, RevealHeading, LazyMount, StylisedMap
+src/components/layout/cart/     CartContents, CartLineItem, CartSummary, CartUpsell, FreeDeliveryBar, LineTag, EditCreationLink, CraftLinks
 src/components/item/*           ItemDetailContent, ItemOptionsForm, OptionPills, StickyAddBar, ItemModal
 src/components/menu/*           CategoryNav, MenuSearch, MenuSection, MenuEmpty, menuIds
 src/components/layout/          Navbar, NavLogo, CartButton, CartDrawer (+cart/*), MobileBottomBar, WhatsAppFab, Footer, FooterWordmark, PageLoader, PageTransition, CoffeeSpill, ScrollToTop, Seo, JsonLd, PagePlaceholder, navLinks
@@ -179,6 +199,11 @@ public/images/{coffee,burgers,wraps,sides,drinks,desserts,deals,brand}/  photos 
 - **tailwind-merge:** custom tokens registered in `lib/utils.ts`.
 
 ## 5. Config & data the owner must fill
+- **#1 `site.contact.whatsappNumber`: the real WhatsApp business number** (digits, e.g. `923001234567`). Until then production shows "Online ordering is coming soon, call us" and hides every WhatsApp link; dev shows a warning banner + message preview.
+- `src/config/site.ts` (Phase 5 fields): `orderPrefix` (MM), `tableCount` (20), `commerce.minDeliveryOrder` (0), `etaMinutes`, `payments` (cash only for now), `addressNotes` (parking/landmark).
+- `src/data/builder.ts`, `coffeeBuilder.ts`, `wrapBuilder.ts`: **PLACEHOLDER PRICES** for the makers (burger base 350, wrap base 250, every ingredient), fun names, `bunLabel`.
+- `src/data/deals.ts`: Midnight Deal window (23:00–02:00) + student-card rule.
+- `src/data/story.ts`: `STORY_FACTS` (founding year, founders, origin; hidden until filled) and the "How we make it" steps; photos at `public/images/brand/{kitchen,team,counter}.webp`.
 - `src/config/site.ts`: WhatsApp number, phone, email, address, Google Maps link, lat/lng, Instagram + TikTok handles, real opening hours, free-delivery threshold, delivery fee, **tax rate (currently 0)**, delivery areas, real domain (`url`, also used for OG/JSON-LD absolute URLs). `brandName` / `alternateName` already set.
 - `src/data/menu.ts`: **PLACEHOLDER PRICES**.
 - `src/data/deals.ts`: deal prices + rules. Optional deal photos: `public/images/deals/<slug>.webp`.
@@ -190,8 +215,12 @@ public/images/{coffee,burgers,wraps,sides,drinks,desserts,deals,brand}/  photos 
 ## 6. Known issues / tech debt
 - Refreshing while the item modal is open re-opens it over the page (history state survives refresh). Direct links always get the full page.
 - Quick-add: items with >1 size open the modal (coffees); others add instantly (spice = Medium).
-- Delivery fee shows in the drawer for every cart; order-type logic comes with checkout (Phase 5).
-- Page transitions intercept `<a>` clicks only; programmatic `navigate()` calls (e.g. after checkout) change pages without the wipe.
+- Fixed in Phase 5: delivery fee now only for delivery orders (`orderType` in the store); programmatic navigation gets the wipe via `useTransitionNavigate()`.
+- The owner only learns about an order when the customer actually hits send in WhatsApp; "Yes, I've sent it" is the customer's word (no backend to verify). Not tested on a real Android phone yet (headless only): check that the CTA opens the WhatsApp app and "back" lands on /order-success.
+- Pickup slots / closed banner / deal "Available now" are computed once on page load (a tab left open for hours shows stale slots until refresh).
+- Vitest prints a Node "localStorage is not available" ExperimentalWarning (Node 26 + zustand persist import); tests pass.
+- Coffee "Tweak" applies to every coffee in the maker list (maker and menu coffees are the same line by design).
+- Editing a creation into one identical to another line merges the two (qty adds up).
 - Bestsellers pin uses ScrollTrigger pin spacing, so full-page screenshots show an empty band above it (normal).
 - Motion logs a dev-only "Reduced Motion enabled" warning when the OS setting is on (not in production).
 - GSAP (~86 KB gz) + Motion (~46 KB gz) in the shell; Phase 6: consider lazy plugins / LazyMotion. Home chunk is larger now (all sections); fine at 52 fps avg under CPU 4×.
@@ -201,8 +230,22 @@ public/images/{coffee,burgers,wraps,sides,drinks,desserts,deals,brand}/  photos 
 
 ## 7. Future goals (not built yet)
 Node/Supabase backend + real orders DB · real JazzCash / Easypaisa / card gateway integration · admin dashboard to edit menu & prices · live order tracking · "Munch Points" loyalty & referral · Urdu/English language toggle · PWA + "Add to home screen" · table QR ordering for dine-in · reservations · push/WhatsApp order-status notifications · analytics (GA4 / Meta Pixel) with consent · Foodpanda link-out · A/B testing CTA copy.
+- **Automatic owner notifications:** backend + WhatsApp Business Platform (Cloud API) template messages, or a Telegram bot / email as a simpler first step (`lib/orderApi.ts` `submitOrder()` marks the hook-in point).
+- **Online payments (JazzCash / Easypaisa / card) need the backend first** (`site.payments` flags + `TODO(payments)` in `PaymentOptions`).
 
 ## 8. Changelog (Asia/Karachi dates)
+### 2026-11-07: Phase 5 complete: Craft your own, WhatsApp checkout, content pages
+- Phase 4 check: burger/coffee/wrap builders, Vibe Picker, Snack Roulette and custom cursor work; sounds were never built (not built now either); `lib/events.ts` created as a stub.
+- ONE "Craft your own" section (Coffee / Burger / Wrap switch, deep links `#craft-*`, state kept per tab, lazy Coffee/Wrap chunks) on a shared Builder Kit; old Build Studio + builder files removed.
+- Order logic (pure + tested): phone, totals, order number, Order snapshot, zod checkout schema, WhatsApp message (never drops a layer/filling, < 2,000 chars), `submitOrder` stub unused.
+- Cart: describeLine everywhere, re-pricing with one honest notice + "No longer available" block, Edit/Tweak replaces the line, tag chips, craft links in empty states, orderType (delivery fee only for delivery).
+- Checkout `/checkout`: order types, pickup slots from real hours, RHF + zod with error summary + focus, draft + opt-in remember-me, cash-only payments ("Coming soon" for the rest), sticky WhatsApp CTA; synchronous wa.me flow; production shows "call us" while the number is a placeholder.
+- Order success: pending-send → "Yes, I've sent it" clears the cart → sent (dance, one confetti, ETA "estimated, after confirmation"). Never claims confirmation.
+- Pages: Deals (filters, honest windows), Our Story (no invented facts), Find Us (click-to-load map), 404 search + bestsellers, Menu `?q=`.
+- `forms` chunk (zod + RHF) split out of the shell vendor chunk (68 → 32 KB gz on every page).
+- Verified: 70 Vitest tests; 360 + 1440 browser runs (Edit/Tweak, re-price, checkout validation/phone/order types/draft, wa.me URL with a temporary test number then restored, success states, pages, no overflow); production preview: no wa.me links with the placeholder, 0 console messages, reduced motion shows all content. Colour tokens unchanged.
+- Commits `a56bfaa` … this docs commit; pushed to `main`.
+
 ### 2026-11-06: Phase 4 complete: interactive toys
 - Build Your Burger, Coffee Lab and a build-your-wrap builder, combined into ONE tabbed Build Studio section (owner request); shared builder maths + IngredientPicker.
 - Wrap It Up reworked on owner feedback from a scroll animation into a pick-your-fillings builder with a roll-up on "Roll it & add".

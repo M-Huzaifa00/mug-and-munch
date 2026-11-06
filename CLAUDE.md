@@ -12,6 +12,7 @@ Vite 8 + React 19 + TypeScript (strict) · Tailwind v4 (`@tailwindcss/vite`, tok
 - `npm run build`: type-check + production build (must pass with 0 TS errors)
 - `npm run preview`: serve the built `dist/`
 - `npm run lint`: oxlint
+- `npm test`: Vitest unit tests (`src/lib/__tests__`); must pass with build + lint before any push
 
 ## Top 10 code rules
 1. TypeScript strict, no `any`; functional components, **named exports**, one component per file, PascalCase components, camelCase utils.

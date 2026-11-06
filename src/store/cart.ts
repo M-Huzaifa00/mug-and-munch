@@ -1,6 +1,8 @@
+import { useMemo } from 'react'
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-import { site } from '@/config/site'
+import { repriceLines } from '@/lib/itemOptions'
+import { getOrderTotals, type OrderType } from '@/lib/orderTotals'
 import type { Category, SpiceLevel } from '@/data/menu'
 import type { WrapChoice } from '@/data/wrapBuilder'
 
@@ -36,6 +38,8 @@ export interface CartItem {
   /** Human-readable option chips, e.g. ["Large", "Oat milk", "+ Extra shot"]. */
   optionLabels: string[]
   isCustom?: boolean
+  /** Set by re-pricing when the item / an ingredient no longer exists → blocks sending. */
+  unavailable?: boolean
 }
 
 export type AddItemInput = Omit<CartItem, 'lineId' | 'qty'>
@@ -79,6 +83,11 @@ const readSessionFlag = (): boolean => {
   }
 }
 
+export interface EditTarget {
+  lineId: string
+  tab: 'burger' | 'wrap' | 'coffee'
+}
+
 interface LastAdd {
   lineId: string
   /** Quantity before the add (0 = line was new). */
@@ -92,6 +101,10 @@ interface CartState {
   /** First add of this browser session (sessionStorage) → confetti once. */
   hasAddedThisSession: boolean
   lastAdd: LastAdd | null
+  /** Delivery / takeaway / dine-in (persisted; checkout + drawer read it). */
+  orderType: OrderType
+  /** Line being edited in the Craft section (Edit / Tweak). Not persisted. */
+  editing: EditTarget | null
 
   /** Adds (or merges) a line. Returns the lineId and whether it was the session's first add. */
   addItem: (input: AddItemInput, qty?: number) => { lineId: string; isFirstAdd: boolean }
@@ -103,6 +116,13 @@ interface CartState {
   undoLastAdd: () => void
   openCart: () => void
   closeCart: () => void
+  setOrderType: (type: OrderType) => void
+  /** Replace a line in place (Edit / Tweak). Merges into an identical existing line. Returns the new lineId. */
+  replaceItem: (lineId: string, input: AddItemInput) => string
+  /** Re-price every line from the current data files. Returns true when a price changed (→ one honest notice). */
+  reprice: () => boolean
+  startEditing: (target: EditTarget) => void
+  stopEditing: () => void
 }
 
 export const useCart = create<CartState>()(
@@ -112,6 +132,8 @@ export const useCart = create<CartState>()(
       isOpen: false,
       hasAddedThisSession: readSessionFlag(),
       lastAdd: null,
+      orderType: 'delivery',
+      editing: null,
 
       addItem: (input, qty = 1) => {
         const lineId = buildLineId(input.itemId, input.options)
@@ -163,31 +185,64 @@ export const useCart = create<CartState>()(
 
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),
+      setOrderType: (orderType) => set({ orderType }),
+
+      replaceItem: (lineId, input) => {
+        const nextId = buildLineId(input.itemId, input.options)
+        set((state) => {
+          const index = state.items.findIndex((i) => i.lineId === lineId)
+          if (index < 0) return state
+          const old = state.items[index]!
+          const twin = nextId !== lineId ? state.items.find((i) => i.lineId === nextId) : undefined
+          if (twin) {
+            // Edited into an identical existing creation → merge quantities, drop the old line.
+            return {
+              items: state.items
+                .filter((i) => i.lineId !== lineId)
+                .map((i) => (i.lineId === nextId ? { ...i, qty: Math.min(MAX_QTY, i.qty + old.qty) } : i)),
+              editing: null,
+              lastAdd: null,
+            }
+          }
+          const items = [...state.items]
+          items[index] = { ...input, lineId: nextId, qty: old.qty }
+          return { items, editing: null, lastAdd: null }
+        })
+        return nextId
+      },
+
+      reprice: () => {
+        const { items, changed, priceChanged } = repriceLines(get().items)
+        if (changed) set({ items })
+        return priceChanged
+      },
+
+      startEditing: (editing) => set({ editing, isOpen: false }),
+      stopEditing: () => set({ editing: null }),
     }),
     {
       name: 'mm-cart',
       version: 2,
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ items: state.items }),
+      partialize: (state) => ({ items: state.items, orderType: state.orderType }),
       // v1 (Phase 1) used a different line shape and was never user-facing → start fresh.
       migrate: () => ({ items: [] }),
     },
   ),
 )
 
-/* ---------- Selectors ---------- */
-type S = Pick<CartState, 'items'>
-export const selectCount = (s: S): number => s.items.reduce((n, i) => n + i.qty, 0)
-export const selectSubtotal = (s: S): number => s.items.reduce((sum, i) => sum + i.unitPrice * i.qty, 0)
-export const selectDeliveryFee = (s: S): number => {
-  const subtotal = selectSubtotal(s)
-  if (subtotal === 0 || subtotal >= site.commerce.freeDeliveryThreshold) return 0
-  return site.commerce.deliveryFee
-}
-export const selectAmountToFreeDelivery = (s: S): number =>
-  Math.max(0, site.commerce.freeDeliveryThreshold - selectSubtotal(s))
+/* ---------- Selectors (money maths lives in lib/orderTotals.ts) ---------- */
+type S = Pick<CartState, 'items' | 'orderType'>
+export const selectCount = (s: Pick<CartState, 'items'>): number => s.items.reduce((n, i) => n + i.qty, 0)
+export const selectTotals = (s: S) => getOrderTotals({ items: s.items, orderType: s.orderType })
+export const selectSubtotal = (s: S): number => selectTotals(s).subtotal
 
 export const useCartCount = (): number => useCart(selectCount)
 export const useCartSubtotal = (): number => useCart(selectSubtotal)
-export const useDeliveryFee = (): number => useCart(selectDeliveryFee)
-export const useAmountToFreeDelivery = (): number => useCart(selectAmountToFreeDelivery)
+export const useOrderType = (): OrderType => useCart((s) => s.orderType)
+/** Totals for the current cart + order type (memoised; selectors must return stable values). */
+export const useOrderTotals = () => {
+  const items = useCart((s) => s.items)
+  const orderType = useCart((s) => s.orderType)
+  return useMemo(() => getOrderTotals({ items, orderType }), [items, orderType])
+}

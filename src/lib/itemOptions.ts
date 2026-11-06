@@ -1,5 +1,10 @@
-import { SPICE_LABELS, SWEETNESS_DEFAULT, type ItemOptions, type MenuItem, type OptionChoice, type SpiceLevel } from '@/data/menu'
-import type { AddItemInput, CartOptions } from '@/store/cart'
+import { BURGER_BUILDER, type BurgerLayerId } from '@/data/builder'
+import { deals } from '@/data/deals'
+import { getItemById, SPICE_LABELS, SWEETNESS_DEFAULT, type ItemOptions, type MenuItem, type OptionChoice, type SpiceLevel } from '@/data/menu'
+import { WRAP_MAKER } from '@/data/wrapBuilder'
+import { burgerPrice } from '@/lib/burgerBuilder'
+import { wrapPrice } from '@/lib/wrapBuilder'
+import type { AddItemInput, CartItem, CartOptions } from '@/store/cart'
 
 /** The shopper's current choices for one menu item. */
 export interface OptionSelection {
@@ -71,6 +76,82 @@ export function optionLabels(item: MenuItem, sel: OptionSelection): string[] {
   }
   if (o.sweetness && sel.sweetness !== undefined && sel.sweetness !== SWEETNESS_DEFAULT) labels.push(`Sweetness ${sel.sweetness}%`)
   return labels
+}
+
+/** Rebuild an OptionSelection from a stored cart line (menu items / coffees). */
+export function selectionFromOptions(o: CartOptions): OptionSelection {
+  return { size: o.size, temp: o.temp, milk: o.milk, spice: o.spice, extras: [...(o.extras ?? [])], sweetness: o.sweetness }
+}
+
+export type LinePrice = { available: true; unitPrice: number } | { available: false }
+
+const has = (list: readonly { id: string }[], id: string) => list.some((c) => c.id === id)
+/** A chosen single-option id must still exist in its group (when the group exists). */
+const validSingle = (choices: OptionChoice[] | undefined, id: string | undefined) => !id || !choices || has(choices, id)
+
+/**
+ * Re-price ANY persisted cart line from the current data files (menu, burger, wrap, deals).
+ * localStorage may hold old prices after the owner edits data → the drawer and checkout call this.
+ * Missing item / ingredient / option → `{ available: false }` (sending is blocked until removed).
+ */
+export function priceLine(line: Pick<CartItem, 'itemId' | 'category' | 'options'>): LinePrice {
+  const o = line.options
+  if (line.itemId === 'custom-burger') {
+    const layers = o.layers ?? []
+    if (!layers.every((id) => has(BURGER_BUILDER.ingredients, id))) return { available: false }
+    return { available: true, unitPrice: burgerPrice(layers as BurgerLayerId[]) }
+  }
+  if (line.itemId === 'custom-wrap') {
+    const w = o.wrap
+    const M = WRAP_MAKER
+    const ok =
+      w &&
+      has(M.bases, w.base) &&
+      has(M.proteins, w.protein) &&
+      has(M.spice, w.spice) &&
+      w.cheeses.every((id) => has(M.cheeses, id)) &&
+      w.veggies.every((id) => has(M.veggies, id)) &&
+      w.sauces.every((id) => has(M.sauces, id))
+    return ok ? { available: true, unitPrice: wrapPrice(w) } : { available: false }
+  }
+  if (line.category === 'deal') {
+    const deal = deals.find((d) => d.id === line.itemId)
+    if (!deal || !deal.items.every((l) => getItemById(l.itemId))) return { available: false }
+    return { available: true, unitPrice: deal.price }
+  }
+  const item = getItemById(line.itemId)
+  if (!item) return { available: false }
+  const sel = selectionFromOptions(o)
+  const io = item.options
+  const valid =
+    validSingle(io.sizes, sel.size) &&
+    validSingle(io.temps, sel.temp) &&
+    validSingle(io.milks, sel.milk) &&
+    (!sel.spice || !item.spiceLevels || item.spiceLevels.includes(sel.spice)) &&
+    sel.extras.every((id) => has(io.extras ?? [], id))
+  return valid ? { available: true, unitPrice: unitPriceFor(item, sel) } : { available: false }
+}
+
+/**
+ * Re-price persisted lines. `priceChanged` → show "Some prices were updated." once;
+ * `changed` also covers lines that became (un)available.
+ */
+export function repriceLines(items: readonly CartItem[]): { items: CartItem[]; changed: boolean; priceChanged: boolean } {
+  let changed = false
+  let priceChanged = false
+  const next = items.map((line) => {
+    const p = priceLine(line)
+    if (!p.available) {
+      if (line.unavailable) return line
+      changed = true
+      return { ...line, unavailable: true }
+    }
+    if (p.unitPrice === line.unitPrice && !line.unavailable) return line
+    changed = true
+    if (p.unitPrice !== line.unitPrice) priceChanged = true
+    return { ...line, unitPrice: p.unitPrice, unavailable: undefined }
+  })
+  return { items: next, changed, priceChanged }
 }
 
 /** Turn a menu item + selection into a cart line input. Menu modal and Coffee maker both use this. */

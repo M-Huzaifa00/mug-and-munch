@@ -39,6 +39,8 @@ export const BURGER_BUILDER = {
   maxLayers: 10,
   image: '/images/burgers/build-your-own.webp',
   fallbackName: 'Custom Burger',
+  /** First detail on the kitchen ticket (the bun is always included). */
+  bunLabel: 'Sesame bun',
   funNames: ['The F-7 Special', 'Midnight Monster', 'Blue Area Banger', 'The G-11 Stack', 'Desi Smash Bomb', 'The Margalla Melt', 'Jinnah Avenue Giant'],
   ingredients: [
     { id: 'patty', label: 'Smash patty', price: 450, max: 3, icon: { shape: 'patty' } },

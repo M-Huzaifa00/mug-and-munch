@@ -10,6 +10,9 @@ import './styles/index.css'
 import './styles/brand.css'
 
 import { App } from './app/App'
+import { warnIfWhatsappUnconfigured } from './lib/whatsapp'
+
+warnIfWhatsappUnconfigured()
 
 const root = document.getElementById('root')
 if (!root) throw new Error('Root element #root not found')

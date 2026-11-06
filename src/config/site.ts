@@ -60,7 +60,21 @@ export const site = {
     freeDeliveryThreshold: 2500, // TODO: owner fills (PKR)
     deliveryFee: 199, // TODO: owner fills (PKR)
     taxRate: 0, // TODO: owner confirms GST / ICT sales tax rate (e.g. 0.16). 0 = no tax line charged.
+    minDeliveryOrder: 0, // TODO: owner fills (PKR subtotal needed for delivery; 0 = no minimum)
   },
+
+  /** Order prefix for order numbers like MM-261107-4K2Q. */
+  orderPrefix: 'MM', // TODO: owner fills
+  tableCount: 20, // TODO: owner fills (dine-in tables numbered 1…tableCount)
+  /** Estimated minutes AFTER the owner confirms on WhatsApp. */
+  etaMinutes: {
+    delivery: [35, 50],
+    takeaway: [15, 25],
+    dineIn: [15, 25],
+  } as Record<'delivery' | 'takeaway' | 'dineIn', readonly [number, number]>, // TODO: owner fills
+  /** Only enabled methods can be chosen at checkout; the rest show "Coming soon". */
+  payments: { cod: true, jazzcash: false, easypaisa: false, card: false }, // TODO: owner fills (TODO(payments): gateway integration)
+  addressNotes: '', // TODO: owner fills (parking / landmark text, e.g. "Parking at the back, next to …")
 
   // TODO: owner edits the delivery coverage list.
   deliveryAreas: [

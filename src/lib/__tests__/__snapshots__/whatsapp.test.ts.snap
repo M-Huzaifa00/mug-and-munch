@@ -1,0 +1,85 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`buildWhatsAppOrderMessage > delivery: full message with every layer + filling, under 2,000 chars 1`] = `
+"🧾 *New order MM-261107-TEST* · Mug n Munch
+
+🛵 *Delivery*
+Area: F-7
+Address: House 12, Street 34
+Landmark: Near the park
+
+*Items*
+2× *Classic Smash* — Rs 2,200
+   Desi Hot 🌶️ · +Extra cheese
+1× 🍔 *"Midnight Monster"* (custom burger) — Rs 2,320
+   Sesame bun · Smash patty ×3 · Cheese ×2 · Jalapeños · Onion · Lettuce · House sauce ×2
+1× ☕ *Spanish Latte* — Rs 1,540
+   Large · Oat milk · Iced · Extra shot · Hazelnut syrup · Sweetness 25%
+1× 🌯 *"Late Night Lapet"* (custom wrap) — Rs 1,670
+   Paratha · Malai boti ×2 · Mozzarella · Cheddar · Onions · Pickled onions · Mint chutney · Imli · Desi Hot 🌶️
+1× 🎁 *Student Deal* (deal) — Rs 1,199
+   Classic Smash · Classic Fries · Soft Drink
+
+Subtotal: Rs 8,929
+Delivery: Free
+*Total: Rs 8,929*
+
+Payment: Cash on Delivery
+Name: Ali
+Phone: 0300-1234567
+Notes: Extra napkins pls"
+`;
+
+exports[`buildWhatsAppOrderMessage > dineIn: full message with every layer + filling, under 2,000 chars 1`] = `
+"🧾 *New order MM-261107-TEST* · Mug n Munch
+
+🍽️ *Dine-in*
+Table: 7
+
+*Items*
+2× *Classic Smash* — Rs 2,200
+   Desi Hot 🌶️ · +Extra cheese
+1× 🍔 *"Midnight Monster"* (custom burger) — Rs 2,320
+   Sesame bun · Smash patty ×3 · Cheese ×2 · Jalapeños · Onion · Lettuce · House sauce ×2
+1× ☕ *Spanish Latte* — Rs 1,540
+   Large · Oat milk · Iced · Extra shot · Hazelnut syrup · Sweetness 25%
+1× 🌯 *"Late Night Lapet"* (custom wrap) — Rs 1,670
+   Paratha · Malai boti ×2 · Mozzarella · Cheddar · Onions · Pickled onions · Mint chutney · Imli · Desi Hot 🌶️
+1× 🎁 *Student Deal* (deal) — Rs 1,199
+   Classic Smash · Classic Fries · Soft Drink
+
+Subtotal: Rs 8,929
+*Total: Rs 8,929*
+
+Payment: Pay at the counter
+Name: Ali
+Phone: 0300-1234567
+Notes: Extra napkins pls"
+`;
+
+exports[`buildWhatsAppOrderMessage > takeaway: full message with every layer + filling, under 2,000 chars 1`] = `
+"🧾 *New order MM-261107-TEST* · Mug n Munch
+
+🥡 *Takeaway*
+Pickup: Today 9:30 PM
+
+*Items*
+2× *Classic Smash* — Rs 2,200
+   Desi Hot 🌶️ · +Extra cheese
+1× 🍔 *"Midnight Monster"* (custom burger) — Rs 2,320
+   Sesame bun · Smash patty ×3 · Cheese ×2 · Jalapeños · Onion · Lettuce · House sauce ×2
+1× ☕ *Spanish Latte* — Rs 1,540
+   Large · Oat milk · Iced · Extra shot · Hazelnut syrup · Sweetness 25%
+1× 🌯 *"Late Night Lapet"* (custom wrap) — Rs 1,670
+   Paratha · Malai boti ×2 · Mozzarella · Cheddar · Onions · Pickled onions · Mint chutney · Imli · Desi Hot 🌶️
+1× 🎁 *Student Deal* (deal) — Rs 1,199
+   Classic Smash · Classic Fries · Soft Drink
+
+Subtotal: Rs 8,929
+*Total: Rs 8,929*
+
+Payment: Cash on pickup
+Name: Ali
+Phone: 0300-1234567
+Notes: Extra napkins pls"
+`;

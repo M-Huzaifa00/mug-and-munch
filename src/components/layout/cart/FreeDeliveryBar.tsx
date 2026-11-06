@@ -2,18 +2,19 @@ import { motion } from 'motion/react'
 import { site } from '@/config/site'
 import { SPRING } from '@/lib/motion-presets'
 import { cn, formatPKR } from '@/lib/utils'
-import { useAmountToFreeDelivery, useCartSubtotal } from '@/store/cart'
+import { useOrderTotals, useOrderType } from '@/store/cart'
 
-/** "Rs X away from free delivery 🛵" → fills up → "Free delivery unlocked 🎉". */
-export function FreeDeliveryBar() {
-  const subtotal = useCartSubtotal()
-  const remaining = useAmountToFreeDelivery()
+/** "Rs X away from free delivery 🛵" → fills up → "Free delivery unlocked 🎉". Delivery orders only. */
+export function FreeDeliveryBar({ className }: { className?: string }) {
+  const { subtotal, amountToFreeDelivery: remaining } = useOrderTotals()
+  const orderType = useOrderType()
+  if (orderType !== 'delivery') return null
   const threshold = site.commerce.freeDeliveryThreshold
   const progress = Math.min(1, subtotal / threshold)
   const unlocked = remaining === 0
 
   return (
-    <div className={cn('rounded-2xl border-2 border-espresso p-3', unlocked ? 'bg-pickle' : 'bg-cheese/45')}>
+    <div className={cn('rounded-2xl border-2 border-espresso p-3', unlocked ? 'bg-pickle' : 'bg-cheese/45', className)}>
       <p role="status" aria-live="polite" className="text-sm font-bold text-espresso">
         {unlocked ? 'Free delivery unlocked 🎉' : `${formatPKR(remaining)} away from free delivery 🛵`}
       </p>

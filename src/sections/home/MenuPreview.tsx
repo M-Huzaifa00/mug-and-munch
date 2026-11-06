@@ -10,6 +10,7 @@ import { MagneticButton } from '@/components/ui/MagneticButton'
 import { ProductCard } from '@/components/ui/ProductCard'
 import { RevealHeading } from '@/components/ui/RevealHeading'
 import { Sticker } from '@/components/ui/Sticker'
+import { MunchStop } from '@/components/munchRun/MunchStop'
 import { MenuPreviewTabs } from './MenuPreviewTabs'
 import { SECTION_IDS } from './sectionIds'
 
@@ -54,8 +55,9 @@ export function MenuPreview() {
       ref={sectionRef}
       id={SECTION_IDS.menuPreview}
       aria-labelledby="menu-preview-title"
-      className="grain relative overflow-hidden bg-cheese px-4 py-20 sm:px-6 md:py-28"
+      className="grain relative overflow-hidden bg-cheese px-4 pt-24 pb-20 sm:px-6 md:pt-32 md:pb-28 lg:pt-36"
     >
+      <MunchStop stop={2} />
       <Sticker kind="hot" className="top-6 right-4 sm:top-12 sm:right-[8%]" tilt={10} />
       <Sticker kind="sparkle" className="top-40 right-[38%] hidden lg:block" tilt={-14} />
       <Sticker kind="steam" className="bottom-10 left-[5%] hidden sm:block" tilt={-6} />

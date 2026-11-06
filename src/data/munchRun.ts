@@ -62,14 +62,17 @@ export const MUNCH_STOPS: readonly MunchStopConfig[] = [
 export const MUNCH_RUN_CONFIG = {
   /** Flight line as a fraction of viewport height: a segment starts/ends when an anchor's top crosses it. */
   flightLine: { desktop: 0.28, mobile: 0.22 },
+  /** Departure line (fraction of vh): a parked character rides along with its section until its anchor's top
+   *  rises to here, then takes off. Lower than the flight line = a dwell at each stop. */
+  departLine: { desktop: 0.1, mobile: 0.09 }, // just below the navbar
   /** Below this width: smaller arcs, wobble instead of spin, fewer crumbs, notes hidden. */
   mobileMax: 767,
   /** Notes only where they fit beside the character without covering text. */
   notesMinWidth: 768,
   /** Curve shape: pull toward the page centre (fraction of the gap) + drop (fraction of viewport height). */
   arc: { pull: { desktop: 0.55, mobile: 0.35 }, drop: { desktop: 0.12, mobile: 0.06 } },
-  /** Hop over the tilted marquee strip during segment 1 (fraction of viewport height, progress window). */
-  marqueeHop: { height: 0.09, from: 0.12, to: 0.48 },
+  /** Hop over the tilted marquee strips ([data-munch-hop]) while they pass under the character (fraction of vh). */
+  marqueeHop: { height: 0.1 },
   crumbs: { desktop: 8, mobile: 4, everyPx: 38 },
   /** Lenis velocity (px/frame) that makes it dizzy during flight. */
   dizzyVelocity: 55,

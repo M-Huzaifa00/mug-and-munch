@@ -16,11 +16,13 @@ import {
 
 describe('segment progress', () => {
   it('first segment never starts before scroll 0', () => {
-    expect(segmentRange(150, 1500, 250, true)).toEqual({ start: 0, end: 1250 })
-    expect(segmentRange(800, 1500, 250, true)).toEqual({ start: 550, end: 1250 })
+    expect(segmentRange(150, 1500, 250, 250, true)).toEqual({ start: 0, end: 1250 })
+    expect(segmentRange(800, 1500, 250, 250, true)).toEqual({ start: 550, end: 1250 })
   })
-  it('later segments start when the from-anchor crosses the line', () => {
-    expect(segmentRange(1500, 2600, 250, false)).toEqual({ start: 1250, end: 2350 })
+  it('later segments start when the from-anchor rises to the departure line', () => {
+    expect(segmentRange(1500, 2600, 250, 250, false)).toEqual({ start: 1250, end: 2350 })
+    // departure line above the landing line → the previous stop gets a dwell of (land - depart) px
+    expect(segmentRange(1500, 2600, 50, 250, false)).toEqual({ start: 1450, end: 2350 })
   })
   it('progress is clamped 0..1 and linear in between', () => {
     const r = { start: 100, end: 300 }
@@ -29,7 +31,7 @@ describe('segment progress', () => {
     expect(segmentProgress(999, r)).toBe(1)
   })
   it('degenerate ranges never divide by zero', () => {
-    const r = segmentRange(500, 400, 100, false)
+    const r = segmentRange(500, 400, 100, 100, false)
     expect(r.end).toBeGreaterThan(r.start)
     expect(Number.isFinite(segmentProgress(450, r))).toBe(true)
   })

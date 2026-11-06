@@ -14,13 +14,15 @@ export const smoothstep = (t: number) => {
 }
 
 /**
- * Scroll positions where a segment starts / ends: the "from" anchor's top crossing the flight line
- * starts it (never before scroll 0 for the first segment), the "to" anchor's top reaching it ends it.
+ * Scroll positions where a segment starts / ends. It starts when the "from" anchor's top rises to the
+ * departure line (never before scroll 0 for the first segment) and ends when the "to" anchor's top reaches
+ * the landing (flight) line. departY <= landY gives each stop a dwell: the character rides along with its
+ * section from the landing line up to the departure line before taking off again.
  * Anchor tops are document positions (rect.top + scrollY), read live so pins and resizes stay correct.
  */
-export function segmentRange(fromDocTop: number, toDocTop: number, lineY: number, first: boolean): { start: number; end: number } {
-  const start = first ? Math.max(0, fromDocTop - lineY) : fromDocTop - lineY
-  const end = Math.max(start + 1, toDocTop - lineY)
+export function segmentRange(fromDocTop: number, toDocTop: number, departY: number, landY: number, first: boolean): { start: number; end: number } {
+  const start = first ? Math.max(0, fromDocTop - departY) : fromDocTop - departY
+  const end = Math.max(start + 1, toDocTop - landY)
   return { start, end }
 }
 

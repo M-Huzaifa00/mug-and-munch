@@ -6,6 +6,7 @@ import { HandArrow } from '@/components/ui/HandArrow'
 import { ProductCard } from '@/components/ui/ProductCard'
 import { RevealHeading } from '@/components/ui/RevealHeading'
 import { LogoStamp } from '@/components/brand/LogoStamp'
+import { MunchStop } from '@/components/munchRun/MunchStop'
 
 const EXTRA_NOTES = ['the one everyone orders 👀', 'midnight fav 🌙', 'double trouble 🔥', 'garma garam 🔥', 'cheesy chaos 🧀', 'new obsession 💚']
 const ITEMS: MenuItem[] = [...getBestsellers(), getItemBySlug('pistachio-latte'), getItemBySlug('tikka-smash')].filter(
@@ -58,7 +59,8 @@ export function Bestsellers() {
   return (
     <section ref={section} aria-labelledby="bestsellers-title" className="grain relative overflow-hidden bg-oat lg:flex lg:h-dvh lg:flex-col lg:justify-center">
       <div className="relative mx-auto w-full max-w-7xl px-4 pt-20 sm:px-6 lg:pt-24">
-        <LogoStamp size={96} className="absolute top-10 right-4 rotate-12 sm:right-8" />
+        <MunchStop stop={3} />
+        <LogoStamp size={96} className="absolute top-20 right-[44%] hidden rotate-12 lg:inline-flex" />
         <RevealHeading id="bestsellers-title" className="text-display font-extrabold text-espresso">
           Bestsellers
         </RevealHeading>

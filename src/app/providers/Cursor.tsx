@@ -4,21 +4,21 @@ import { isLowEndDevice } from '@/hooks/useIsTouch'
 import { gsap, MQ, useGSAP } from '@/lib/gsap'
 import { EASE } from '@/lib/motion-presets'
 
-type Mode = 'dot' | 'link' | 'add' | 'drag'
-const SCALE: Record<Mode, number> = { dot: 0.18, link: 0.34, add: 1, drag: 1 }
-const LABEL: Record<Mode, string> = { dot: '', link: '', add: 'Add +', drag: 'Drag' }
+type Mode = 'dot' | 'link' | 'add' | 'drag' | 'view'
+const SCALE: Record<Mode, number> = { dot: 0.18, link: 0.34, add: 1, drag: 1, view: 1 }
+const LABEL: Record<Mode, string> = { dot: '', link: '', add: 'Add +', drag: 'Drag', view: 'View' }
 
 /** Read the hovered target's intent: explicit data-cursor wins, then links/buttons. */
 function modeFor(target: EventTarget | null): Mode {
   if (!(target instanceof Element)) return 'dot'
   const explicit = target.closest<HTMLElement>('[data-cursor]')?.dataset.cursor
-  if (explicit === 'add' || explicit === 'drag') return explicit
+  if (explicit === 'add' || explicit === 'drag' || explicit === 'view') return explicit
   return target.closest('a, button, [role="button"], label, input, select, textarea') ? 'link' : 'dot'
 }
 
 /**
  * Custom cursor companion: chili dot that grows into an "Add +" bubble over product cards
- * ([data-cursor="add"]) and a cheese "Drag" bubble over draggables ([data-cursor="drag"]).
+ * ([data-cursor="add"]), a cheese "Drag" bubble over draggables ([data-cursor="drag"]) and a "View" bubble\n * ([data-cursor="view"], text from data-cursor-label) over the parked Munch Run character.
  * Desktop fine pointer + motion allowed + not low-end (cores > 4) only. Native cursor stays visible.
  */
 export function Cursor() {
@@ -41,15 +41,15 @@ export function Cursor() {
       gsap.set(bubble, { scale: SCALE.dot, autoAlpha: 0 })
       const cur: { mode: Mode; visible: boolean } = { mode: 'dot', visible: false }
 
-      const setMode = (next: Mode) => {
-        if (next === cur.mode) return
+      const setMode = (next: Mode, text = LABEL[next]) => {
+        if (next === cur.mode && label.textContent === text) return
         cur.mode = next
         el.dataset.mode = next
         bubble.classList.toggle('bg-cheese', next === 'drag')
         bubble.classList.toggle('bg-chili', next !== 'drag')
-        label.textContent = LABEL[next]
+        label.textContent = text
         gsap.to(bubble, { scale: SCALE[next], duration: 0.35, ease: EASE.bouncy, overwrite: 'auto' })
-        gsap.to(label, { autoAlpha: LABEL[next] ? 1 : 0, duration: 0.2 })
+        gsap.to(label, { autoAlpha: text ? 1 : 0, duration: 0.2 })
       }
 
       const onMove = (e: PointerEvent) => {
@@ -60,7 +60,10 @@ export function Cursor() {
           cur.visible = true
           gsap.to(bubble, { autoAlpha: 1, duration: 0.2 })
         }
-        setMode(modeFor(e.target))
+        const mode = modeFor(e.target)
+        // [data-cursor-label] overrides the bubble text (e.g. Munch Run: "Make one").
+        const custom = e.target instanceof Element ? e.target.closest<HTMLElement>('[data-cursor-label]')?.dataset.cursorLabel : undefined
+        setMode(mode, mode === 'view' && custom ? custom : LABEL[mode])
       }
       const onLeave = () => {
         cur.visible = false

@@ -5,15 +5,16 @@ import { DUR, EASE } from '@/lib/motion-presets'
 import { cn } from '@/lib/utils'
 import { LogoStamp } from '@/components/brand/LogoStamp'
 import { ProductImage } from '@/components/ui/ProductImage'
+import { MunchStop } from '@/components/munchRun/MunchStop'
 
 const VISUALS = [
-  { slug: 'classic-smash', depth: 1, tag: 'smash 🔥', box: 'left-[4%] top-[20%] w-[54%]', tilt: -6, shape: 'rounded-[46%_54%_42%_58%/55%_45%_55%_45%]' },
-  { slug: 'spanish-latte', depth: 0.6, tag: 'iced latte 🧊', box: 'right-[2%] top-[0%] w-[40%]', tilt: 8, shape: 'rounded-[58%_42%_50%_50%/45%_55%_45%_55%]' },
+  // The burger is the Munch Run traveler (parks top-right of this box), so no burger photo here.
+  { slug: 'spanish-latte', depth: 1, tag: 'iced latte 🧊', box: 'left-[4%] top-[18%] w-[54%]', tilt: -6, shape: 'rounded-[46%_54%_42%_58%/55%_45%_55%_45%]' },
   { slug: 'chicken-tikka-wrap', depth: 0.3, tag: 'tikka wrap', box: 'right-[6%] bottom-[2%] w-[42%]', tilt: -10, shape: 'rounded-[40%_60%_55%_45%/50%_40%_60%_50%]' },
 ] as const
 
 /**
- * Three floating hero items (real photos if present in public/images, else styled blobs).
+ * Floating hero items (latte + wrap + stamp; the burger is the Munch Run traveler) (real photos if present in public/images, else styled blobs).
  * 3 depth layers of mouse parallax on fine pointers; gentle idle float everywhere (smaller on touch).
  */
 export function HeroVisuals({ play }: { play: boolean }) {
@@ -54,6 +55,7 @@ export function HeroVisuals({ play }: { play: boolean }) {
   return (
     <div ref={ref} className="relative mx-auto aspect-square w-full max-w-[min(88vw,560px)]" aria-hidden="true">
       <span className="absolute inset-[12%] rounded-full bg-cheese/50 blur-3xl" />
+      <MunchStop stop={1} />
       {VISUALS.map((v) => {
         const item = getItemBySlug(v.slug)
         if (!item) return null

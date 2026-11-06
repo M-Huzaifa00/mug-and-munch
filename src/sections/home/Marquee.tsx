@@ -69,7 +69,7 @@ export function Marquee() {
   )
 
   return (
-    <section ref={ref} aria-label="What we're about" className="relative overflow-hidden bg-espresso py-14 md:py-20">
+    <section ref={ref} data-munch-hop aria-label="What we're about" className="relative overflow-hidden bg-espresso py-14 md:py-20">
       <p className="sr-only">{[...ITEM_LINE, ...URDU_LINES].join(' · ')}</p>
       {STRIPS.map((strip, s) => (
         <div

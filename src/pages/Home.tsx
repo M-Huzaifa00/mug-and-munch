@@ -1,4 +1,5 @@
 import { lazy, Suspense, useState } from 'react'
+import { useIdleMount } from '@/hooks/useIdleMount'
 import { useLocation } from 'react-router'
 import { site } from '@/config/site'
 import { shouldShowPreloader } from '@/lib/preloader'
@@ -19,6 +20,8 @@ import { VibePicker } from '@/sections/home/vibe/VibePicker'
 // Lazy chunk, mounted only near the viewport (or immediately for a #craft-* deep link).
 const CraftSection = lazy(() => import('@/sections/home/craft/CraftSection').then((m) => ({ default: m.CraftSection })))
 const CRAFT_SPACE = 'min(100dvh, 900px)'
+// Decorative Munch Run traveler: its own chunk, loaded after the preloader on idle (never affects LCP).
+const MunchRun = lazy(() => import('@/components/munchRun/MunchRun').then((m) => ({ default: m.MunchRun })))
 
 /**
  * Home: Preloader → Hero → Marquee → MenuPreview → Bestsellers → Craft your own (coffee / burger / wrap)
@@ -27,6 +30,7 @@ const CRAFT_SPACE = 'min(100dvh, 900px)'
 export function Home() {
   const [preloading, setPreloading] = useState(shouldShowPreloader)
   const { hash } = useLocation()
+  const munchReady = useIdleMount(!preloading)
 
   return (
     <>
@@ -49,6 +53,11 @@ export function Home() {
       <DealsStrip />
       <Reviews />
       <FindUsTeaser />
+      {munchReady && (
+        <Suspense fallback={null}>
+          <MunchRun />
+        </Suspense>
+      )}
     </>
   )
 }

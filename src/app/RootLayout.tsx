@@ -4,6 +4,8 @@ import { useLocation, useRoutes } from 'react-router'
 import { getBackgroundLocation, getModalSlug } from '@/lib/routing'
 import { ItemModal } from '@/components/item/ItemModal'
 import { CartDrawer } from '@/components/layout/CartDrawer'
+import { CoffeeSpill } from '@/components/layout/CoffeeSpill'
+import { PageTransition } from '@/components/layout/PageTransition'
 import { Footer } from '@/components/layout/Footer'
 import { JsonLd } from '@/components/layout/JsonLd'
 import { MobileBottomBar } from '@/components/layout/MobileBottomBar'
@@ -38,6 +40,8 @@ export function RootLayout() {
       <MobileBottomBar />
       <WhatsAppFab />
       <CartDrawer />
+      <PageTransition />
+      <CoffeeSpill />
       <AnimatePresence>{modalSlug && <ItemModal key="item-modal" slug={modalSlug} />}</AnimatePresence>
     </div>
   )

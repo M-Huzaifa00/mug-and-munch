@@ -44,6 +44,13 @@ export {
   MorphSVGPlugin,
 }
 
+let refreshTimer = 0
+/** Debounced ScrollTrigger.refresh() — call after images/fonts change layout. */
+export function refreshScrollTriggersSoon(delay = 150) {
+  window.clearTimeout(refreshTimer)
+  refreshTimer = window.setTimeout(() => ScrollTrigger.refresh(), delay)
+}
+
 /** Media queries used with gsap.matchMedia() so motion respects user prefs. */
 export const MQ = {
   motionOk: '(prefers-reduced-motion: no-preference)',

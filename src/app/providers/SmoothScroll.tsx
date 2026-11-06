@@ -1,6 +1,6 @@
 import { useEffect, useRef, type ReactNode } from 'react'
 import { ReactLenis, useLenis, type LenisRef } from 'lenis/react'
-import { gsap, ScrollTrigger } from '@/lib/gsap'
+import { gsap, refreshScrollTriggersSoon, ScrollTrigger } from '@/lib/gsap'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 /** Stable reference so useLenis doesn't re-subscribe every render. */
@@ -19,6 +19,14 @@ function ScrollTriggerSync() {
 export function SmoothScroll({ children }: { children: ReactNode }) {
   const reduced = useReducedMotion()
   const lenisRef = useRef<LenisRef>(null)
+
+  // Layout settles after the window load, web fonts and late images → re-measure ScrollTriggers.
+  useEffect(() => {
+    const refresh = () => refreshScrollTriggersSoon()
+    if (document.readyState !== 'complete') window.addEventListener('load', refresh, { once: true })
+    void document.fonts?.ready.then(refresh)
+    return () => window.removeEventListener('load', refresh)
+  }, [])
 
   useEffect(() => {
     if (reduced) return

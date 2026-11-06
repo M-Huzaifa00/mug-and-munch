@@ -1,28 +1,36 @@
-﻿# claude.mind.md: Mug & Munch project brain
+﻿# claude.mind.md: Mug n Munch project brain
 
 > Read this before every task. Never rebuild anything marked ✅. Update status, file map and changelog after every task.
-> Current phase: **Phase 3 🟡 in progress**: logo system done; mascot static draft waiting for owner approval on `/mascot-lab` (dev only) before animation + home sections.
-> Repo: https://github.com/M-Huzaifa00/mug-and-munch (branch `main`).
-> **Colours are LOCKED:** never edit/add/remove tokens in the `@theme` block of `src/styles/index.css`. Need a new shade? Use opacity (`bg-chili/15`).
+> Current phase: **Phase 3 ✅ done** → waiting for "next" to start **Phase 4 (Interactive toys)**.
+> Repo: https://github.com/M-Huzaifa00/mug-and-munch (branch `main`). Git rule: local commit after each completed step; push to `main` only at the end of a phase after build + lint pass. Never push broken builds.
+> **Colours are LOCKED:** never edit/add/remove tokens in the `@theme` block of `src/styles/index.css`. Need a new shade? Use opacity (`bg-chili/15`). Brand ink lives in `src/styles/brand.css` as `--brand-ink` (a color-mix of tokens), mascot/illustration lines only.
+> **Brand name:** visible text is **"Mug n Munch"** from `site.brandName` (never hardcode); `site.alternateName` = "Mug & Munch" (JSON-LD only).
 
 ---
 
 ## 1. Vision & audience
-- **What:** Website for Mug & Munch, a real café in Islamabad serving coffee, smash burgers and wraps. Frontend only for now.
+- **What:** Website for Mug n Munch (aka "Mug & Munch"), a real café in Islamabad serving coffee, smash burgers and wraps. Frontend only for now.
 - **Goal #1:** Colour + motion + micro-interactions make visitors tap "Add to cart" within 30 seconds.
 - **Goal #2:** Feels local to Pakistani Gen Z (students, young professionals, late-night crowd); fast on mid-range Android (mobile-first, 360px design width).
 - **Voice:** English-first, max 1 Roman Urdu line per section ("Bhook lagi? We got you.", "Yaar, ek aur?", "Order karo, chill karo"). Tagline **Sip. Bite. Repeat.** Urdu wordmark **مگ اینڈ منچ**.
 - **Persuasion:** honest only. No fake timers, stock counts, viewer counts or reviews.
 
 ## 1b. Logo Analysis (owner logo: `public/brand/logo.png`, 3242×3948, transparent PNG ✅ ≥512px ✅)
-- **Composition:** stacked lockup. Top = character illustration; bottom = wordmark "MUG n MUNCH" (empty band at rows 2782–3028 separates them; `scripts/brand-assets.mjs` auto-detects it to crop `icon` and `wordmark`).
+- **Composition:** stacked lockup. Top = character illustration; bottom = wordmark "MUG n MUNCH" (empty band at rows 2782–3028; `scripts/brand-assets.mjs` auto-detects it to crop `icon` and `wordmark`).
 - **Character:** a cheeky kid's head, tilted ~15° left. Big round face; voluminous **curly hair drawn as a cloud of round solid curls** (heavy mass on the left covering the cheek/ear, scalloped fringe top-right); a **soft white cap** with a brim line and a small nub on top; **wink** (left eye = solid teardrop with a tiny highlight notch, right eye = closed ">" wink with lash); **curly "ↄ" nose**; wide **grin with tongue licking the left corner**; small ear with a "+" mark.
-- **Accessory:** balancing a **checkered-paper tray** on the cap: a coffee cup (coffee-bean emblem, handle left, **three flame-shaped steam wisps**), a sesame-bun burger (wavy lettuce, patty), a wrap in a paper cone (wavy top, dots). Checkered paper drapes down the right side of the head.
-- **Line style:** thick, even monoline (~1.1% of width), fully rounded caps/joins, retro 50s/60s diner-mascot / sticker look; flat, no gradients; a thin white sticker cut-line around the art; solid ink fills for hair, coffee, eye.
-- **Typography:** "MUG" + "MUNCH" in heavy geometric sans caps (slightly rounded corners, tight spacing) joined by a tall brush-script "n" with a long descender swash.
-- **Colours:** one ink, deep brick-maroon ≈ `#901F10` (rgb 144,32,16), white fills (opaque `#FFFFFF`), one tiny cream patch ≈ `#F0E8E0`.
-- **Token mapping (tokens are LOCKED):** maroon is not a token. Closest expression from tokens = `color-mix(in oklab, chili 53%, espresso)` ≈ `#8A311F` (ΔOKLab 0.028 vs 0.25 for pure chili, 0.28 for pure espresso; 7.6:1 on oat) → exported as `BRAND_INK` in `src/lib/brand.ts`. White → `oat`. Maroon on espresso = 2.1:1 ✗ → on dark sections the logo sits on an **oat badge** (`tone="light"`), never recoloured.
-- **Naming note:** the wordmark reads "MUG n MUNCH"; site copy currently says "Mug & Munch" (owner to confirm which to use in text).
+- **Accessory:** balancing a **checkered-paper tray** on the cap: a coffee cup (coffee-bean emblem, handle left, **three flame-shaped steam wisps**), a sesame-bun burger, a wrap in a paper cone. Checkered paper drapes down the right side of the head.
+- **Line style:** thick, even monoline (~1.1% of width), fully rounded caps/joins, retro 50s/60s diner-mascot / sticker look; flat; thin white sticker cut-line; solid ink fills for hair, coffee, eye.
+- **Typography:** "MUG" + "MUNCH" in heavy geometric sans caps joined by a tall brush-script "n" with a long descender swash.
+- **Colours:** one ink, deep brick-maroon ≈ `#901F10`, white fills, one tiny cream patch ≈ `#F0E8E0`.
+- **Token mapping (LOCKED tokens):** maroon isn't a token → `--brand-ink: color-mix(in oklab, var(--color-chili) 53%, var(--color-espresso))` ≈ `#8A311F` (ΔOKLab 0.028; 7.6:1 on oat), defined once in `src/styles/brand.css`, exposed as `BRAND_INK` in `src/lib/brand.ts` (owner chose option A). White → `oat`. Maroon on espresso = 2.1:1 ✗ → on dark sections the logo sits on an **oat badge** (`tone="light"`), never recoloured.
+
+## 1c. Mascot: **Munchy**
+- The logo kid as a full chibi figure (owner approved): curl-cloud hair, cap + nub, scalloped fringe, teardrop eyes, "ↄ" nose, tongue grin, tiny arms/legs, checkered tray with bean cup, burger, wrap and flame steam. Lines = `--brand-ink`, fills = oat, blush = bubblegum. ~5 KB rendered SVG.
+- Named groups (`data-part`): rig, body, head, face, eyeL, eyeR, pupilL, pupilR, eyelids, mouth (+ morphable `mouthShape`), armL, armR, legs, steam, blush, accessory, cap, tear, crumbs, zzz, sparkles.
+- **Moods** (`<Mascot mood>`; static pose = reduced-motion fallback; GSAP timelines in `useMascotAnimation`):
+  `idle` (bob + steam + random blinks 3–6s) · `follow` (pupils track cursor, or device tilt where no permission prompt) · `wave` (arm wave) · `excited` (jump + sparkle burst) · `sleep` (closed eyes, floating zZz, breathing) · `sad` (droopy brows, frown, falling tear) · `guilty` (side-eye look-around, wobbly mouth, crumbs) · `dance` (sway, bounce, arms) · `peek` (slides up from the edge, waves, looks around, then hides, or calls `onPeekEnd`).
+- Mouth morphs between moods (MorphSVG). `reactive` prop → `useMascotReactions`: first add of session → wave, every add → excited, 30s no interaction → sleep.
+- Where: hero (peek → follow on desktop / idle on touch), preloader (wave), deals (reactive), Find Us card, empty cart (sleep), empty search + item-not-found (sad), 404 (guilty), order success (dance). DEV-only playground: `/mascot-lab`.
 
 ## 2. Feature status
 ✅ done · 🟡 in progress / partial · ⬜ todo
@@ -33,180 +41,159 @@
 | Vite + React + TS strict scaffold, `@/` alias | ✅ | `vite.config.ts`, `tsconfig.app.json` |
 | Tailwind v4 tokens (colours, fonts, shadows, eases, type scale), grain/sticker/glass utilities, keyframes | ✅ | `src/styles/index.css` |
 | Self-hosted fonts (Bricolage, Plus Jakarta, Caveat, Noto Nastaliq Urdu) | ✅ | `src/main.tsx` |
-| GSAP + 10 plugins registered once | ✅ | `src/lib/gsap.ts` |
-| Animation presets (CustomEase bouncy/squish/snappy, DUR, STAGGER, SPRING) | ✅ | `src/lib/motion-presets.ts` |
-| Lenis smooth scroll on gsap.ticker + ScrollTrigger sync; off for reduced motion | ✅ | `src/app/providers/SmoothScroll.tsx` |
-| Router, all 9 routes lazy-loaded + Suspense loader | ✅ | `src/app/router.tsx`, `src/app/RootLayout.tsx`, `src/components/layout/PageLoader.tsx` |
-| Scroll-to-top on route change (Lenis aware) | ✅ | `src/components/layout/ScrollToTop.tsx` |
+| GSAP + 10 plugins registered once (+ `refreshScrollTriggersSoon`) | ✅ | `src/lib/gsap.ts` |
+| Animation presets (CustomEase bouncy/squish/snappy, DUR, STAGGER, SPRING, MASCOT, SCENE) | ✅ | `src/lib/motion-presets.ts` |
+| Lenis smooth scroll on gsap.ticker + ScrollTrigger sync; off for reduced motion; refresh after load/fonts | ✅ | `src/app/providers/SmoothScroll.tsx` |
+| Router, all routes lazy-loaded + Suspense loader | ✅ | `src/app/router.tsx`, `src/app/routes.tsx`, `src/app/RootLayout.tsx`, `PageLoader.tsx` |
+| Scroll-to-top on page change (Lenis aware, modal-aware) | ✅ | `src/components/layout/ScrollToTop.tsx` |
 | Per-page title/description/OG/canonical | ✅ | `src/components/layout/Seo.tsx` |
-| Sticky glassy navbar (shrink, hide on scroll down, show on up) | ✅ | `Navbar.tsx`, `src/hooks/useScrollState.ts` |
-| Cart button with live count (aria-live) | ✅ | `src/components/layout/CartButton.tsx` (opens drawer since Phase 2) |
-| Mobile bottom tab bar + floating "View cart · Rs X" pill | ✅ | `src/components/layout/MobileBottomBar.tsx` (pill opens drawer; hidden on full item page) |
+| Sticky glassy navbar (shrink, hide on scroll down, show on up) | ✅ | `Navbar.tsx`, `NavLogo.tsx`, `src/hooks/useScrollState.ts` |
+| Cart button with live count (aria-live) → opens drawer | ✅ | `src/components/layout/CartButton.tsx` |
+| Mobile bottom tab bar + floating "View cart · Rs X" pill | ✅ | `src/components/layout/MobileBottomBar.tsx` |
 | Floating WhatsApp button | ✅ | `src/components/layout/WhatsAppFab.tsx` |
-| Footer (tagline, Urdu wordmark, hours, live open badge, socials, giant wordmark static) | ✅ | `src/components/layout/Footer.tsx` |
-| Live Open/Closed badge (Asia/Karachi, overnight hours) | ✅ | `src/lib/hours.ts`, `src/components/ui/OpenBadge.tsx` |
-| Config + data (site, menu 33 items, deals w/ computed savings, placeholder reviews) | ✅ | `src/config/site.ts`, `src/data/*.ts` |
-| Cart store (rewritten to Phase 2 API, see below) | ✅ | `src/store/cart.ts` |
+| Footer | ✅ | `src/components/layout/Footer.tsx`, `FooterWordmark.tsx` |
+| Live Open/Closed badge ("Open now 🟢 · till 2 AM", Asia/Karachi, overnight hours) | ✅ | `src/lib/hours.ts`, `src/components/ui/OpenBadge.tsx` |
+| Config + data | ✅ | `src/config/site.ts`, `src/data/*.ts` |
 | Button / ButtonLink / buttonClasses | ✅ | `src/components/ui/Button.tsx`, `buttonClasses.ts` |
 | Vendor chunk splitting (react / gsap / motion / vendor) | ✅ | `vite.config.ts` |
 
 ### Phase 2: Cart, core commerce + Home menu section ✅
 | Feature | Status | Files |
 |---|---|---|
-| Cart store: `items`, `addItem` (returns `{lineId, isFirstAdd}`), `removeItem`, `updateQty`, `restoreItem`, `clear`, `undoLastAdd`, `isOpen`/`openCart`/`closeCart` (not persisted), `hasAddedThisSession` (sessionStorage `mm-first-add`); lineId = itemId + djb2 hash of options; selectors count/subtotal/deliveryFee/amountToFreeDelivery | ✅ | `src/store/cart.ts` |
-| Option pricing/labels/defaults (`defaultSelection`, `unitPriceFor`, `optionLabels`, `toCartInput`, `hasRequiredOptions` = has >1 size) | ✅ | `src/lib/itemOptions.ts` |
-| ProductCard (default + compact), stretched link → item, chili "+" quick-add, category hover glow, Motion wobble/squish | ✅ | `src/components/ui/ProductCard.tsx` |
-| Image-with-fallback (only requests photos that exist, via `virtual:photos` Vite plugin) | ✅ | `src/components/ui/ProductImage.tsx`, `vite.config.ts`, `src/types/virtual.d.ts` |
-| Home "Kya khaoge aaj?" section: SplitText heading, Caveat note + self-drawing arrow, tabs with sliding `layoutId` fill + arrow keys, popLayout card swap, GSAP scroll reveal, doodle stickers, magnetic "See full menu" | ✅ | `src/sections/home/MenuPreview.tsx`, `MenuPreviewTabs.tsx` |
-| Menu page: sticky glass chip bar (All + 6 categories, horizontal scroll, scroll-spy, follows navbar), 300ms debounced search, Veg/Spicy/Bestseller filters, Motion layout grid, Munchy empty state | ✅ | `src/pages/Menu.tsx`, `src/components/menu/*`, `src/lib/menuFilter.ts` |
-| Item detail: modal over current page (background location) / full page on direct link; size, hot/iced, milk, spice, extras; rolling live price; qty; sticky "Add to cart · Rs X" bar | ✅ | `src/components/item/*`, `src/pages/ItemDetail.tsx`, `src/lib/routing.ts`, `src/app/RootLayout.tsx`, `src/app/routes.tsx` |
-| CartDrawer: right panel (md+) / bottom sheet with drag handle (mobile), focus trap, Esc/backdrop close, option chips, steppers, swipe-to-remove + trash with Undo toast, free-delivery bar, upsell row, summary, Munchy empty state | ✅ | `src/components/layout/CartDrawer.tsx`, `src/components/layout/cart/*` |
-| Upsell rules (coffee → dessert, burger → fries + drink, wrap → drink, never in-cart items) | ✅ | `src/lib/recommendations.ts` |
-| Fly-to-cart arc (MotionPathPlugin) → jelly bounce (GSAP elastic) → odometer count; first-add confetti in token colours; "Nice pick! 🔥" toast + Undo; reduced motion = toast only | ✅ | `src/hooks/useFlyToCart.ts`, `src/hooks/useAddToCart.ts`, `src/lib/celebrate.ts`, `src/components/ui/RollingNumber.tsx` |
-| UI kit: Badge, Chip, QuantityStepper, Sticker, HandArrow, MagneticButton, Modal, Drawer, RevealHeading, RollingNumber | ✅ | `src/components/ui/*` |
-| Munchy mascot: static moods happy / sleepy / oops | 🟡 | `src/components/mascot/Munchy.tsx` (Phase 3 adds blink, eye-tracking, wave, idle sleep) |
+| Cart store (items, addItem → `{lineId, isFirstAdd}`, removeItem, updateQty, restoreItem, clear, undoLastAdd, isOpen/openCart/closeCart, hasAddedThisSession; option-hash line merging; selectors) | ✅ | `src/store/cart.ts` |
+| Option pricing/labels/defaults | ✅ | `src/lib/itemOptions.ts` |
+| ProductCard (default + compact) | ✅ | `src/components/ui/ProductCard.tsx` |
+| Image-with-fallback (`virtual:photos`, logo watermark, refreshes ScrollTrigger on load) | ✅ | `src/components/ui/ProductImage.tsx`, `vite.config.ts` |
+| Home "Kya khaoge aaj?" menu preview (id `menu-preview`) | ✅ | `src/sections/home/MenuPreview.tsx`, `MenuPreviewTabs.tsx` |
+| Menu page (sticky scroll-spy chips, search, filters, layout grid, empty state) | ✅ | `src/pages/Menu.tsx`, `src/components/menu/*`, `src/lib/menuFilter.ts` |
+| Item detail modal / full page + options + sticky add bar | ✅ | `src/components/item/*`, `src/pages/ItemDetail.tsx`, `src/lib/routing.ts` |
+| CartDrawer (swipe-to-remove, free-delivery bar, upsell, summary, empty state) | ✅ | `src/components/layout/CartDrawer.tsx`, `src/components/layout/cart/*` |
+| Upsell rules | ✅ | `src/lib/recommendations.ts` |
+| Fly-to-cart, jelly bounce, odometer, first-add confetti, toasts + Undo | ✅ | `src/hooks/useFlyToCart.ts`, `useAddToCart.ts`, `src/lib/celebrate.ts`, `src/lib/notify.tsx` |
+| UI kit | ✅ | `src/components/ui/*` |
 
-### Phase 3: Brand logo, mascot & Home wow sections 🟡
+### Phase 3: Brand logo, mascot & Home wow sections ✅
 | Feature | Status | Files |
 |---|---|---|
-| Brand asset pipeline (sharp): logo/icon/wordmark WebP ×4 sizes, favicon.ico (16/32/48), favicon-32.png, apple-touch-icon (180, oat), og-image (1200×630), generated aspect ratios | ✅ | `scripts/brand-assets.mjs` (`npm run brand`), `public/brand/*`, `public/favicon*`, `src/components/brand/brandAssets.ts` (generated) |
-| `Logo` (full / icon / wordmark / horizontal / stamp; size; tone dark/light → oat badge) + `BrandImage` (srcset, exact w/h) + `LogoStamp` (rotating text ring, GSAP, reduced-motion static) | ✅ | `src/components/brand/*`, `src/lib/brand.ts` |
-| index.html icons, og:image, twitter:image, theme-color = espresso | ✅ | `index.html` |
-| Logo placements: navbar (icon+wordmark, wordmark tucks away on scroll, wiggle on hover), Suspense loader (pulsing), footer (full on oat badge + stamp), mobile cart pill (tiny icon), fallback-card watermark, toasts (`notify()`), 404 + empty cart | ✅ | `NavLogo.tsx`, `PageLoader.tsx`, `Footer.tsx`, `MobileBottomBar.tsx`, `ProductImage.tsx`, `src/lib/notify.tsx`, `NotFound.tsx`, `cart/CartContents.tsx` |
-| JSON-LD CafeOrCoffeeShop (logo from `site.logoUrl`) | ✅ | `src/components/layout/JsonLd.tsx`, `site.ts` (`logoUrl`, `ogImage`) |
-| Logo placements still to do: preloader, page-transition wipe, order-success page, stamp doodles in sections, logo 5-click coffee-spill easter egg | ⬜ | |
-| Mascot (name: **Munchy**, default; owner may rename): layered SVG with data-part groups, 9 moods as static poses, ink options | 🟡 awaiting approval | `src/components/mascot/Mascot.tsx`, `MascotFace.tsx`, `mascotPoses.ts`, `src/pages/MascotLab.tsx` (DEV-only route `/mascot-lab`) |
-| Mascot GSAP animation per mood + cart-event reactions + replace Phase 2 `Munchy` placeholders | ⬜ | (old placeholder: `src/components/mascot/Munchy.tsx`) |
-| Preloader · Hero · Marquee · Bestsellers (pin desktop / snap mobile) · Deals strip · Reviews (Draggable+Inertia) · Find Us teaser · Footer wordmark reveal · page transitions | ⬜ | |
+| Brand asset pipeline (sharp): logo/icon/wordmark WebP ×4 sizes, favicon.ico (16/32/48), favicon-32.png, apple-touch-icon (180, oat), og-image 1200×630 (brand name from site.ts), generated aspect ratios | ✅ | `scripts/brand-assets.mjs` (`npm run brand`), `public/brand/*`, `public/favicon*`, `src/components/brand/brandAssets.ts` (generated) |
+| `Logo` (full / icon / wordmark / horizontal / stamp; size; tone) + `BrandImage` + `LogoStamp` (rotating ring text from site.ts) | ✅ | `src/components/brand/*`, `src/lib/brand.ts`, `src/styles/brand.css` |
+| index.html: icons, og/twitter image, theme-color = espresso; `%BRAND_NAME%`/`%ALT_NAME%`/`%SITE_URL%` filled from site.ts at build | ✅ | `index.html`, `vite.config.ts` (`siteHtmlVars`) |
+| Logo everywhere: navbar (wordmark tucks away on scroll, wiggle), preloader, footer (full + stamp), cart pill, fallback-card watermark, Suspense loader (pulse), page-transition wipe, toasts, 404, empty cart, order success, stamp doodles (hero, bestsellers, reviews, find us), JSON-LD logo + alternateName | ✅ | see file map |
+| Logo 5-click easter egg: coffee spills down the screen and mops itself up | ✅ | `src/lib/easterEgg.ts`, `src/components/layout/CoffeeSpill.tsx`, `NavLogo.tsx` |
+| Munchy mascot: layered SVG, 9 animated moods, mouth morph, cart reactions, idle sleep; replaced all Phase 2 placeholders | ✅ | `src/components/mascot/*`, `src/pages/MascotLab.tsx` (DEV-only) |
+| Preloader (logo coffee-wave fill + counter → Munchy pops & waves → wipe up; ≤1.8s; once per session; skipped with reduced motion; refreshes ScrollTrigger) | ✅ | `src/sections/home/Preloader.tsx`, `src/lib/preloader.ts` |
+| Hero (SplitText elastic chars, DrawSVG word underlines, parallax floating items, stamp, Munchy peek → follow, magnetic Order Now → Lenis scroll to menu, See the Menu, scroll hint) | ✅ | `src/sections/home/hero/*` |
+| Marquee (2 tilted strips, seamless, scroll-velocity speed/direction, hover pause, logo separators) | ✅ | `src/sections/home/Marquee.tsx` |
+| Bestsellers (desktop pin + scrub + progress bar; mobile snap carousel; Caveat notes + arrows) | ✅ | `src/sections/home/Bestsellers.tsx` |
+| Deals strip (computed savings, tilt on hover, one-line "Add deal", reactive Munchy) | ✅ | `src/sections/home/deals/*` |
+| Reviews (Draggable + Inertia sticker board, drag hint, IG 3×3 grid, follow button; placeholders dev-only) | ✅ | `src/sections/home/reviews/*`, `src/data/reviews.ts` |
+| Find Us teaser (open/closed, today's hours, address, directions + call, Munchy on the card, stylised map) | ✅ | `src/sections/home/FindUsTeaser.tsx` |
+| Footer giant wordmark revealed letter by letter on scroll (script "n") | ✅ | `src/components/layout/FooterWordmark.tsx` |
+| Page transitions: chili/cheese wipe + logo pop (~0.6s), skipped with reduced motion; item links excluded (modal) | ✅ | `src/components/layout/PageTransition.tsx` |
 
 ### Phase 4: Interactive toys ⬜
-Build Your Burger · Coffee Lab · Wrap It Up · Vibe Picker (Flip) · Snack Roulette · custom cursor · page transitions (chili/cheese wipe) · logo 5-click coffee-spill easter egg. All ⬜.
+Build Your Burger · Coffee Lab · Wrap It Up · Vibe Picker (Flip) · Snack Roulette · custom cursor. (Page transitions + easter egg already done in Phase 3.)
 
 ### Phase 5: Checkout & Pakistan flow ⬜
-Checkout form (rhf + zod), order type (delivery/takeaway/dine-in + table), sector dropdown, PK phone validation + `03XX-XXXXXXX` format, payment cards (COD default; JazzCash/Easypaisa/Card "coming soon"), WhatsApp order message (`src/lib/whatsapp.ts` TODO), order summary (subtotal/delivery/tax/total), success page (Munchy dance), Deals page, Our Story, Find Us, 404 with guilty Munchy. All ⬜ (pages exist as placeholders).
+Checkout form (rhf + zod), order type (delivery/takeaway/dine-in + table), sector dropdown, PK phone validation + `03XX-XXXXXXX` format, payment cards (COD default; JazzCash/Easypaisa/Card "coming soon"), WhatsApp order message (`src/lib/whatsapp.ts` TODO), order summary (subtotal/delivery/tax/total), success page details (Munchy dance already there), Deals page, Our Story, Find Us page. Pages exist as placeholders.
 
 ### Phase 6: Polish & QA ⬜
-Reduced-motion + low-end paths audit, a11y pass, JSON-LD `CafeOrCoffeeShop`, OG image, image optimisation, Lighthouse mobile ≥ 90 ×4 (report scores), 360/768/1440 checks.
+Reduced-motion + low-end audit, a11y pass, JSON-LD openingHours, image optimisation, Lighthouse mobile ≥ 90 ×4 (report scores), 360/768/1440 checks.
 
 ## 3. File map
 ```
-index.html                      lang=en, default title/meta/OG (Seo.tsx updates per page)
-vite.config.ts                  react + tailwind plugins, @ alias, vendor chunk groups, `virtual:photos` plugin (lists real files in public/images)
-src/main.tsx                    fonts, lenis.css, global css, mounts <App/>
-src/styles/index.css            @theme tokens (LOCKED), base styles, focus ring, utilities (grain, sticker, glass, pb-safe-bar), keyframes, reduced-motion CSS
+index.html                      %BRAND_NAME%/%ALT_NAME%/%SITE_URL% placeholders (filled from site.ts), icons, OG
+vite.config.ts                  react + tailwind, @ alias, vendor chunks, `virtual:photos`, `siteHtmlVars`
+scripts/brand-assets.mjs        sharp: logo crops/sizes, favicons, apple icon, OG image, brandAssets.ts (npm run brand)
+public/brand/                   logo.png (master) + generated logo*/og-image; public/favicon.ico, favicon-32.png, apple-touch-icon.png
+src/main.tsx                    fonts, lenis.css, index.css, brand.css, mounts <App/>
+src/styles/index.css            @theme tokens (LOCKED), base, utilities, keyframes, reduced-motion CSS
+src/styles/brand.css            --brand-ink (chili/espresso color-mix)
 src/types/virtual.d.ts          types for `virtual:photos`
-src/app/App.tsx                 MotionConfig reducedMotion="user" + SmoothScroll + RouterProvider + sonner Toaster (mobileOffset below navbar)
-src/app/router.tsx              createBrowserRouter([{ path: '*', Component: RootLayout }])
-src/app/routes.tsx              PAGE_ROUTES (lazy pages via lazyNamed)
-src/app/RootLayout.tsx          useRoutes(PAGE_ROUTES, background ?? location) + ItemModal overlay + CartDrawer + layout chrome
-src/app/providers/SmoothScroll.tsx  ReactLenis root, gsap.ticker raf, lagSmoothing(0), useLenis(ScrollTrigger.update)
-src/lib/gsap.ts                 registers ScrollTrigger, SplitText, Flip, Draggable, Inertia, Observer, CustomEase, MotionPath, DrawSVG, MorphSVG + useGSAP; MQ media queries
-src/lib/motion-presets.ts       EASE, DUR, STAGGER (GSAP); SPRING, TAP_SQUISH, FADE_UP (Motion)
-src/lib/utils.ts                cn() (tailwind-merge extended with our tokens), formatPKR() → "Rs 1,250", clamp()
-src/lib/itemOptions.ts          option selection → unit price, labels, cart input
-src/lib/menuFilter.ts           filterMenu(query, filters), getPreviewItems(category), FILTER_LABELS
-src/lib/recommendations.ts      getUpsells(cartItems, limit) "Goes great with…"
-src/lib/routing.ts              background-location helpers: modalStateFrom, getBackgroundLocation, getModalSlug, ITEM_PATH
-src/lib/celebrate.ts            confettiBurst(x, y): lazy canvas-confetti, colours read from CSS tokens
-src/lib/hours.ts                getOpenStatus() in Asia/Karachi (overnight-aware), formatTime/DayHours, DAY_LABELS, WEEK_ORDER
-src/lib/whatsapp.ts             whatsappLink(message), WHATSAPP_GREETING
-src/hooks/useReducedMotion.ts   reactive prefers-reduced-motion
-src/hooks/useIsTouch.ts         touch detection + isLowEndDevice() (cores <= 4 or touch)
-src/hooks/useScrollState.ts     rAF-throttled scrolled/hidden flags for navbar; SHOW_NAV_EVENT forces navbar back
-src/hooks/useAddToCart.ts       THE way to add from UI: store + fly + confetti (first add) + toast w/ Undo
-src/hooks/useFlyToCart.ts       MotionPath arc clone → [data-cart-target], jellyBounce()
-src/hooks/useFocusTrap.ts       Tab trap + Esc + focus restore (stack-aware)
-src/hooks/useScrollLock.ts      ref-counted Lenis stop + overflow hidden
-src/hooks/useMagnetic.ts        GSAP quickTo magnetic pull (fine pointer + motion ok)
-src/hooks/useMediaQuery.ts, useDebouncedValue.ts, useIsItemPage.ts
-src/store/cart.ts               useCart (items, addItem, removeItem, updateQty, restoreItem, clear, undoLastAdd, isOpen, openCart, closeCart, hasAddedThisSession) + selectors/hooks useCartCount, useCartSubtotal, useDeliveryFee, useAmountToFreeDelivery
-src/config/site.ts              ALL owner settings (contact, address, hours, fees, tax, delivery areas, socials)
-src/data/menu.ts                MenuItem types, option sets, 33 items, CATEGORY_META colour-coding, SPICE_LABELS, lookups
-src/data/deals.ts               combos + getDealOriginalPrice/getDealSavings (computed, never hardcoded)
-src/data/reviews.ts             PLACEHOLDER reviews flagged isPlaceholder
-src/components/ui/Button.tsx    Button (button) + ButtonLink (router Link)
-src/components/ui/buttonClasses.ts  variant/size class builder (also for external <a>)
-src/components/ui/OpenBadge.tsx live open/closed pill
-src/components/ui/SocialIcons.tsx   Instagram/TikTok/WhatsApp line glyphs (lucide v1 has no brand icons)
-src/components/ui/ProductCard.tsx, ProductImage.tsx, Badge.tsx, Chip.tsx, QuantityStepper.tsx, RollingNumber.tsx,
-  Sticker.tsx, HandArrow.tsx, MagneticButton.tsx, Modal.tsx, Drawer.tsx, RevealHeading.tsx
-src/components/mascot/Munchy.tsx    SVG mascot, moods happy|sleepy|oops, pupils tagged data-pupil
+src/app/App.tsx                 MotionConfig reducedMotion="user" + SmoothScroll + RouterProvider + Toaster
+src/app/router.tsx, routes.tsx  data router → RootLayout; PAGE_ROUTES (lazy; /mascot-lab DEV only)
+src/app/RootLayout.tsx          useRoutes(background ?? location), JsonLd, ScrollToTop, Navbar, Footer, bars, CartDrawer, PageTransition, CoffeeSpill, ItemModal
+src/app/providers/SmoothScroll.tsx  Lenis + gsap.ticker + ScrollTrigger sync + refresh on load/fonts
+src/lib/gsap.ts                 plugin registry, MQ, refreshScrollTriggersSoon()
+src/lib/motion-presets.ts       EASE, DUR, STAGGER, MASCOT, SCENE (GSAP); SPRING, TAP_SQUISH, FADE_UP (Motion)
+src/lib/brand.ts                BRAND_INK, brandSrc(kind, height)
+src/lib/notify.tsx              branded sonner toast (logo icon + Undo)
+src/lib/preloader.ts            shouldShowPreloader(), markPreloaderSeen() (sessionStorage mm-preloaded)
+src/lib/easterEgg.ts            registerLogoClick() → SPILL_EVENT on 5 clicks / 2s
+src/lib/hours.ts                getOpenStatus() {isOpen, detail, label}, getTodayKey(), formatDayHours, DAY_LABELS, WEEK_ORDER
+src/lib/utils.ts, itemOptions.ts, menuFilter.ts, recommendations.ts, routing.ts, celebrate.ts, whatsapp.ts
+src/hooks/*                     useReducedMotion, useIsTouch (+isLowEndDevice), useScrollState, useAddToCart, useFlyToCart, useFocusTrap, useScrollLock, useMagnetic, useMediaQuery, useDebouncedValue, useIsItemPage
+src/store/cart.ts               Zustand cart (persist mm-cart)
+src/config/site.ts              owner settings incl. brandName, alternateName, logoUrl, ogImage
+src/data/menu.ts, deals.ts, reviews.ts (PLACEHOLDER reviews + visibleReviews())
+src/components/brand/           Logo, BrandImage, LogoStamp, brandAssets.ts (generated)
+src/components/mascot/          Mascot, MascotFace, mascotPoses, useMascotAnimation, useMascotReactions, mascotFollow
+src/components/ui/              Button, buttonClasses, OpenBadge, SocialIcons, ProductCard, ProductImage, Badge, Chip, QuantityStepper, RollingNumber, Sticker, HandArrow, MagneticButton, Modal, Drawer, RevealHeading
 src/components/item/*           ItemDetailContent, ItemOptionsForm, OptionPills, StickyAddBar, ItemModal
-src/components/menu/*           CategoryNav (sticky + scroll-spy), MenuSearch, MenuSection, MenuEmpty, menuIds
-src/components/layout/*         Navbar, CartButton, CartDrawer (+ cart/CartContents, CartLineItem, CartSummary, CartUpsell, FreeDeliveryBar), Logo (+MugMark), navLinks, MobileBottomBar, WhatsAppFab, Footer, PageLoader, ScrollToTop, Seo, PagePlaceholder
-src/sections/home/MenuPreview.tsx, MenuPreviewTabs.tsx
-src/pages/*                     Home, Menu, ItemDetail, Deals, Checkout, OrderSuccess, OurStory, FindUs, NotFound (named exports)
-public/images/{coffee,burgers,wraps,sides,drinks,desserts,brand}/  photos go here as <slug>.webp
+src/components/menu/*           CategoryNav, MenuSearch, MenuSection, MenuEmpty, menuIds
+src/components/layout/          Navbar, NavLogo, CartButton, CartDrawer (+cart/*), MobileBottomBar, WhatsAppFab, Footer, FooterWordmark, PageLoader, PageTransition, CoffeeSpill, ScrollToTop, Seo, JsonLd, PagePlaceholder, navLinks
+src/sections/home/              Preloader, hero/{Hero, HeroHeadline, HeroVisuals, HeroMascot, ScrollHint}, Marquee, MenuPreview, MenuPreviewTabs, Bestsellers, deals/{DealsStrip, DealCard}, reviews/{Reviews, ReviewsBoard, InstaGrid}, FindUsTeaser, sectionIds
+src/pages/*                     Home, Menu, ItemDetail, Deals, Checkout, OrderSuccess, OurStory, FindUs, NotFound, MascotLab (DEV)
+public/images/{coffee,burgers,wraps,sides,drinks,desserts,deals,brand}/  photos as <slug>.webp
 ```
 
 ## 4. Design system
-- **Tokens** (Tailwind classes `bg-*`, `text-*`, `border-*`): espresso, oat, chili, cheese, caramel, pickle, bubblegum, ink (+ transparent, current). Default Tailwind palette is wiped (`--color-*: initial`), so non-brand colours fail at build time.
-- **60/30/10:** 60% oat or espresso, 30% category colour, 10% chili CTAs. Sections alternate oat → espresso → cheese → oat. Add `grain` to sections.
-- **Category colours:** coffee = caramel, burger = chili, wrap = pickle, sides = cheese, drinks/desserts = bubblegum (`CATEGORY_META` in `data/menu.ts`).
-- **Contrast rules (computed):** oat on chili = 3.0:1 → **large bold text only (≥ 19px bold)**; small text on chili → espresso (5.7:1). Pickle/cheese/bubblegum backgrounds → espresso text. Caramel on oat = 3.0:1 → large display only; caramel on espresso = 5.7:1 OK. Cheese on espresso = 11.9:1.
-- **Fonts:** `font-display` Bricolage Grotesque (headlines, buttons) · `font-sans` Plus Jakarta Sans (body/UI) · `font-hand` Caveat (doodle notes) · `font-urdu` Noto Nastaliq Urdu (Urdu only; set `lang="ur" dir="rtl"`, generous line-height ~2.2).
-- **Type scale:** `text-mega` clamp(3.5rem, 14vw, 13rem) for hero/wordmark; `text-display` clamp(2.5rem, 7vw, 6rem) for section heads.
-- **Shapes:** `rounded-blob` (2rem) cards; `sticker` = 2.5px espresso border + `shadow-hard`; shadows `shadow-hard-sm | shadow-hard | shadow-hard-lg | shadow-hard-oat`. Hover shifts element up-left and grows shadow; press = translate + shadow none.
-- **Focus:** global `:focus-visible` 3px cheese outline; auto-switches to espresso on `.bg-cheese`/`.bg-pickle`.
-- **Eases:** CSS `ease-bouncy`, `ease-snappy`; GSAP `EASE.bouncy/squish/snappy/elastic`; Motion `SPRING.soft/bouncy/snappy`.
-- **CSS loops:** `animate-float`, `animate-steam`, `animate-wiggle`, `animate-pulse-ring` (all disabled by reduced motion).
-- **Components:** use `Button`/`ButtonLink` for every CTA (`variant="primary"` = chili). External links that look like buttons: `<a className={buttonClasses(...)}>`. Pages start with `<Seo title description path />`.
-- **Layout offsets:** navbar is fixed → page tops need `pt-28`+; mobile bottom bar is fixed → root uses `pb-safe-bar md:pb-0`.
-- **Fly-to-cart target:** `[data-cart-target]` (navbar CartButton); `[data-cart-jelly]` inside it bounces. Navbar has `[data-nav-header]`.
-- **Adding to cart:** always `useAddToCart()(toCartInput(item, selection), { qty, source: imageEl })`. Never call `addItem` directly from UI (you'd lose fly/confetti/toast).
-- **Linking to an item:** `<Link to={'/menu/' + slug} state={modalStateFrom(location)}>` → opens the modal over the current page. Plain links / direct URLs → full page.
-- **Dialogs:** `<AnimatePresence>{open && <Modal|Drawer onClose labelledBy>…</Modal>}</AnimatePresence>`. Both trap focus, close on Esc/backdrop, lock scroll. Mark inner scroll areas `data-lenis-prevent`.
-- **ProductCard** for any menu item tile (`variant="compact"` in rows). **Chip** for pills/tabs/toggles (`layoutId` for a sliding fill). **RollingNumber** for any changing price/count. **RevealHeading** for section headings. **Sticker** for doodles. **MagneticButton** wraps big CTAs.
-- **Tailwind v4 gotcha:** `translate-*`, `rotate-*`, `scale-*` use the standalone CSS `translate`/`rotate`/`scale` properties, so transition them with `transition-[translate,scale,rotate]`, not `transition-[transform]`. GSAP writes `transform`, so they don't fight.
-- **tailwind-merge:** custom tokens are registered in `lib/utils.ts`. Add new custom utilities there too, or `cn()` may drop classes (e.g. `text-display` vs `text-espresso`).
-- **Motion vs GSAP on cards:** Motion = presence/layout wrapper + card hover/tap; GSAP scroll reveal = a separate inner wrapper (`[data-reveal-card]`). Never the same element.
+- **Tokens** (Tailwind classes): espresso, oat, chili, cheese, caramel, pickle, bubblegum, ink (+ transparent, current). Default palette wiped, so non-brand colours fail at build time. `--brand-ink` (brand.css) only for mascot/illustration lines.
+- **60/30/10:** 60% oat or espresso, 30% category colour, 10% chili CTAs. Home rhythm: hero oat → marquee espresso → menu cheese → bestsellers oat → deals cheese → reviews espresso → find us oat → footer espresso. Add `grain` to sections.
+- **Category colours:** coffee = caramel, burger = chili, wrap = pickle, sides = cheese, drinks/desserts = bubblegum.
+- **Contrast rules:** oat on chili = 3.0:1 → large bold text only (≥ 19px bold); small text on chili → espresso. Pickle/cheese/bubblegum → espresso text. Caramel text only large on oat. Light token strokes on oat (pickle) get an espresso outline underneath.
+- **Fonts / type / shapes / focus / eases:** as Phase 1–2 (display = Bricolage, sans = Plus Jakarta, hand = Caveat, urdu = Nastaliq; `text-mega`, `text-display`; `sticker`, `rounded-blob`, `shadow-hard*`).
+- **Logo:** always `<Logo variant size tone>` / `<BrandImage>` / `<LogoStamp>`; never `<img src="/brand/...">` by hand. `tone="light"` on dark backgrounds.
+- **Mascot:** `<Mascot mood reactive? onPeekEnd? label?>`; pick the mood that fits the context (see 1c). Don't animate mascot parts from outside; extend `useMascotAnimation` instead.
+- **Toasts:** `notify(message, { id, undo })`, never sonner directly.
+- **Adding to cart:** `useAddToCart()(input, { qty, source })` (deals: one line, `category: 'deal'`).
+- **Linking to an item:** `<Link to state={modalStateFrom(location)}>` → modal. Page transitions intercept other internal `<a>` clicks automatically.
+- **Dialogs:** `<AnimatePresence>{open && <Modal|Drawer …/>}</AnimatePresence>`; inner scroll areas `data-lenis-prevent`.
+- **GSAP rules:** inside `useGSAP({ scope })`; wrap motion in `gsap.matchMedia()` with `MQ.motionOk`; scoped selectors only; GSAP and Motion never on the same element. Tailwind v4 `translate/rotate/scale-*` are standalone CSS properties: transition them with `transition-[translate,scale,rotate]`, and don't mix with GSAP transforms on the same element.
+- **tailwind-merge:** custom tokens registered in `lib/utils.ts`.
 
 ## 5. Config & data the owner must fill
-- `src/config/site.ts`: WhatsApp number (digits, e.g. 923001234567), phone, email, address line + area, Google Maps link, lat/lng, Instagram + TikTok handles, real opening hours, free-delivery threshold, delivery fee, **tax rate (confirm with accountant, currently 0)**, delivery areas list, real domain (`url`).
-- `src/data/menu.ts`: **PLACEHOLDER PRICES**; confirm names, descriptions, prices, option prices.
-- `src/data/deals.ts`: deal prices + rules (student card rule, midnight window).
-- `src/data/reviews.ts`: replace samples with REAL reviews (with permission) and set `isPlaceholder: false`.
-- Photos: `public/images/<folder>/<slug>.webp` (e.g. `public/images/burgers/classic-smash.webp`), ~1200px, WebP/AVIF. Until then fallback cards render.
-- OG image: `public/images/brand/og.jpg` (1200×630).
+- `src/config/site.ts`: WhatsApp number, phone, email, address, Google Maps link, lat/lng, Instagram + TikTok handles, real opening hours, free-delivery threshold, delivery fee, **tax rate (currently 0)**, delivery areas, real domain (`url`, also used for OG/JSON-LD absolute URLs). `brandName` / `alternateName` already set.
+- `src/data/menu.ts`: **PLACEHOLDER PRICES**.
+- `src/data/deals.ts`: deal prices + rules. Optional deal photos: `public/images/deals/<slug>.webp`.
+- **TODO (reviews):** `src/data/reviews.ts` holds PLACEHOLDER reviews. They render only in development (labelled "sample"); production shows "Reviews coming soon" until real reviews (with permission) are added with `isPlaceholder: false`. Never present placeholder reviews as real.
+- **TODO (Instagram):** `InstaGrid` shows menu tiles as placeholders; swap for real posts/embed later.
+- Photos: `public/images/<folder>/<slug>.webp`, ~1200px.
+- Logo: replace `public/brand/logo.png` (or add `logo.svg`) then run `npm run brand` to regenerate everything.
 
 ## 6. Known issues / tech debt
-- History state survives a page refresh, so refreshing while the item modal is open re-opens it over the page (standard behaviour). A fresh/direct link always gets the full page.
-- Quick-add policy: items with >1 size open the modal (coffees); everything else adds instantly with defaults (spice = Medium). Change in `hasRequiredOptions()`.
-- Delivery fee shows in the drawer for every cart; order-type logic (takeaway/dine-in = no fee) comes with checkout in Phase 5.
-- Motion prints a dev-only "Reduced Motion enabled" console warning when the OS setting is on; it is not in production builds.
-- GSAP (~86 KB gz with all 10 plugins) loads in the app shell because every plugin is registered in one file. Phase 6: consider lazy-registering heavy plugins (Draggable, Inertia, MorphSVG) if Lighthouse needs it.
-- Motion is ~46 KB gz; Phase 6: consider `LazyMotion` + `m` components.
-- Noto Nastaliq Urdu Arabic subset is 239 KB (only downloads when Urdu glyphs render, i.e. the footer). Phase 6: subset to the wordmark glyphs.
-- Reviews are placeholders; UI must label them as samples while `isPlaceholder` is true.
-- Headless Chrome on Windows has a ~500px minimum window; use CDP device emulation for 360px screenshots.
+- Refreshing while the item modal is open re-opens it over the page (history state survives refresh). Direct links always get the full page.
+- Quick-add: items with >1 size open the modal (coffees); others add instantly (spice = Medium).
+- Delivery fee shows in the drawer for every cart; order-type logic comes with checkout (Phase 5).
+- Page transitions intercept `<a>` clicks only; programmatic `navigate()` calls (e.g. after checkout) change pages without the wipe.
+- Bestsellers pin uses ScrollTrigger pin spacing, so full-page screenshots show an empty band above it (normal).
+- Motion logs a dev-only "Reduced Motion enabled" warning when the OS setting is on (not in production).
+- GSAP (~86 KB gz) + Motion (~46 KB gz) in the shell; Phase 6: consider lazy plugins / LazyMotion. Home chunk is larger now (all sections); fine at 52 fps avg under CPU 4×.
+- Noto Nastaliq Urdu Arabic subset is 239 KB (footer only). Phase 6: subset.
+- OG image text uses system fonts (Arial Black / Segoe UI) because librsvg can't load the web fonts.
+- Headless Chrome on Windows has a ~500px minimum window; QA uses CDP device emulation.
 
 ## 7. Future goals (not built yet)
 Node/Supabase backend + real orders DB · real JazzCash / Easypaisa / card gateway integration · admin dashboard to edit menu & prices · live order tracking · "Munch Points" loyalty & referral · Urdu/English language toggle · PWA + "Add to home screen" · table QR ordering for dine-in · reservations · push/WhatsApp order-status notifications · analytics (GA4 / Meta Pixel) with consent · Foodpanda link-out · A/B testing CTA copy.
 
 ## 8. Changelog (Asia/Karachi dates)
+### 2026-11-06: Phase 3 complete: brand, Munchy, home wow sections
+- Owner decisions applied: mascot approved; ink option A as `--brand-ink` in `styles/brand.css`; name "Munchy"; visible brand "Mug n Munch" via `site.brandName` everywhere (titles, meta, index.html via build-time vars, footer wordmark, stamp ring, WhatsApp greeting, JSON-LD with `alternateName: "Mug & Munch"`, OG image regenerated).
+- Munchy animated: 9 GSAP moods, mouth morphing, cart reactions (wave / excited), idle sleep; replaced Phase 2 placeholders; old `Munchy.tsx` removed.
+- Home rebuilt in final order: Preloader → Hero → Marquee → MenuPreview → Bestsellers → Deals → Reviews → Find Us → Footer.
+- Page transitions (chili/cheese wipe + logo), logo 5-click coffee-spill easter egg, order-success page with dancing Munchy, ScrollTrigger refresh after preloader / load / fonts / image loads.
+- Hours badge now "Open now 🟢 · till 2 AM" / "Closed 🔴 · opens 2 PM".
+- Verified (production build): transitions + modal exclusion, easter egg, preloader once per session, desktop pin vs mobile carousel, reduced motion (no preloader, no loops, all content visible), no horizontal overflow at 360px, **52 fps average / 17 ms p95 scrolling the whole home at 360px with CPU 4× throttle**, mascot SVG 5.1 KB, Phase 2 commerce regression suite green, 0 console errors/warnings. Colour tokens unchanged (index.css byte-identical).
+- Commits: `3945981` logo system · `a88c716` mascot · `cac7073` home sections · Step 4 + docs; pushed to `main`.
+
 ### 2026-11-06: Phase 3 (part 1): logo system + mascot draft
-- Owner logo added (`public/brand/logo.png`), analysed (section 1b). `sharp` + `scripts/brand-assets.mjs` generate all brand assets; old placeholder mug logo + favicon.svg removed.
-- `Logo`/`BrandImage`/`LogoStamp` components; logo wired into navbar, loader, footer, cart pill, fallback cards, toasts, 404, empty cart, JSON-LD.
-- Mascot drafted from the logo character (static poses for all 9 moods) on DEV-only `/mascot-lab`, with 3 ink options. Waiting for owner approval before animating.
-- Colour tokens untouched.
+- Owner logo added and analysed; `sharp` + `scripts/brand-assets.mjs`; Logo/BrandImage/LogoStamp; logo wired in; mascot static draft on DEV-only `/mascot-lab`.
 
 ### 2026-11-06: Phase 2 Cart, core commerce + Home menu section
-- Cart store rewritten to the Phase 2 API (items/addItem/removeItem/updateQty/undoLastAdd, isOpen, hasAddedThisSession, deliveryFee + amountToFreeDelivery selectors). Persist version 2.
-- ProductCard + ProductImage (styled fallback; `virtual:photos` Vite plugin so missing photos are never requested).
-- Home MenuPreview ("Kya khaoge aaj?") after the hero; placeholder bands re-coloured to keep alternation.
-- Menu page (sticky scroll-spy chips, debounced search, filters, empty state), item modal/full page with options + sticky add bar, CartDrawer with swipe-to-remove, free-delivery bar, upsell.
-- Fly-to-cart, jelly bounce, odometer counts, first-add confetti, Undo toasts. Munchy mascot (static moods).
-- Fixed Phase 1 bug: `transition-[transform]` didn't animate Tailwind v4 translate utilities (navbar hide + button hover now animate).
-- tailwind-merge taught our custom tokens (it was dropping `text-display`).
-- Colour tokens untouched (index.css byte-identical to Phase 1).
-- Verified with a CDP QA script at 360/768/1440 in dev AND production build: tabs, quick-add, merge, Undo, modal (focus trap, Esc, focus restore), live price, drawer, persistence after reload, direct link, sticky bar, search/filters/scroll-spy, keyboard-only flows, reduced motion (no fly/confetti, toast only). 0 console errors/warnings in production.
-- Pushed to GitHub `main`.
+- Cart store (Phase 2 API), ProductCard + ProductImage (`virtual:photos`), Home MenuPreview, Menu page, item modal/full page, CartDrawer, upsell, fly-to-cart, confetti, Undo toasts.
+- Fixed Tailwind v4 `transition-[transform]` bug; tailwind-merge taught custom tokens.
+- Verified at 360/768/1440 in dev and production; pushed to GitHub `main`.
 
 ### 2026-11-06: Phase 1 Foundation
-- Scaffolded Vite 8 + React 19 + TS 7 (strict, `noUncheckedIndexedAccess`), installed all deps (Tailwind 4.3, GSAP 3.15, Lenis 1.3, Motion 14, React Router 8, Zustand 5, RHF 7 + Zod 4, lucide 1.x, sonner 2).
-- Design tokens, fonts, utilities, keyframes in `src/styles/index.css`.
-- GSAP registry + presets; Lenis on gsap.ticker with ScrollTrigger sync (disabled for reduced motion).
-- Router with 9 lazy routes; RootLayout with Navbar, Footer, MobileBottomBar, WhatsAppFab, skip link, ScrollToTop, Seo.
-- Config (`site.ts`), menu (33 items), deals (savings computed), placeholder reviews, cart store with persistence.
-- Vendor chunk splitting removed the >500 KB chunk warning.
-- Verified: `npm run build` (0 TS errors, 0 warnings), `npm run lint` clean, all routes 200, no console errors, no horizontal overflow at 360px, screenshots at 360/768/1440.
+- Vite 8 + React 19 + TS 7 strict; Tailwind 4.3, GSAP 3.15, Lenis 1.3, Motion 14, React Router 8, Zustand 5, RHF 7 + Zod 4, lucide 1.x, sonner 2.
+- Tokens, fonts, GSAP registry + presets, Lenis, lazy router, layout chrome, config/data, cart store, vendor chunk splitting.

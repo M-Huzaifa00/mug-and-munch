@@ -2,6 +2,7 @@ import { useState } from 'react'
 import photos from 'virtual:photos'
 import { CATEGORY_META, type Category } from '@/data/menu'
 import { brandSrc } from '@/lib/brand'
+import { refreshScrollTriggersSoon } from '@/lib/gsap'
 import { cn } from '@/lib/utils'
 
 interface ProductImageProps {
@@ -36,6 +37,7 @@ export function ProductImage({ name, emoji, image, category, size = 'lg', showNa
         fetchPriority={priority ? 'high' : 'auto'}
         decoding="async"
         onError={() => setFailed(true)}
+        onLoad={() => refreshScrollTriggersSoon()}
         className={cn('size-full object-cover', className)}
       />
     )

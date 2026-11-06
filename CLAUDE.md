@@ -1,8 +1,8 @@
-# Mug & Munch — CLAUDE.md
+# Mug n Munch — CLAUDE.md
 
 **Before starting any task, read claude.mind.md. Never rebuild something marked ✅. After finishing any task, update claude.mind.md (status, file map, changelog).**
 
-Mug & Munch is a real café in Islamabad, Pakistan (coffee, smash burgers, wraps). This repo is the frontend-only website: an award-level, Gen Z, mobile-first food site that must also convert ("Add to cart" within 30s). English-first copy with light Roman Urdu, PKR prices, built to run on mid-range Android phones. Built in 6 phases; stop after each phase and wait for "next".
+Mug n Munch (written "Mug n Munch" everywhere via `site.brandName`; alt "Mug & Munch") is a real café in Islamabad, Pakistan (coffee, smash burgers, wraps). This repo is the frontend-only website: an award-level, Gen Z, mobile-first food site that must also convert ("Add to cart" within 30s). English-first copy with light Roman Urdu, PKR prices, built to run on mid-range Android phones. Built in 6 phases; stop after each phase and wait for "next".
 
 ## Stack
 Vite 8 + React 19 + TypeScript (strict) · Tailwind v4 (`@tailwindcss/vite`, tokens in `src/styles/index.css` `@theme`, no tailwind.config) · GSAP 3 + all plugins (registered once in `src/lib/gsap.ts`) + `@gsap/react` · Lenis (`lenis/react`, driven by gsap.ticker) · Motion (`motion/react`, UI state only) · React Router (`react-router`, lazy pages) · Zustand + persist (`mm-cart`) · react-hook-form + zod · lucide-react · sonner · canvas-confetti · Fontsource variable fonts.

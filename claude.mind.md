@@ -118,7 +118,7 @@ Brief: owner's Phase 5 prompt. **WhatsApp is the ordering channel; no backend; n
 | 6 | Checkout page (order types, pickup slots, validation + error summary + focus, draft, remember-me, payment cards, review, sticky CTA, hides pill/FAB, useTransitionNavigate) | ✅ | `src/pages/Checkout.tsx`, `src/components/checkout/*`, `src/lib/checkoutSchema.ts` |
 | 7 | WhatsApp order message + synchronous click flow (dev: message preview while the number is a placeholder; prod: call fallback) | ✅ | `src/lib/whatsapp.ts` |
 | 8 | Order success (pending-send / sent / no order) | ✅ | `src/pages/OrderSuccess.tsx` |
-| 9 | Deals page | ⬜ | `src/pages/Deals.tsx` |
+| 9 | Deals page (filter chips, Motion layout grid, item links → modal, Karachi-time windows, reactive Munchy) | ✅ | `src/pages/Deals.tsx`, `src/lib/dealWindow.ts`, `data/deals.ts` (type + window) |
 | 10 | Our Story | ⬜ | `src/pages/OurStory.tsx`, `src/data/story.ts` |
 | 11 | Find Us page | ⬜ | `src/pages/FindUs.tsx` |
 | 12 | 404 polish, SEO pass, Future Goals, docs | ⬜ | |

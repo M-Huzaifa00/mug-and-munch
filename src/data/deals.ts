@@ -9,6 +9,11 @@ export interface DealLine {
   qty: number
 }
 
+/** Filter group on the Deals page. */
+export type DealType = 'solo' | 'sharing' | 'late-night' | 'coffee'
+
+export const DEAL_TYPE_LABELS: Record<DealType, string> = { solo: 'Solo 🎒', sharing: 'Sharing 💕', 'late-night': 'Late night 🌙', coffee: 'Coffee ☕' }
+
 export interface Deal {
   id: string
   slug: string
@@ -17,8 +22,11 @@ export interface Deal {
   emoji: string
   items: DealLine[]
   price: number
-  /** Honest availability note (no fake timers). */
+  type: DealType
+  /** Honest rule note (no fake timers), e.g. student card. */
   availability?: string
+  /** Daily window in Asia/Karachi (24h "HH:MM"; end <= start means it runs past midnight). No countdowns. */
+  window?: { start: string; end: string }
 }
 
 export const deals: Deal[] = [
@@ -34,6 +42,7 @@ export const deals: Deal[] = [
       { itemId: 'soft-drink', qty: 1 },
     ],
     price: 1199,
+    type: 'solo',
     availability: 'Show your student card at pickup', // TODO: owner confirms rule
   },
   {
@@ -47,6 +56,7 @@ export const deals: Deal[] = [
       { itemId: 'choc-chunk-cookie', qty: 2 },
     ],
     price: 1699,
+    type: 'coffee',
   },
   {
     id: 'midnight-deal',
@@ -60,7 +70,8 @@ export const deals: Deal[] = [
       { itemId: 'cold-brew', qty: 1 },
     ],
     price: 2199,
-    availability: 'Available 11 PM till close', // TODO: owner confirms window
+    type: 'late-night',
+    window: { start: '23:00', end: '02:00' }, // TODO: owner confirms window
   },
   {
     id: 'duo-deal',
@@ -74,6 +85,7 @@ export const deals: Deal[] = [
       { itemId: 'spanish-latte', qty: 2 },
     ],
     price: 3499,
+    type: 'sharing',
   },
 ]
 

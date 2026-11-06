@@ -1,20 +1,25 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { motion } from 'motion/react'
+import { Link, useLocation } from 'react-router'
 import { getItemById } from '@/data/menu'
 import { getDealOriginalPrice, getDealSavings, type Deal } from '@/data/deals'
 import { useAddToCart } from '@/hooks/useAddToCart'
+import { getDealWindow } from '@/lib/dealWindow'
+import { modalStateFrom } from '@/lib/routing'
 import { SPRING } from '@/lib/motion-presets'
 import { cn, formatPKR } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
 import { ProductImage } from '@/components/ui/ProductImage'
 
-/** Combo card: real computed savings, one cart line on "Add deal". Tilts on hover. */
+/** Combo card: real computed savings, item names open the item modal, honest window, one cart line on "Add deal". Tilts on hover. */
 export function DealCard({ deal, index }: { deal: Deal; index: number }) {
   const addToCart = useAddToCart()
   const art = useRef<HTMLDivElement>(null)
   const original = getDealOriginalPrice(deal)
   const savings = getDealSavings(deal)
   const lines = deal.items.map((l) => `${l.qty}× ${getItemById(l.itemId)?.name ?? l.itemId}`)
+  const location = useLocation()
+  const [win] = useState(() => getDealWindow(deal))
 
   const add = () =>
     addToCart(
@@ -49,10 +54,28 @@ export function DealCard({ deal, index }: { deal: Deal; index: number }) {
       <h3 className="mt-4 font-display text-2xl font-extrabold text-espresso">{deal.name}</h3>
       <p className="font-hand text-xl text-ink">{deal.tagline}</p>
       <ul className="mt-3 space-y-0.5 text-sm text-ink">
-        {lines.map((l) => (
-          <li key={l}>{l}</li>
-        ))}
+        {deal.items.map((l) => {
+          const item = getItemById(l.itemId)
+          return (
+            <li key={l.itemId}>
+              {l.qty}×{' '}
+              {item ? (
+                <Link to={`/menu/${item.slug}`} state={modalStateFrom(location)} className="font-semibold underline decoration-espresso/30 decoration-2 underline-offset-2 hover:decoration-chili">
+                  {item.name}
+                </Link>
+              ) : (
+                l.itemId
+              )}
+            </li>
+          )
+        })}
       </ul>
+      {win && (
+        <p className="mt-2 text-xs font-bold text-espresso">
+          {win.isNow ? 'Available now 🟢 · ' : ''}
+          {win.label}
+        </p>
+      )}
       {deal.availability && <p className="mt-2 text-xs font-semibold text-ink/80">{deal.availability}</p>}
       <div className="mt-auto flex items-end justify-between gap-2 pt-4">
         <p>

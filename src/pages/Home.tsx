@@ -5,6 +5,7 @@ import { Seo } from '@/components/layout/Seo'
 import { Bestsellers } from '@/sections/home/Bestsellers'
 import { BuildYourBurger } from '@/sections/home/burger/BuildYourBurger'
 import { CoffeeLab } from '@/sections/home/coffee/CoffeeLab'
+import { VibePicker } from '@/sections/home/vibe/VibePicker'
 import { WrapItUp } from '@/sections/home/wrap/WrapItUp'
 import { DealsStrip } from '@/sections/home/deals/DealsStrip'
 import { FindUsTeaser } from '@/sections/home/FindUsTeaser'
@@ -35,6 +36,7 @@ export function Home() {
       <BuildYourBurger />
       <CoffeeLab />
       <WrapItUp />
+      <VibePicker />
       <DealsStrip />
       <Reviews />
       <FindUsTeaser />

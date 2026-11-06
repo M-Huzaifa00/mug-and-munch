@@ -9,6 +9,8 @@ interface AddOptions {
   qty?: number
   /** Element to clone for the fly-to-cart arc (usually the product image). */
   source?: HTMLElement | null
+  /** Edit / Tweak: replace this line instead of adding a new one. */
+  replaceLineId?: string
 }
 
 /**
@@ -21,8 +23,14 @@ export function useAddToCart() {
   const reduced = useReducedMotion()
 
   return useCallback(
-    (input: AddItemInput, { qty = 1, source }: AddOptions = {}) => {
-      const { addItem, undoLastAdd, isOpen } = useCart.getState()
+    (input: AddItemInput, { qty = 1, source, replaceLineId }: AddOptions = {}) => {
+      const { addItem, replaceItem, undoLastAdd, isOpen, items } = useCart.getState()
+      if (replaceLineId && items.some((i) => i.lineId === replaceLineId)) {
+        replaceItem(replaceLineId, input)
+        fly(source)
+        notify(`Updated ✨ ${input.name}`, { id: 'cart-add' })
+        return
+      }
       const { isFirstAdd } = addItem(input, qty)
 
       // Don't fly behind the open drawer's backdrop.

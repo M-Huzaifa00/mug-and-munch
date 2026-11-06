@@ -41,9 +41,10 @@ export function CraftSection() {
   useEffect(() => refreshScrollTriggersSoon(300), [])
 
   // Deep links: #craft-coffee | #craft-burger | #craft-wrap → open that tab (adjusted during render) …
-  const [seenHash, setSeenHash] = useState(location.hash)
-  if (location.hash !== seenHash) {
-    setSeenHash(location.hash)
+  // Keyed on location.key so a repeat link to the same hash (e.g. Edit from the drawer) still re-opens.
+  const [seenKey, setSeenKey] = useState(location.key)
+  if (location.key !== seenKey) {
+    setSeenKey(location.key)
     const target = tabFromHash(location.hash)
     if (target) {
       setTab(target)
@@ -63,7 +64,8 @@ export function CraftSection() {
       else el.scrollIntoView({ behavior: immediate || reduced ? 'auto' : 'smooth' })
     }
     const onRefresh = () => go(true)
-    const first = window.setTimeout(() => go(false), 180)
+    // Wait for the cart drawer (Edit / Tweak) to release its scroll lock.
+    const first = window.setTimeout(() => go(false), 380)
     ScrollTrigger.addEventListener('refresh', onRefresh)
     const stop = window.setTimeout(() => ScrollTrigger.removeEventListener('refresh', onRefresh), 2500)
     return () => {
@@ -71,7 +73,7 @@ export function CraftSection() {
       window.clearTimeout(stop)
       ScrollTrigger.removeEventListener('refresh', onRefresh)
     }
-  }, [location.hash, lenis, reduced])
+  }, [location.key, location.hash, lenis, reduced])
 
   const change = (next: CraftTab) => {
     if (next === tab || switching.current) return

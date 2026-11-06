@@ -13,6 +13,8 @@ import { IngredientTile } from '@/components/builder/IngredientTile'
 import { TileGroup } from '@/components/builder/TileGroup'
 import { BurgerLayer } from './BurgerLayer'
 import { MAKER_STAGE } from './makerLayout'
+import { EditBanner } from './EditBanner'
+import { UPDATE_LABEL, useCraftEdit, usePreloadEdit } from './useCraftEdit'
 
 interface Layer {
   key: number
@@ -35,6 +37,16 @@ export function BurgerMaker({ active, ctaLabel }: { active: boolean; ctaLabel: s
   const stack = useRef<HTMLDivElement>(null)
   const addToCart = useAddToCart()
   const reduced = useReducedMotion()
+  const editing = useCraftEdit('burger')
+
+  // Edit: preload the line's layers + name (bun closes on update, like a normal add).
+  usePreloadEdit(editing, (line) => {
+    const loaded = (line.options.layers ?? []) as BurgerLayerId[]
+    // Negative keys never clash with taps (nextKey counts up from 1).
+    setLayers(loaded.map((id, i) => ({ key: -(i + 1), id })))
+    setName(line.options.name ?? '')
+    setRound((r) => r + 1)
+  })
 
   const ids = layers.map((l) => l.id)
   const price = burgerPrice(ids)
@@ -63,7 +75,7 @@ export function BurgerMaker({ active, ctaLabel }: { active: boolean; ctaLabel: s
     const closedIds = closed ? ids : [...ids, 'bun' as const]
     if (!closed) addLayer('bun')
     const add = () => {
-      addToCart(burgerToCartInput(closedIds, name), { source: stack.current })
+      addToCart(burgerToCartInput(closedIds, name), { source: stack.current, replaceLineId: editing?.lineId })
       track('burger_maker_add', { price: burgerPrice(closedIds), layers: closedIds.length })
     }
     if (reduced || closed) add()
@@ -125,8 +137,9 @@ export function BurgerMaker({ active, ctaLabel }: { active: boolean; ctaLabel: s
             />
           ))}
         </TileGroup>
+        {editing && <EditBanner />}
         <BuilderActions
-          ctaLabel={ctaLabel}
+          ctaLabel={editing ? UPDATE_LABEL : ctaLabel}
           price={price}
           onAdd={finish}
           addDisabled={fillings === 0}

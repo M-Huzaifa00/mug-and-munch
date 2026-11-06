@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { AnimatePresence } from 'motion/react'
 import { X } from 'lucide-react'
 import { notify } from '@/lib/notify'
@@ -6,6 +7,7 @@ import { ButtonLink } from '@/components/ui/Button'
 import { Logo } from '@/components/brand/Logo'
 import { Mascot } from '@/components/mascot/Mascot'
 import { CartLineItem } from './CartLineItem'
+import { CraftLinks } from './CraftLinks'
 import { CartSummary } from './CartSummary'
 import { CartUpsell } from './CartUpsell'
 import { FreeDeliveryBar } from './FreeDeliveryBar'
@@ -15,6 +17,12 @@ export function CartContents({ onClose }: { onClose: () => void }) {
   const items = useCart((s) => s.items)
   const updateQty = useCart((s) => s.updateQty)
   const count = useCartCount()
+  const blocked = items.some((i) => i.unavailable)
+
+  // Persisted carts may hold old prices → re-price from the current data on open (one honest notice).
+  useEffect(() => {
+    if (useCart.getState().reprice()) notify('Some prices were updated.', { id: 'prices-updated' })
+  }, [])
 
   const remove = (item: CartItem) => {
     const { items: current, removeItem, restoreItem } = useCart.getState()
@@ -50,6 +58,8 @@ export function CartContents({ onClose }: { onClose: () => void }) {
           <ButtonLink to="/menu" size="md" className="mt-3" onClick={onClose}>
             Browse menu
           </ButtonLink>
+          <p className="mt-3 text-sm font-semibold text-ink/80">or craft your own</p>
+          <CraftLinks onNavigate={onClose} />
         </div>
       ) : (
         <>
@@ -69,7 +79,7 @@ export function CartContents({ onClose }: { onClose: () => void }) {
             </ul>
             <CartUpsell />
           </div>
-          <CartSummary />
+          <CartSummary blocked={blocked} />
         </>
       )}
     </>

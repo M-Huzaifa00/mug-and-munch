@@ -15,6 +15,8 @@ import { MAKER_STAGE } from './makerLayout'
 import { resetWrapScene, rollWrap } from './wrapAnimations'
 import { WrapFilling } from './WrapFilling'
 import { WrapStage } from './WrapStage'
+import { EditBanner } from './EditBanner'
+import { UPDATE_LABEL, useCraftEdit, usePreloadEdit } from './useCraftEdit'
 
 const M = WRAP_MAKER
 type ListKey = 'cheeses' | 'veggies' | 'sauces'
@@ -33,6 +35,16 @@ export function WrapMaker({ active, ctaLabel }: { active: boolean; ctaLabel: str
   const stage = useRef<HTMLDivElement>(null)
   const addToCart = useAddToCart()
   const reduced = useReducedMotion()
+  const editing = useCraftEdit('wrap')
+
+  // Edit: preload every choice + the name.
+  usePreloadEdit(editing, (line) => {
+    const w = line.options.wrap
+    if (!w) return
+    setChoice({ ...w, cheeses: [...w.cheeses], veggies: [...w.veggies], sauces: [...w.sauces] })
+    setName(line.options.name ?? '')
+    setRound((r) => r + 1)
+  })
 
   const count = wrapFillingCount(choice)
   const price = wrapPrice(choice)
@@ -60,8 +72,9 @@ export function WrapMaker({ active, ctaLabel }: { active: boolean; ctaLabel: str
     const el = stage.current
     if (!el || rolling) return
     const input = wrapToCartInput(choice, name)
+    const replaceLineId = editing?.lineId
     const done = () => {
-      addToCart(input, { source: el })
+      addToCart(input, { source: el, replaceLineId })
       track('wrap_maker_add', { price: input.unitPrice, fillings: count })
       window.setTimeout(() => {
         resetWrapScene(el)
@@ -142,8 +155,9 @@ export function WrapMaker({ active, ctaLabel }: { active: boolean; ctaLabel: str
         <p className="mt-2 min-h-6 font-hand text-xl text-cheese" aria-live="polite">
           {note || `${count}/${M.maxFillings} fillings`}
         </p>
+        {editing && <EditBanner />}
         <BuilderActions
-          ctaLabel={ctaLabel}
+          ctaLabel={editing ? UPDATE_LABEL : ctaLabel}
           price={price}
           onAdd={add}
           addDisabled={rolling}

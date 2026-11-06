@@ -1,6 +1,6 @@
 import { formatPKR } from '@/lib/utils'
 import { useOrderTotals, useOrderType } from '@/store/cart'
-import { ButtonLink } from '@/components/ui/Button'
+import { Button, ButtonLink } from '@/components/ui/Button'
 import { RollingNumber } from '@/components/ui/RollingNumber'
 
 const TYPE_LABEL = { delivery: 'Delivery', takeaway: 'Takeaway', dineIn: 'Dine-in' } as const
@@ -43,9 +43,15 @@ export function CartSummary({ blocked = false }: { blocked?: boolean }) {
           </dd>
         </div>
       </dl>
-      <ButtonLink to="/checkout" size="lg" className="mt-3 w-full" aria-disabled={blocked || undefined}>
-        Checkout
-      </ButtonLink>
+      {blocked ? (
+        <Button size="lg" className="mt-3 w-full" disabled>
+          Remove unavailable items first
+        </Button>
+      ) : (
+        <ButtonLink to="/checkout" size="lg" className="mt-3 w-full">
+          Checkout
+        </ButtonLink>
+      )}
       <p className="mt-2 text-center text-xs text-ink/70">
         {orderType === 'delivery' ? 'Takeaway or dine-in? No delivery fee. Pick it at checkout.' : `${TYPE_LABEL[orderType]} order · change it at checkout.`}
       </p>

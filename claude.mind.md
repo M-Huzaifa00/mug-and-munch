@@ -113,8 +113,8 @@ Brief: owner's Phase 5 prompt. **WhatsApp is the ordering channel; no backend; n
 | 1 | Builder Kit + ONE "Craft your own" section (id `craft`, tabs + hash deep links, state kept per tab, lazy makers) + Burger maker | ✅ | `src/components/builder/*`, `src/sections/home/craft/*`, `src/data/builder.ts` |
 | 2 | Coffee maker (drink/size/milk/temp/add-ons/sweetness; merges with menu coffee) | ✅ | `craft/CoffeeMaker.tsx`, `src/data/coffeeBuilder.ts` |
 | 3 | Wrap maker (base/protein/cheese/veggies/sauces/spice; roll on add) | ✅ | `craft/WrapMaker.tsx`, `src/data/wrapBuilder.ts` |
-| 4 | Order logic: site fields, phone, orderTotals, orderType in store, orderNumber, order, orderApi stub, Vitest | ⬜ | `src/lib/*` |
-| 5 | describeLine, priceLine re-pricing, merge rules, Edit/Tweak, custom chips, empty-cart links | ⬜ | `src/lib/lineDescription.ts`, `itemOptions.ts` |
+| 4 | Order logic: site fields, phone, orderTotals, orderType in store, orderNumber, order, orderApi stub, checkoutSchema, WhatsApp message builder, Vitest (`npm test`) | ✅ | `src/lib/{phone,orderTotals,orderNumber,order,orderApi,checkoutSchema,whatsapp}.ts`, `src/lib/__tests__/*` |
+| 5 | describeLine, priceLine re-pricing (notice + unavailable block), merge rules, Edit/Tweak (cart `editing` + `replaceItem`, makers preload), tag chips, empty-cart craft links | ✅ | `src/lib/lineDescription.ts`, `itemOptions.ts`, `components/layout/cart/{LineTag,EditCreationLink,CraftLinks}.tsx`, `craft/{useCraftEdit.ts,EditBanner.tsx}` |
 | 6 | Checkout page (order types, validation, payment cards, review) | ⬜ | `src/pages/Checkout.tsx`, `src/components/checkout/*`, `src/lib/checkoutSchema.ts` |
 | 7 | WhatsApp order message + click flow | ⬜ | `src/lib/whatsapp.ts` |
 | 8 | Order success (pending-send / sent) | ⬜ | `src/pages/OrderSuccess.tsx` |

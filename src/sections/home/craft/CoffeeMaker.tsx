@@ -13,6 +13,8 @@ import { TileTray, type TrayGroup } from '@/components/builder/TileTray'
 import { CoffeeCup, type CupSize } from './CoffeeCup'
 import { MAKER_STAGE } from './makerLayout'
 import { SweetnessPills } from './SweetnessPills'
+import { EditBanner } from './EditBanner'
+import { UPDATE_LABEL, useCraftEdit, usePreloadEdit } from './useCraftEdit'
 
 const DRINKS: MenuItem[] = COFFEE_DRINKS.map((s) => getItemBySlug(s)).filter((i): i is MenuItem => Boolean(i))
 const MILK_TOKEN: Record<string, string> = { regular: 'oat', oat: 'cheese', almond: 'bubblegum' }
@@ -52,6 +54,15 @@ export function CoffeeMaker({ active, ctaLabel }: { active: boolean; ctaLabel: s
   const cup = useRef<HTMLDivElement>(null)
   const addToCart = useAddToCart()
   const reduced = useReducedMotion()
+  const editing = useCraftEdit('coffee')
+
+  // Tweak: preload the coffee line (drink + every option).
+  usePreloadEdit(editing, (line) => {
+    const drink = DRINKS.find((d) => d.id === line.itemId)
+    if (!drink) return
+    const o = line.options
+    setState(fit({ drink: drink.id, size: o.size ?? COFFEE_DEFAULTS.size, milk: o.milk, temp: o.temp, extras: [...(o.extras ?? [])], sweetness: o.sweetness ?? COFFEE_DEFAULTS.sweetness }, drink))
+  })
   const item = DRINKS.find((d) => d.id === state.drink) ?? DRINKS[0]
   if (!item) return null
   const o = item.options
@@ -64,7 +75,7 @@ export function CoffeeMaker({ active, ctaLabel }: { active: boolean; ctaLabel: s
   const label = (list: OptionChoice[] | undefined, id?: string) => list?.find((c) => c.id === id)?.label
 
   const add = () => {
-    addToCart(toCartInput(item, sel), { source: cup.current })
+    addToCart(toCartInput(item, sel), { source: cup.current, replaceLineId: editing?.lineId })
     track('coffee_maker_add', { drink: item.id, price })
   }
   const reset = () => {
@@ -120,7 +131,8 @@ export function CoffeeMaker({ active, ctaLabel }: { active: boolean; ctaLabel: s
       </div>
       <div data-controls className="text-oat [grid-area:controls]">
         <TileTray groups={groups} tabs="always" idPrefix="coffee" />
-        <BuilderActions ctaLabel={ctaLabel} price={price} onAdd={add} onReset={reset} />
+        {editing && <EditBanner />}
+        <BuilderActions ctaLabel={editing ? UPDATE_LABEL : ctaLabel} price={price} onAdd={add} onReset={reset} />
       </div>
     </div>
   )

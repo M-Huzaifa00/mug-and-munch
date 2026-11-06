@@ -1,7 +1,7 @@
 ﻿# claude.mind.md: Mug n Munch project brain
 
 > Read this before every task. Never rebuild anything marked ✅. Update status, file map and changelog after every task.
-> Current phase: **Phase 3 ✅ done** → waiting for "next" to start **Phase 4 (Interactive toys)**.
+> Current phase: **Phase 4 ✅ done** → **Phase 5 🟡 in progress** (Craft section, WhatsApp checkout, content pages). See the Phase 5 table for the exact resume point.
 > Repo: https://github.com/M-Huzaifa00/mug-and-munch (branch `main`). Git rule: local commit after each completed step; push to `main` only at the end of a phase after build + lint pass. Never push broken builds.
 > **Colours are LOCKED:** never edit/add/remove tokens in the `@theme` block of `src/styles/index.css`. Need a new shade? Use opacity (`bg-chili/15`). Brand ink lives in `src/styles/brand.css` as `--brand-ink` (a color-mix of tokens), mascot/illustration lines only.
 > **Brand name:** visible text is **"Mug n Munch"** from `site.brandName` (never hardcode); `site.alternateName` = "Mug & Munch" (JSON-LD only).
@@ -91,8 +91,19 @@
 | Footer giant wordmark revealed letter by letter on scroll (script "n") | ✅ | `src/components/layout/FooterWordmark.tsx` |
 | Page transitions: chili/cheese wipe + logo pop (~0.6s), skipped with reduced motion; item links excluded (modal) | ✅ | `src/components/layout/PageTransition.tsx` |
 
-### Phase 4: Interactive toys ⬜
-Build Your Burger · Coffee Lab · Wrap It Up · Vibe Picker (Flip) · Snack Roulette · custom cursor. (Page transitions + easter egg already done in Phase 3.)
+### Phase 4: Interactive toys ✅
+| Feature | Status | Files |
+|---|---|---|
+| Build Studio: ONE section, tabs Burger / Coffee / Wrap (owner request: combine the three builders) | ✅ (Phase 5 Step 1 turns it into the "Craft your own" section) | `src/sections/home/builders/BuildStudio.tsx`, `BuildTabs.tsx`, `IngredientPicker.tsx` |
+| Burger builder: layers drop with squash & stretch, live price, auto top bun, reset topples | ✅ | `src/sections/home/burger/BurgerBuilder.tsx`, `BurgerLayer.tsx`, `src/lib/burgerBuilder.ts` |
+| Coffee builder (real Classic Latte options): pour to size, milk tint, steam, ice drop + splash + straw | ✅ | `src/sections/home/coffee/CoffeeBuilder.tsx`, `CoffeeCup.tsx` |
+| Wrap builder (owner request: pick fillings, not a scroll animation): fillings drop, "Roll it & add" (MorphSVG roll, seams, frills, band) | ✅ | `src/sections/home/wrap/WrapBuilder.tsx`, `WrapStage.tsx`, `WrapFilling.tsx`, `wrapAnimations.ts`, `src/lib/wrapBuilder.ts` |
+| Shared builder maths | ✅ | `src/lib/builder.ts`, data in `src/data/toys.ts` |
+| Vibe Picker (5 moods, GSAP Flip reshuffle, 3 picks highlighted, one-tap add + "Add all 3") | ✅ | `src/sections/home/vibe/VibePicker.tsx` |
+| Snack Roulette (lands exactly under the pointer, desktop flick via Draggable + Inertia, normal prices) | ✅ | `src/sections/home/roulette/*` |
+| Custom cursor ("Add +" / "Drag" bubbles; fine pointer, motion ok, cores > 4) | ✅ | `src/app/providers/Cursor.tsx` (`data-cursor` attrs on ProductCard, review stickers, wheel) |
+| Sounds | ⬜ not built (not in the original Phase 4 list) | — |
+| `lib/events.ts` analytics stub | ⬜ → created in Phase 5 Step 1 | — |
 
 ### Phase 5: Checkout & Pakistan flow ⬜
 Checkout form (rhf + zod), order type (delivery/takeaway/dine-in + table), sector dropdown, PK phone validation + `03XX-XXXXXXX` format, payment cards (COD default; JazzCash/Easypaisa/Card "coming soon"), WhatsApp order message (`src/lib/whatsapp.ts` TODO), order summary (subtotal/delivery/tax/total), success page details (Munchy dance already there), Deals page, Our Story, Find Us page. Pages exist as placeholders.
@@ -177,6 +188,13 @@ public/images/{coffee,burgers,wraps,sides,drinks,desserts,deals,brand}/  photos 
 Node/Supabase backend + real orders DB · real JazzCash / Easypaisa / card gateway integration · admin dashboard to edit menu & prices · live order tracking · "Munch Points" loyalty & referral · Urdu/English language toggle · PWA + "Add to home screen" · table QR ordering for dine-in · reservations · push/WhatsApp order-status notifications · analytics (GA4 / Meta Pixel) with consent · Foodpanda link-out · A/B testing CTA copy.
 
 ## 8. Changelog (Asia/Karachi dates)
+### 2026-11-06: Phase 4 complete: interactive toys
+- Build Your Burger, Coffee Lab and a build-your-wrap builder, combined into ONE tabbed Build Studio section (owner request); shared builder maths + IngredientPicker.
+- Wrap It Up reworked on owner feedback from a scroll animation into a pick-your-fillings builder with a roll-up on "Roll it & add".
+- Vibe Picker (GSAP Flip), Snack Roulette (accurate landing, flick to spin), custom cursor.
+- Verified each toy in the browser (prices, cart lines, animations, 360/1440, keyboard tabs); 0 console errors.
+- Commits `571ffbf` … `e1e4d9a`; pushed to `main`.
+
 ### 2026-11-06: Phase 3 complete: brand, Munchy, home wow sections
 - Owner decisions applied: mascot approved; ink option A as `--brand-ink` in `styles/brand.css`; name "Munchy"; visible brand "Mug n Munch" via `site.brandName` everywhere (titles, meta, index.html via build-time vars, footer wordmark, stamp ring, WhatsApp greeting, JSON-LD with `alternateName: "Mug & Munch"`, OG image regenerated).
 - Munchy animated: 9 GSAP moods, mouth morphing, cart reactions (wave / excited), idle sleep; replaced Phase 2 placeholders; old `Munchy.tsx` removed.

@@ -2,6 +2,7 @@ import { Logo } from '@/components/brand/Logo'
 import { Mascot } from '@/components/mascot/Mascot'
 import { MASCOT_MOODS } from '@/components/mascot/mascotPoses'
 import { Seo } from '@/components/layout/Seo'
+import { MunchCharacter } from '@/components/munchRun/MunchCharacter'
 import { Button } from '@/components/ui/Button'
 import { getItemBySlug } from '@/data/menu'
 import { useAddToCart } from '@/hooks/useAddToCart'
@@ -67,6 +68,18 @@ export function MascotLab() {
                 </li>
               ))}
             </ul>
+          </section>
+
+          <section aria-labelledby="munchrun">
+            <h2 id="munchrun" className="font-display text-3xl font-extrabold text-espresso">Munch Run forms (on oat · cheese · espresso)</h2>
+            {(['bg-oat', 'bg-cheese', 'bg-espresso'] as const).map((bg) => (
+              <div key={bg} className={`mt-4 flex flex-wrap items-end gap-8 rounded-blob p-6 ${bg}`}>
+                {(['burger', 'wrap', 'coffee'] as const).map((f) => (
+                  <MunchCharacter key={f} form={f} className="size-[110px]" />
+                ))}
+                <MunchCharacter form="burger" className="size-[60px]" />
+              </div>
+            ))}
           </section>
 
           <section aria-labelledby="logos">

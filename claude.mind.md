@@ -176,7 +176,7 @@ src/data/builder.ts, coffeeBuilder.ts, wrapBuilder.ts   maker data (PLACEHOLDER 
 src/data/story.ts               Our Story copy + owner facts (render only when filled)
 src/components/builder/         IngredientTile, IngredientIcon, TileGroup, TileTray, BuilderActions
 src/components/checkout/        CheckoutCard, CheckoutField, fieldStyles, OrderTypeSwitch, OrderTypeFields, DetailsFields, PaymentOptions, OrderReview, CheckoutTotals, SendOrderButton, ErrorSummary, CheckoutBanners, CheckoutEmpty, MessagePreview (DEV), OrderSnapshot, useCheckoutForm, useSendOrder
-src/sections/home/craft/        CraftSection, CraftSwitch, BurgerMaker, BurgerLayer, CoffeeMaker, CoffeeCup, SweetnessPills, WrapMaker, WrapStage, WrapFilling, wrapAnimations, makerLayout, MakerLoading, EditBanner, useCraftEdit
+src/sections/home/craft/        CraftSection, CraftSwitch, BurgerMaker, BurgerLayer (+ burgerArt.tsx realistic layer art, burgerLayerKind.ts), CoffeeMaker, CoffeeCup, SweetnessPills, WrapMaker, WrapStage, WrapFilling, wrapAnimations, makerLayout, MakerLoading, EditBanner, useCraftEdit
 src/sections/story/             StoryPanels, StorySteps
 src/sections/findus/            HoursTable, MapFacade
 REMOVED in Phase 5              sections/home/{builders,burger,coffee,wrap}/* (BuildStudio, BuildTabs→CraftSwitch, IngredientPicker, BurgerBuilder, BurgerControls, CoffeeBuilder, WrapBuilder, WrapItUp…)
@@ -248,6 +248,9 @@ Node/Supabase backend + real orders DB · real JazzCash / Easypaisa / card gatew
 - **Online payments (JazzCash / Easypaisa / card) need the backend first** (`site.payments` flags + `TODO(payments)` in `PaymentOptions`).
 
 ## 8. Changelog (Asia/Karachi dates)
+### 2026-11-09: Realistic burger maker
+- Owner asked for realistic burgers in the Craft burger maker: shaded toasted sesame bun, seared crispy-edged patty, melting glossy cheese, ruffled lettuce, red onion rings, jalapeno slices, drippy sauce (`craft/burgerArt.tsx`). Token color-mix shades only; animations unchanged. Verified at 360 + 1440. Menu cards still show emoji until real photos are added; Munch Run stays a cartoon mascot.
+
 ### 2026-11-07: Munch Run
 - A burger (hero top-right) takes off on scroll, hops over the marquee, spins + morphs into a wrap (MenuPreview top-left), then into a coffee (Bestsellers top-right, lands before the desktop pin). Scroll up reverses it exactly.
 - Audit: replaced the hero's floating burger photo (latte now takes the big spot); MenuPreview gets more top padding for Stop 2; Bestsellers LogoStamp moved off Stop 3. Traveler z-[35]: under navbar (50), FAB / bottom bar / checkout bar (40), drawer + modals (70), toasts, cursor (99), page wipe (96).

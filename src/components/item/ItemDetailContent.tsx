@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
-import { CATEGORY_META, type MenuItem } from '@/data/menu'
+import { Phone } from 'lucide-react'
+import { site } from '@/config/site'
+import { isPriced, type MenuItem, type PricedItem } from '@/data/menu'
 import { useAddToCart } from '@/hooks/useAddToCart'
 import { defaultSelection, toCartInput, unitPriceFor, type OptionSelection } from '@/lib/itemOptions'
-import { cn, formatPKR } from '@/lib/utils'
-import { Badge } from '@/components/ui/Badge'
+import { formatPKR } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
-import { ProductImage } from '@/components/ui/ProductImage'
+import { buttonClasses } from '@/components/ui/buttonClasses'
+import { PriceComingSoon } from '@/components/ui/PriceComingSoon'
 import { QuantityStepper } from '@/components/ui/QuantityStepper'
 import { RollingNumber } from '@/components/ui/RollingNumber'
+import { ItemIntro } from './ItemIntro'
 import { ItemOptionsForm } from './ItemOptionsForm'
 import { StickyAddBar } from './StickyAddBar'
 
@@ -18,17 +21,31 @@ interface ItemDetailContentProps {
   onAdded?: () => void
 }
 
-/** Shared body for the item modal and the full item page: image, info, options, qty, add. */
+/** Shared body for the item modal and the full item page. Items without a price yet can't be ordered online. */
 export function ItemDetailContent({ item, mode, onAdded }: ItemDetailContentProps) {
+  if (isPriced(item)) return <OrderableItem item={item} mode={mode} onAdded={onAdded} />
+  return (
+    <ItemIntro item={item} mode={mode}>
+      <PriceComingSoon className="self-start px-3 py-1 text-sm" />
+      <p className="text-ink">We're finalising this one's price. It's on the menu at the café; give us a call and we'll sort you out.</p>
+      <a href={site.contact.phoneHref} className={buttonClasses('outline', 'md', 'self-start')}>
+        <Phone size={18} strokeWidth={2.6} aria-hidden="true" /> Call {site.contact.phoneDisplay}
+      </a>
+    </ItemIntro>
+  )
+}
+
+function OrderableItem({ item, mode, onAdded }: ItemDetailContentProps & { item: PricedItem }) {
   const [selection, setSelection] = useState<OptionSelection>(() => defaultSelection(item))
   const [qty, setQty] = useState(1)
   const [showSticky, setShowSticky] = useState(false)
   const imageRef = useRef<HTMLDivElement>(null)
   const addButtonRef = useRef<HTMLButtonElement>(null)
   const addToCart = useAddToCart()
-  const meta = CATEGORY_META[item.category]
   const total = unitPriceFor(item, selection) * qty
-  const Heading = mode === 'page' ? 'h1' : 'h2'
+  // "from" only when some choice actually costs more (Hot / Cold / Blended are the same price).
+  const o = item.options
+  const pricesVary = [o.sizes, o.temps, o.milks, o.extras].some((g) => g?.some((c) => c.priceDelta > 0))
 
   // Sticky bar shows while the main button is out of view (IO root = viewport, clipped by the modal scroller).
   useEffect(() => {
@@ -47,50 +64,19 @@ export function ItemDetailContent({ item, mode, onAdded }: ItemDetailContentProp
 
   return (
     <>
-      <div className={cn('grid gap-6 md:grid-cols-2 md:gap-8', mode === 'modal' ? 'p-4 pt-4 md:p-6' : '')}>
-        <div className="relative">
-          <div
-            ref={imageRef}
-            className={cn(
-              'overflow-hidden rounded-blob border-[2.5px] border-espresso shadow-hard',
-              mode === 'modal' ? 'aspect-[4/3] md:aspect-square' : 'aspect-square',
-            )}
-          >
-            <ProductImage name={item.name} emoji={item.emoji} image={item.image} category={item.category} priority={mode === 'page'} />
-          </div>
-          {item.note && (
-            <p className="sticker absolute -bottom-4 left-4 -rotate-3 rounded-full bg-oat px-4 py-1 font-hand text-xl text-ink">
-              {item.note}
-            </p>
-          )}
+      <ItemIntro item={item} mode={mode} imageRef={imageRef}>
+        <p className="font-display text-2xl font-extrabold text-espresso">
+          {pricesVary ? 'from ' : ''}
+          {formatPKR(item.price)}
+        </p>
+        <ItemOptionsForm item={item} value={selection} onChange={setSelection} />
+        <div className="mt-2 flex flex-wrap items-center gap-3">
+          <QuantityStepper value={qty} onChange={setQty} label={item.name} />
+          <Button ref={addButtonRef} size="lg" onClick={add} className="flex-1 whitespace-nowrap">
+            Add to cart · <RollingNumber value={total} format={formatPKR} />
+          </Button>
         </div>
-
-        <div className="flex flex-col gap-4 pt-2">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className={cn('rounded-full border-2 border-espresso px-2.5 py-0.5 text-xs font-extrabold uppercase', meta.bg, meta.text)}>
-              {meta.emoji} {meta.label}
-            </span>
-            {item.badges.map((b) => (
-              <Badge key={b} kind={b} />
-            ))}
-          </div>
-          <Heading id="item-title" className="pr-12 font-display text-4xl font-extrabold text-espresso md:text-5xl">
-            {item.name}
-          </Heading>
-          <p className="text-lg text-ink">{item.description}</p>
-          <p className="font-display text-2xl font-extrabold text-espresso">from {formatPKR(item.price)}</p>
-
-          <ItemOptionsForm item={item} value={selection} onChange={setSelection} />
-
-          <div className="mt-2 flex flex-wrap items-center gap-3">
-            <QuantityStepper value={qty} onChange={setQty} label={item.name} />
-            <Button ref={addButtonRef} size="lg" onClick={add} className="flex-1 whitespace-nowrap">
-              Add to cart · <RollingNumber value={total} format={formatPKR} />
-            </Button>
-          </div>
-        </div>
-      </div>
-
+      </ItemIntro>
       <StickyAddBar visible={showSticky} name={item.name} total={total} onAdd={add} mode={mode} />
     </>
   )

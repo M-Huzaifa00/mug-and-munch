@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { getItemBySlug, type MenuItem } from '@/data/menu'
+import { getItemBySlug, isPriced, type PricedItem } from '@/data/menu'
 import { ROULETTE_ITEMS } from '@/data/toys'
 import { useAddToCart } from '@/hooks/useAddToCart'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
@@ -14,7 +14,8 @@ import { RevealHeading } from '@/components/ui/RevealHeading'
 import { Mascot } from '@/components/mascot/Mascot'
 import { RouletteWheel } from './RouletteWheel'
 
-const ITEMS: MenuItem[] = ROULETTE_ITEMS.map((id) => getItemBySlug(id)).filter((i): i is MenuItem => Boolean(i))
+// Only items with a price (the result offers 'Add it').
+const ITEMS: PricedItem[] = ROULETTE_ITEMS.map((id) => getItemBySlug(id)).filter((i): i is PricedItem => Boolean(i && isPriced(i)))
 const SEG = 360 / ITEMS.length
 /** Rotation r puts segment i under the top pointer when (i·seg + seg/2 + r) ≡ 0 (mod 360). */
 const indexAt = (r: number) => (((Math.round(-(r + SEG / 2) / SEG) % ITEMS.length) + ITEMS.length) % ITEMS.length)
@@ -23,7 +24,7 @@ const snapToSegment = (r: number) => Math.round((r + SEG / 2) / SEG) * SEG - SEG
 /** Spin (button, or flick the wheel on desktop) → lands on a random item → "Add it" / "Spin again". Normal prices only. */
 export function SnackRoulette() {
   const [spinning, setSpinning] = useState(false)
-  const [result, setResult] = useState<MenuItem | null>(null)
+  const [result, setResult] = useState<PricedItem | null>(null)
   const wheel = useRef<SVGGElement>(null)
   const rotation = useRef(0)
   const resultArt = useRef<HTMLDivElement>(null)

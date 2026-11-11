@@ -1,10 +1,12 @@
 /**
- * Menu data. PLACEHOLDER PRICES — owner to update.
- * Images live in /public/images/<folder>/<slug>.webp. Until real photos exist,
- * the UI renders a styled fallback (category gradient + emoji + name).
+ * Menu data: the café's real list (from Syed Ahmed, 2026-11-07). Owner-editable.
+ * - `price: null` = the owner hasn't given a price yet → the site shows "Price coming soon" and the item
+ *   can't be added to the cart. Fill the number in to make it orderable. (TODO(owner): every null below.)
+ * - Descriptions only state what the list says (patties, shape, flavour); no invented ingredients or claims.
+ * Images live in /public/images/<folder>/<slug>.webp; until real photos exist the UI shows a styled fallback.
  */
 
-export type Category = 'coffee' | 'burger' | 'wrap' | 'sides' | 'drinks' | 'desserts'
+export type Category = 'coffee' | 'matcha' | 'drinks' | 'burger' | 'steak' | 'wrap'
 export type Badge = 'bestseller' | 'new' | 'spicy' | 'veg'
 export type SpiceLevel = 'mild' | 'medium' | 'desi-hot'
 
@@ -32,7 +34,8 @@ export interface MenuItem {
   slug: string
   name: string
   category: Category
-  price: number
+  /** PKR. null = price not given yet → "Price coming soon", not orderable. */
+  price: number | null
   description: string
   image: string
   emoji: string
@@ -42,103 +45,84 @@ export interface MenuItem {
   isVeg: boolean
   /** Handwritten Caveat doodle note (optional). */
   note?: string
+  /** Shown in the Home "Our picks" strip (owner's choice, not a popularity claim). */
+  featured?: boolean
 }
 
-/* ---------- Shared option sets ---------- */
-const COFFEE_SIZES: OptionChoice[] = [
-  { id: 's', label: 'Small', priceDelta: 0 },
-  { id: 'm', label: 'Medium', priceDelta: 150 },
-  { id: 'l', label: 'Large', priceDelta: 250 },
-]
-const TEMPS: OptionChoice[] = [
-  { id: 'hot', label: 'Hot', priceDelta: 0 },
-  { id: 'iced', label: 'Iced', priceDelta: 50 },
-]
-const MILKS: OptionChoice[] = [
-  { id: 'regular', label: 'Regular milk', priceDelta: 0 },
-  { id: 'oat', label: 'Oat milk', priceDelta: 200 },
-  { id: 'almond', label: 'Almond milk', priceDelta: 200 },
-]
-const COFFEE_EXTRAS: OptionChoice[] = [
-  { id: 'extra-shot', label: 'Extra shot', priceDelta: 150 },
-  { id: 'caramel-syrup', label: 'Caramel syrup', priceDelta: 100 },
-  { id: 'hazelnut-syrup', label: 'Hazelnut syrup', priceDelta: 100 },
-  { id: 'vanilla-syrup', label: 'Vanilla syrup', priceDelta: 100 },
-  { id: 'whipped-cream', label: 'Whipped cream', priceDelta: 120 },
-]
-const BURGER_EXTRAS: OptionChoice[] = [
-  { id: 'extra-cheese', label: 'Extra cheese', priceDelta: 150 },
-  { id: 'extra-patty', label: 'Extra patty', priceDelta: 450 },
-  { id: 'jalapenos', label: 'Jalapeños', priceDelta: 100 },
-  { id: 'caramelised-onions', label: 'Caramelised onions', priceDelta: 100 },
-]
-const WRAP_EXTRAS: OptionChoice[] = [
-  { id: 'extra-cheese', label: 'Extra cheese', priceDelta: 150 },
-  { id: 'jalapenos', label: 'Jalapeños', priceDelta: 100 },
-  { id: 'extra-filling', label: 'Extra filling', priceDelta: 300 },
-]
-const SPICE: SpiceLevel[] = ['mild', 'medium', 'desi-hot']
+/** A menu item that has a price, i.e. can go in the cart. */
+export type PricedItem = MenuItem & { price: number }
+export const isPriced = (item: MenuItem): item is PricedItem => item.price !== null
 
-const COFFEE_OPTIONS: ItemOptions = { sizes: COFFEE_SIZES, temps: TEMPS, milks: MILKS, extras: COFFEE_EXTRAS, sweetness: SWEETNESS_LEVELS }
-const BLACK_COFFEE_OPTIONS: ItemOptions = { sizes: COFFEE_SIZES, temps: TEMPS, extras: COFFEE_EXTRAS, sweetness: SWEETNESS_LEVELS }
+/* ---------- Option sets (only what the menu list states) ---------- */
+/** Flavoured lattes: HOT / COLD / BLENDED, same price. */
+const HOT_COLD_BLENDED: OptionChoice[] = [
+  { id: 'hot', label: 'Hot', priceDelta: 0 },
+  { id: 'cold', label: 'Cold', priceDelta: 0 },
+  { id: 'blended', label: 'Blended', priceDelta: 0 },
+]
+const FLAVOURED: ItemOptions = { temps: HOT_COLD_BLENDED }
 
 const FOLDER: Record<Category, string> = {
   coffee: 'coffee',
-  burger: 'burgers',
-  wrap: 'wraps',
-  sides: 'sides',
+  matcha: 'drinks',
   drinks: 'drinks',
-  desserts: 'desserts',
+  burger: 'burgers',
+  steak: 'burgers',
+  wrap: 'wraps',
 }
 
-type Seed = Omit<MenuItem, 'id' | 'image'>
-const make = (s: Seed): MenuItem => ({ ...s, id: s.slug, image: `/images/${FOLDER[s.category]}/${s.slug}.webp` })
+type Seed = Omit<MenuItem, 'id' | 'image' | 'badges' | 'options' | 'isVeg'> & Partial<Pick<MenuItem, 'badges' | 'options' | 'isVeg'>>
+const make = (s: Seed): MenuItem => ({ badges: [], options: {}, isVeg: false, ...s, id: s.slug, image: `/images/${FOLDER[s.category]}/${s.slug}.webp` })
+const drink = (s: Omit<Seed, 'isVeg'>): MenuItem => make({ ...s, isVeg: true })
 
 export const menu: MenuItem[] = [
-  /* ---------- Coffee ---------- */
-  make({ slug: 'classic-latte', name: 'Classic Latte', category: 'coffee', price: 650, emoji: '☕', badges: [], isVeg: true, options: COFFEE_OPTIONS, description: 'Double espresso, silky steamed milk. The everyday hug.' }),
-  make({ slug: 'spanish-latte', name: 'Spanish Latte', category: 'coffee', price: 790, emoji: '🥛', badges: ['bestseller'], isVeg: true, options: COFFEE_OPTIONS, note: 'the one everyone orders 👀', description: 'Espresso over sweet condensed milk. Creamy, dangerous, addictive.' }),
-  make({ slug: 'caramel-macchiato', name: 'Caramel Macchiato', category: 'coffee', price: 850, emoji: '🍯', badges: [], isVeg: true, options: COFFEE_OPTIONS, description: 'Vanilla milk, marked with espresso, drowned in caramel drizzle.' }),
-  make({ slug: 'mocha', name: 'Mocha', category: 'coffee', price: 820, emoji: '🍫', badges: [], isVeg: true, options: COFFEE_OPTIONS, description: 'Dark chocolate meets espresso. Dessert you can drink.' }),
-  make({ slug: 'pistachio-latte', name: 'Pistachio Latte', category: 'coffee', price: 850, emoji: '💚', badges: ['new'], isVeg: true, options: COFFEE_OPTIONS, note: 'new obsession unlocked', description: 'Nutty pistachio cream, espresso, a sprinkle of crushed pista.' }),
-  make({ slug: 'flat-white', name: 'Flat White', category: 'coffee', price: 700, emoji: '🤍', badges: [], isVeg: true, options: COFFEE_OPTIONS, description: 'Ristretto shots, velvet microfoam. Strong and smooth.' }),
-  make({ slug: 'americano', name: 'Americano', category: 'coffee', price: 550, emoji: '🖤', badges: [], isVeg: true, options: BLACK_COFFEE_OPTIONS, description: 'Espresso + water. No drama, just caffeine.' }),
-  make({ slug: 'cold-brew', name: 'Cold Brew', category: 'coffee', price: 750, emoji: '🧊', badges: [], isVeg: true, options: { sizes: COFFEE_SIZES, extras: COFFEE_EXTRAS, sweetness: SWEETNESS_LEVELS }, note: 'study grind fuel ☕', description: 'Steeped 18 hours. Smooth, low-acid, seriously strong.' }),
+  /* ---------- Coffee: espresso speciality ---------- */
+  drink({ slug: 'espresso', name: 'Espresso', category: 'coffee', price: 499, emoji: '☕', description: 'A straight shot of espresso.' }),
+  drink({ slug: 'americano', name: 'Americano', category: 'coffee', price: 499, emoji: '🖤', description: 'Espresso topped up with hot water.' }),
+  drink({ slug: 'cappuccino', name: 'Cappuccino', category: 'coffee', price: 650, emoji: '☕', description: 'Espresso, steamed milk and a thick cap of foam.' }),
+  drink({ slug: 'latte', name: 'Latte', category: 'coffee', price: 650, emoji: '🥛', description: 'Espresso with plenty of steamed milk.' }),
+  drink({ slug: 'flat-white', name: 'Flat White', category: 'coffee', price: 699, emoji: '🤍', description: 'Espresso with a thin layer of velvety milk.' }),
+  drink({ slug: 'mocha', name: 'Mocha', category: 'coffee', price: 699, emoji: '🍫', description: 'Espresso, chocolate and steamed milk.' }),
 
-  /* ---------- Burgers ---------- */
-  make({ slug: 'classic-smash', name: 'Classic Smash', category: 'burger', price: 950, emoji: '🍔', badges: ['bestseller'], isVeg: false, options: { extras: BURGER_EXTRAS }, spiceLevels: SPICE, note: 'start here, trust us', description: 'Smashed beef patty, American cheese, pickles, house sauce, potato bun.' }),
-  make({ slug: 'double-smash', name: 'Double Smash', category: 'burger', price: 1350, emoji: '🍔', badges: ['bestseller'], isVeg: false, options: { extras: BURGER_EXTRAS }, spiceLevels: SPICE, note: 'double trouble 🔥', description: 'Two crispy-edged patties, double cheese, caramelised onions, house sauce.' }),
-  make({ slug: 'smoky-bbq-stack', name: 'Smoky BBQ Stack', category: 'burger', price: 1450, emoji: '🔥', badges: [], isVeg: false, options: { extras: BURGER_EXTRAS }, spiceLevels: SPICE, description: 'Double beef, smoked cheddar, crispy onion rings, sticky BBQ glaze.' }),
-  make({ slug: 'mushroom-swiss', name: 'Mushroom Swiss', category: 'burger', price: 1250, emoji: '🍄', badges: [], isVeg: false, options: { extras: BURGER_EXTRAS }, spiceLevels: SPICE, description: 'Beef smash, garlic butter mushrooms, melted Swiss, truffle mayo.' }),
-  make({ slug: 'jalapeno-kicker', name: 'Jalapeño Kicker', category: 'burger', price: 1200, emoji: '🌶️', badges: ['spicy'], isVeg: false, options: { extras: BURGER_EXTRAS }, spiceLevels: SPICE, description: 'Beef smash, pepper jack, fresh + pickled jalapeños, chipotle mayo.' }),
-  make({ slug: 'tikka-smash', name: 'Desi Tikka Smash', category: 'burger', price: 1150, emoji: '🍗', badges: ['new', 'spicy'], isVeg: false, options: { extras: BURGER_EXTRAS }, spiceLevels: SPICE, note: 'desi heart, smash soul', description: 'Chicken tikka patty, mint raita mayo, onion lachha, cheese.' }),
-  make({ slug: 'nashville-hot-chicken', name: 'Nashville Hot Chicken', category: 'burger', price: 1150, emoji: '🐔', badges: ['spicy'], isVeg: false, options: { extras: BURGER_EXTRAS }, spiceLevels: SPICE, description: 'Crispy fried thigh, hot chilli oil, slaw, pickles, brioche.' }),
-  make({ slug: 'aloo-tikki-crunch', name: 'Aloo Tikki Crunch', category: 'burger', price: 850, emoji: '🥔', badges: ['veg'], isVeg: true, options: { extras: BURGER_EXTRAS }, spiceLevels: SPICE, description: 'Crispy spiced aloo tikki, imli chutney, cheese, crunchy lettuce.' }),
+  /* ---------- Coffee: flavoured speciality (hot / cold / blended) ---------- */
+  drink({ slug: 'caramel-latte', name: 'Caramel Latte', category: 'coffee', price: 750, emoji: '🍯', options: FLAVOURED, description: 'Latte with caramel. Hot, cold or blended.' }),
+  drink({ slug: 'hazelnut-latte', name: 'Hazelnut Latte', category: 'coffee', price: 750, emoji: '🌰', options: FLAVOURED, description: 'Latte with hazelnut. Hot, cold or blended.' }),
+  drink({ slug: 'spanish-latte', name: 'Spanish Latte', category: 'coffee', price: 750, emoji: '🥛', options: FLAVOURED, featured: true, note: 'sweet tooth? start here', description: 'Espresso with sweetened condensed milk. Hot, cold or blended.' }),
+  drink({ slug: 'french-vanilla-latte', name: 'French Vanilla Latte', category: 'coffee', price: 799, emoji: '🍦', options: FLAVOURED, description: 'Latte with French vanilla. Hot, cold or blended.' }),
+  drink({ slug: 'tiramisu-latte', name: 'Tiramisu Latte', category: 'coffee', price: 799, emoji: '🍰', options: FLAVOURED, featured: true, note: 'dessert in a cup', description: 'Tiramisu-flavoured latte. Hot, cold or blended.' }),
 
-  /* ---------- Wraps ---------- */
-  make({ slug: 'chicken-tikka-wrap', name: 'Chicken Tikka Wrap', category: 'wrap', price: 950, emoji: '🌯', badges: ['bestseller'], isVeg: false, options: { extras: WRAP_EXTRAS }, spiceLevels: SPICE, note: 'garma garam 🔥', description: 'Char-grilled tikka, garlic mayo, onions, mint chutney, toasted tortilla.' }),
-  make({ slug: 'peri-peri-wrap', name: 'Peri Peri Wrap', category: 'wrap', price: 990, emoji: '🌶️', badges: ['spicy'], isVeg: false, options: { extras: WRAP_EXTRAS }, spiceLevels: SPICE, description: 'Peri peri chicken, fries inside (yes), cheese, lettuce, peri mayo.' }),
-  make({ slug: 'crispy-ranch-wrap', name: 'Crispy Ranch Wrap', category: 'wrap', price: 1050, emoji: '🥬', badges: [], isVeg: false, options: { extras: WRAP_EXTRAS }, spiceLevels: SPICE, description: 'Crunchy fried chicken strips, ranch, cheddar, iceberg, tomato.' }),
-  make({ slug: 'malai-boti-wrap', name: 'Malai Boti Wrap', category: 'wrap', price: 1050, emoji: '🤍', badges: ['new'], isVeg: false, options: { extras: WRAP_EXTRAS }, spiceLevels: SPICE, description: 'Creamy malai boti, white garlic sauce, pickled onions, coriander.' }),
-  make({ slug: 'smoky-beef-wrap', name: 'Smoky Beef Wrap', category: 'wrap', price: 1150, emoji: '🥩', badges: [], isVeg: false, options: { extras: WRAP_EXTRAS }, spiceLevels: SPICE, description: 'Smoky pulled beef, cheese sauce, jalapeños, crispy onions.' }),
-  make({ slug: 'paneer-tikka-wrap', name: 'Paneer Tikka Wrap', category: 'wrap', price: 890, emoji: '🧀', badges: ['veg'], isVeg: true, options: { extras: WRAP_EXTRAS }, spiceLevels: SPICE, description: 'Tandoori paneer, peppers, onions, mint yogurt, chaat masala.' }),
+  /* ---------- Whisked matcha ---------- */
+  drink({ slug: 'classic-matcha', name: 'Classic Matcha', category: 'matcha', price: 800, emoji: '🍵', description: 'Whisked matcha, the classic way.' }),
+  drink({ slug: 'vanilla-matcha', name: 'Vanilla Matcha', category: 'matcha', price: 950, emoji: '🍵', description: 'Whisked matcha with vanilla.' }),
+  drink({ slug: 'strawberry-matcha', name: 'Strawberry Matcha', category: 'matcha', price: 999, emoji: '🍓', featured: true, note: 'pink + green 💚', description: 'Whisked matcha with strawberry.' }),
 
-  /* ---------- Sides ---------- */
-  make({ slug: 'classic-fries', name: 'Classic Fries', category: 'sides', price: 350, emoji: '🍟', badges: ['veg'], isVeg: true, options: {}, description: 'Golden, crispy, salted just right.' }),
-  make({ slug: 'masala-fries', name: 'Masala Fries', category: 'sides', price: 450, emoji: '🍟', badges: ['veg', 'spicy'], isVeg: true, options: {}, description: 'Tossed in our chatpata masala blend.' }),
-  make({ slug: 'loaded-fries', name: 'Loaded Fries', category: 'sides', price: 650, emoji: '🧀', badges: ['bestseller'], isVeg: false, options: {}, description: 'Cheese sauce, jalapeños, crispy chicken bits, house sauce.' }),
-  make({ slug: 'chicken-nuggets', name: 'Chicken Nuggets (6)', category: 'sides', price: 550, emoji: '🍗', badges: [], isVeg: false, options: {}, description: 'Crunchy bites with your choice of dip.' }),
+  /* ---------- Iced teas, beyond caffeine, mojitos ---------- */
+  drink({ slug: 'peach-iced-tea', name: 'Peach Iced Tea', category: 'drinks', price: 650, emoji: '🍑', description: 'Iced tea with peach.' }),
+  drink({ slug: 'raspberry-iced-tea', name: 'Raspberry Iced Tea', category: 'drinks', price: 650, emoji: '🧊', description: 'Iced tea with raspberry.' }),
+  drink({ slug: 'tea-chai', name: 'Tea / Chai', category: 'drinks', price: 300, emoji: '🫖', description: 'Tea or chai, the everyday classic.' }),
+  drink({ slug: 'green-tea', name: 'Green Tea', category: 'drinks', price: null, emoji: '🍵', description: 'A light cup of green tea.' }),
+  drink({ slug: 'green-apple-mojito', name: 'Green Apple Mojito', category: 'drinks', price: 750, emoji: '🍏', description: 'Green apple mojito over ice.' }),
+  drink({ slug: 'blue-mint-mojito', name: 'Blue Mint Mojito', category: 'drinks', price: 750, emoji: '💙', featured: true, note: 'instant cool-down', description: 'Blue mint mojito over ice.' }),
+  drink({ slug: 'passion-fruit-mojito', name: 'Passion Fruit Mojito', category: 'drinks', price: null, emoji: '🍹', description: 'Passion fruit mojito over ice.' }),
 
-  /* ---------- Drinks ---------- */
-  make({ slug: 'karak-chai', name: 'Karak Chai', category: 'drinks', price: 280, emoji: '🫖', badges: [], isVeg: true, options: {}, description: 'Strong, milky, cardamom-kissed. Late-night essential.' }),
-  make({ slug: 'mint-margarita', name: 'Mint Margarita', category: 'drinks', price: 450, emoji: '🌿', badges: ['veg'], isVeg: true, options: {}, description: 'Fresh mint, lime, crushed ice. Instant cool-down.' }),
-  make({ slug: 'fresh-lime', name: 'Fresh Lime', category: 'drinks', price: 300, emoji: '🍋', badges: ['veg'], isVeg: true, options: {}, description: 'Sweet or salty, fizzy or still.' }),
-  make({ slug: 'soft-drink', name: 'Soft Drink', category: 'drinks', price: 180, emoji: '🥤', badges: ['veg'], isVeg: true, options: {}, description: 'Chilled can. Ask for flavours.' }),
+  /* ---------- Zinger burgers (TODO(owner): prices) ---------- */
+  make({ slug: 'munch-zinger-burger', name: 'Munch Zinger Burger', category: 'burger', price: null, emoji: '🍔', description: 'Single-patty zinger burger.' }),
+  make({ slug: 'munch-special-burger', name: 'Munch Special Burger', category: 'burger', price: null, emoji: '🍔', description: 'Our special single-patty zinger burger.' }),
+  make({ slug: 'munch-overload', name: 'Munch Overload', category: 'burger', price: null, emoji: '🍔', featured: true, note: 'double trouble', description: 'Double-patty zinger burger.' }),
+  make({ slug: 'munch-hellfire', name: 'Munch Hellfire', category: 'burger', price: null, emoji: '🔥', badges: ['spicy'], featured: true, note: 'brave ones only 🔥', description: 'Double-patty zinger burger that brings the heat.' }),
 
-  /* ---------- Desserts ---------- */
-  make({ slug: 'choc-chunk-cookie', name: 'Choc Chunk Cookie', category: 'desserts', price: 350, emoji: '🍪', badges: ['veg'], isVeg: true, options: {}, description: 'Gooey centre, crispy edges, big chocolate puddles.' }),
-  make({ slug: 'nutella-brownie', name: 'Nutella Brownie', category: 'desserts', price: 550, emoji: '🟫', badges: ['veg'], isVeg: true, options: {}, description: 'Fudgy brownie, Nutella swirl, served warm.' }),
-  make({ slug: 'lotus-cheesecake', name: 'Lotus Cheesecake', category: 'desserts', price: 750, emoji: '🍰', badges: ['new', 'veg'], isVeg: true, options: {}, description: 'Creamy baked cheesecake on a Biscoff crumb.' }),
+  /* ---------- Beef smash burgers (TODO(owner): prices) ---------- */
+  make({ slug: 'munch-smash', name: 'Munch Smash', category: 'burger', price: null, emoji: '🍔', description: 'Single smashed beef patty.' }),
+  make({ slug: 'smash-beast', name: 'Smash Beast', category: 'burger', price: null, emoji: '🍔', featured: true, description: 'Double smashed beef patties.' }),
+  make({ slug: 'smash-monster', name: 'Smash Monster', category: 'burger', price: null, emoji: '🍔', description: 'Triple smashed beef patties.' }),
+
+  /* ---------- Steaks (TODO(owner): price) ---------- */
+  make({ slug: 'munch-signature-steak', name: 'Munch Signature Steak', category: 'steak', price: null, emoji: '🥩', featured: true, note: 'the signature', description: 'Our signature steak.' }),
+
+  /* ---------- Wraps: triangle-shaped (TODO(owner): prices) ---------- */
+  make({ slug: 'jalapeno-jolt', name: 'Jalapeño Jolt', category: 'wrap', price: null, emoji: '🌶️', badges: ['spicy'], featured: true, description: 'Triangle-shaped wrap with a jalapeño kick.' }),
+  make({ slug: 'bbq-blaze', name: 'BBQ Blaze', category: 'wrap', price: null, emoji: '🌯', description: 'Triangle-shaped wrap with smoky BBQ.' }),
+  make({ slug: 'creamy-crush', name: 'Creamy Crush', category: 'wrap', price: null, emoji: '🌯', description: 'Triangle-shaped wrap with a creamy sauce.' }),
 ]
 
 /* ---------- Category metadata (colour-coding lives here) ---------- */
@@ -162,34 +146,34 @@ export const CATEGORY_META: Record<Category, CategoryMeta> = {
     gradient: 'bg-linear-to-br from-caramel via-caramel/50 to-cheese/40',
     glow: 'hover:shadow-[7px_7px_0_0_var(--color-caramel)]',
   },
+  matcha: {
+    id: 'matcha', label: 'Matcha', emoji: '🍵', bg: 'bg-pickle', text: 'text-espresso', ring: 'ring-pickle',
+    gradient: 'bg-linear-to-br from-pickle via-pickle/50 to-oat',
+    glow: 'hover:shadow-[7px_7px_0_0_var(--color-pickle)]',
+  },
+  drinks: {
+    id: 'drinks', label: 'Teas & Mojitos', emoji: '🍹', bg: 'bg-bubblegum', text: 'text-espresso', ring: 'ring-bubblegum',
+    gradient: 'bg-linear-to-br from-bubblegum via-bubblegum/60 to-pickle/40',
+    glow: 'hover:shadow-[7px_7px_0_0_var(--color-bubblegum)]',
+  },
   burger: {
     id: 'burger', label: 'Burgers', emoji: '🍔', bg: 'bg-chili', text: 'text-espresso', ring: 'ring-chili',
     gradient: 'bg-linear-to-br from-chili via-chili/60 to-cheese/60',
     glow: 'hover:shadow-[7px_7px_0_0_var(--color-chili)]',
+  },
+  steak: {
+    id: 'steak', label: 'Steaks', emoji: '🥩', bg: 'bg-cheese', text: 'text-espresso', ring: 'ring-cheese',
+    gradient: 'bg-linear-to-br from-cheese via-cheese/60 to-chili/40',
+    glow: 'hover:shadow-[7px_7px_0_0_var(--color-cheese)]',
   },
   wrap: {
     id: 'wrap', label: 'Wraps', emoji: '🌯', bg: 'bg-pickle', text: 'text-espresso', ring: 'ring-pickle',
     gradient: 'bg-linear-to-br from-pickle via-pickle/60 to-cheese/40',
     glow: 'hover:shadow-[7px_7px_0_0_var(--color-pickle)]',
   },
-  sides: {
-    id: 'sides', label: 'Sides', emoji: '🍟', bg: 'bg-cheese', text: 'text-espresso', ring: 'ring-cheese',
-    gradient: 'bg-linear-to-br from-cheese via-cheese/60 to-chili/30',
-    glow: 'hover:shadow-[7px_7px_0_0_var(--color-cheese)]',
-  },
-  drinks: {
-    id: 'drinks', label: 'Drinks', emoji: '🥤', bg: 'bg-bubblegum', text: 'text-espresso', ring: 'ring-bubblegum',
-    gradient: 'bg-linear-to-br from-bubblegum via-bubblegum/60 to-pickle/40',
-    glow: 'hover:shadow-[7px_7px_0_0_var(--color-bubblegum)]',
-  },
-  desserts: {
-    id: 'desserts', label: 'Desserts', emoji: '🍪', bg: 'bg-bubblegum', text: 'text-espresso', ring: 'ring-bubblegum',
-    gradient: 'bg-linear-to-br from-bubblegum via-bubblegum/50 to-caramel/50',
-    glow: 'hover:shadow-[7px_7px_0_0_var(--color-bubblegum)]',
-  },
 }
 
-export const CATEGORY_ORDER: Category[] = ['coffee', 'burger', 'wrap', 'sides', 'drinks', 'desserts']
+export const CATEGORY_ORDER: Category[] = ['coffee', 'burger', 'wrap', 'steak', 'matcha', 'drinks']
 
 export const SPICE_LABELS: Record<SpiceLevel, string> = {
   mild: 'Mild',
@@ -204,4 +188,7 @@ const byId = new Map(menu.map((item) => [item.id, item]))
 export const getItemBySlug = (slug: string): MenuItem | undefined => bySlug.get(slug)
 export const getItemById = (id: string): MenuItem | undefined => byId.get(id)
 export const getItemsByCategory = (category: Category): MenuItem[] => menu.filter((i) => i.category === category)
-export const getBestsellers = (): MenuItem[] => menu.filter((i) => i.badges.includes('bestseller'))
+/** Home "Our picks" strip + marquee + 404 suggestions (owner-chosen via `featured`, not sales data). */
+export const getFeatured = (): MenuItem[] => menu.filter((i) => i.featured)
+/** Items that can be added to the cart right now. */
+export const getPricedItems = (): PricedItem[] => menu.filter(isPriced)

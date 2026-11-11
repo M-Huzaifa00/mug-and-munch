@@ -1,12 +1,12 @@
 import { Fragment, useRef } from 'react'
-import { getBestsellers } from '@/data/menu'
+import { getFeatured } from '@/data/menu'
 import { isLowEndDevice } from '@/hooks/useIsTouch'
 import { gsap, MQ, ScrollTrigger, useGSAP } from '@/lib/gsap'
 import { cn } from '@/lib/utils'
 import { BrandImage } from '@/components/brand/BrandImage'
 
 const URDU_LINES = ['Bhook lagi? 😋', 'Yaar, ek aur?', 'Order karo, chill karo ✌️', 'Garma garam 🔥', 'Late-night munchies 🌙']
-const ITEM_LINE = getBestsellers().map((i) => `${i.name} ${i.emoji}`)
+const ITEM_LINE = getFeatured().map((i) => `${i.name} ${i.emoji}`)
 const BASE_SPEED = 32 // seconds per loop
 
 const STRIPS = [

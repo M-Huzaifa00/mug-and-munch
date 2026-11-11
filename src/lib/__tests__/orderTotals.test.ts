@@ -60,3 +60,11 @@ describe('getOrderTotals', () => {
     expect(t.deliveryFee).toBe(site.commerce.deliveryFee)
   })
 })
+
+describe('unavailable lines', () => {
+  it('are never counted in the subtotal (they must be removed before sending anyway)', () => {
+    const t = getOrderTotals({ items: [{ unitPrice: 750, qty: 1 }, { unitPrice: 950, qty: 2, unavailable: true }], orderType: 'takeaway' })
+    expect(t.subtotal).toBe(750)
+    expect(t.total).toBe(750 + t.tax)
+  })
+})

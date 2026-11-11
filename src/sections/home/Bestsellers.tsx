@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { getBestsellers, getItemBySlug, type MenuItem } from '@/data/menu'
+import { getFeatured } from '@/data/menu'
 import { gsap, MQ, useGSAP } from '@/lib/gsap'
 import { cn } from '@/lib/utils'
 import { HandArrow } from '@/components/ui/HandArrow'
@@ -8,10 +8,10 @@ import { RevealHeading } from '@/components/ui/RevealHeading'
 import { LogoStamp } from '@/components/brand/LogoStamp'
 import { MunchStop } from '@/components/munchRun/MunchStop'
 
-const EXTRA_NOTES = ['the one everyone orders 👀', 'midnight fav 🌙', 'double trouble 🔥', 'garma garam 🔥', 'cheesy chaos 🧀', 'new obsession 💚']
-const ITEMS: MenuItem[] = [...getBestsellers(), getItemBySlug('pistachio-latte'), getItemBySlug('tikka-smash')].filter(
-  (i): i is MenuItem => Boolean(i),
-)
+// Neutral doodles only (no 'everyone orders this' popularity claims: we have no sales data).
+const EXTRA_NOTES = ['try me 👀', 'garma garam 🔥', 'yaar, ek aur?', 'late-night fav 🌙']
+/** Owner-chosen picks (`featured` in data/menu.ts). Section is still id'd 'bestsellers' for anchors / Munch Run. */
+const ITEMS = getFeatured()
 const PIN_QUERY = `(min-width: 1024px) and ${MQ.motionOk}`
 
 /**
@@ -62,9 +62,9 @@ export function Bestsellers() {
         <MunchStop stop={3} />
         <LogoStamp size={96} className="absolute top-20 right-[44%] hidden rotate-12 lg:inline-flex" />
         <RevealHeading id="bestsellers-title" className="text-display font-extrabold text-espresso">
-          Bestsellers
+          Our picks
         </RevealHeading>
-        <p className="mt-1 -rotate-1 font-hand text-2xl text-ink sm:text-3xl">the ones Islamabad keeps coming back for</p>
+        <p className="mt-1 -rotate-1 font-hand text-2xl text-ink sm:text-3xl">start anywhere, you can't go wrong</p>
         <div className="mt-6 h-2.5 overflow-hidden rounded-full border-2 border-espresso bg-oat" aria-hidden="true">
           <div ref={bar} className="h-full origin-left scale-x-0 bg-chili" />
         </div>

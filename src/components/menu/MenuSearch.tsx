@@ -20,7 +20,7 @@ export function MenuSearch({ value, onChange, className }: MenuSearchProps) {
         type="search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Search lattes, smash, tikka…"
+        placeholder="Search lattes, zinger, smash…"
         autoComplete="off"
         enterKeyHint="search"
         className="min-h-12 w-full rounded-full border-[2.5px] border-espresso bg-oat pr-12 pl-11 font-semibold text-espresso shadow-hard-sm placeholder:text-ink/60 focus-visible:shadow-hard [&::-webkit-search-cancel-button]:hidden"

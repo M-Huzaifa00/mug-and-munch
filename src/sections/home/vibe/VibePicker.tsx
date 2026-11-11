@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { getItemBySlug, type MenuItem } from '@/data/menu'
+import { getItemBySlug, isPriced, type MenuItem } from '@/data/menu'
 import { VIBES } from '@/data/toys'
 import { useAddToCart } from '@/hooks/useAddToCart'
 import { Flip, MQ, useGSAP } from '@/lib/gsap'
@@ -28,7 +28,9 @@ export function VibePicker() {
     const picks = vibe.picks.map((id) => POOL.find((i) => i.id === id)).filter((i): i is MenuItem => Boolean(i))
     return [...picks, ...POOL.filter((i) => !vibe.picks.includes(i.id))]
   }, [vibe])
-  const picksTotal = ordered.slice(0, 3).reduce((s, i) => s + i.price, 0)
+  // Only picks with a price can go in the cart (the rest show "Price coming soon").
+  const addable = ordered.slice(0, 3).filter(isPriced)
+  const picksTotal = addable.reduce((s, i) => s + i.price, 0)
 
   const choose = (id: string) => {
     if (grid.current) flipState.current = Flip.getState(grid.current.querySelectorAll('[data-flip]'))
@@ -46,7 +48,7 @@ export function VibePicker() {
     { dependencies: [vibeId], scope: grid },
   )
 
-  const addAll = () => ordered.slice(0, 3).forEach((item) => addToCart(toCartInput(item)))
+  const addAll = () => addable.forEach((item) => addToCart(toCartInput(item)))
 
   return (
     <section aria-labelledby="vibe-title" className="grain relative overflow-hidden bg-oat px-4 py-20 sm:px-6 md:py-28">
@@ -95,10 +97,10 @@ export function VibePicker() {
           })}
         </ul>
 
-        {vibe && (
+        {vibe && addable.length > 0 && (
           <div className="mt-8 flex justify-center">
             <Button size="lg" onClick={addAll}>
-              Add all 3 · {formatPKR(picksTotal)}
+              {addable.length === 3 ? 'Add all 3' : `Add ${addable.length === 1 ? 'it' : `these ${addable.length}`}`} · {formatPKR(picksTotal)}
             </Button>
           </div>
         )}

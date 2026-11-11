@@ -1,15 +1,15 @@
-import { getItemsByCategory, menu, type Category, type MenuItem } from '@/data/menu'
+import { getItemsByCategory, isPriced, menu, type Category, type MenuItem } from '@/data/menu'
 
-export type MenuFilter = 'veg' | 'spicy' | 'bestseller'
+export type MenuFilter = 'orderable' | 'spicy' | 'picks'
 
 export const FILTER_LABELS: Record<MenuFilter, string> = {
-  veg: '🌱 Veg',
+  orderable: '🛒 Order online',
   spicy: '🌶️ Spicy',
-  bestseller: '⭐ Bestseller',
+  picks: '⭐ Our picks',
 }
 
 const matchesFilter = (item: MenuItem, f: MenuFilter): boolean =>
-  f === 'veg' ? item.isVeg : item.badges.includes(f)
+  f === 'orderable' ? isPriced(item) : f === 'picks' ? Boolean(item.featured) : item.badges.includes('spicy')
 
 /** Search name/description (case-insensitive) + every active filter must match. */
 export function filterMenu(query: string, filters: ReadonlySet<MenuFilter>, items: MenuItem[] = menu): MenuItem[] {
@@ -21,10 +21,8 @@ export function filterMenu(query: string, filters: ReadonlySet<MenuFilter>, item
   )
 }
 
-/** Home preview: bestsellers first, then the rest, capped. */
+/** Home preview: our picks first, then items you can order now, then the rest; capped. Stable within each group. */
 export function getPreviewItems(category: Category, limit = 6): MenuItem[] {
-  const items = getItemsByCategory(category)
-  const best = items.filter((i) => i.badges.includes('bestseller'))
-  const rest = items.filter((i) => !i.badges.includes('bestseller'))
-  return [...best, ...rest].slice(0, limit)
+  const rank = (i: MenuItem) => (i.featured ? 0 : isPriced(i) ? 1 : 2)
+  return [...getItemsByCategory(category)].sort((a, b) => rank(a) - rank(b)).slice(0, limit)
 }

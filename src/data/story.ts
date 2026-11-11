@@ -34,7 +34,7 @@ export const STORY_PANELS: StoryPanel[] = [
   {
     id: 'coffee',
     title: 'Coffee that keeps up',
-    body: 'Lattes, Spanish lattes, cold brew and the rest. Made your way: size, milk, hot or iced, extra shot, sweetness. Study grind fuel, basically.',
+    body: 'Espresso classics from a straight shot to a mocha, flavoured lattes (caramel, hazelnut, Spanish, French vanilla, tiramisu) hot, cold or blended, and whisked matcha. Study grind fuel, basically.',
     bg: 'bg-caramel',
     image: '/images/coffee/spanish-latte.webp',
     emoji: '☕',
@@ -44,9 +44,9 @@ export const STORY_PANELS: StoryPanel[] = [
   {
     id: 'burger',
     title: 'Smashed, not stacked lazy',
-    body: 'Beef pressed onto a hot grill for crispy edges, cheese melted right on top, soft bun, house sauce. Or build your own, layer by layer.',
+    body: 'Crispy zinger burgers with one patty or two, and beef smash burgers all the way up to the triple-patty Smash Monster. Or build your own, layer by layer.',
     bg: 'bg-chili',
-    image: '/images/burgers/classic-smash.webp',
+    image: '/images/burgers/munch-smash.webp',
     emoji: '🍔',
     sticker: 'hot',
     doodle: 'garma garam 🔥',
@@ -54,7 +54,7 @@ export const STORY_PANELS: StoryPanel[] = [
   {
     id: 'wrap',
     title: 'Wraps for the road',
-    body: 'Tikka, malai boti, crispy chicken or paneer, rolled with crunchy veg and the sauces you pick. Easy to eat on the go, hard to share.',
+    body: 'Triangle-shaped wraps: Jalapeño Jolt, BBQ Blaze and Creamy Crush. Easy to eat on the go, hard to share.',
     bg: 'bg-pickle',
     image: '/images/wraps/build-your-own.webp',
     emoji: '🌯',
@@ -67,7 +67,7 @@ export const STORY_PANELS: StoryPanel[] = [
 export const STORY_STEPS = [
   { emoji: '📝', title: 'You choose', body: 'Pick from the menu or craft your own coffee, burger or wrap.' },
   { emoji: '💬', title: 'We confirm', body: 'Your order lands with us on WhatsApp and we confirm it there.' },
-  { emoji: '🔥', title: 'We make it', body: 'Brewed, smashed and rolled after you order.' },
+  { emoji: '🔥', title: 'We make it', body: 'Brewed, smashed and wrapped after you order.' },
   { emoji: '🛵', title: 'You munch', body: 'Delivered, ready at the counter, or brought to your table.' },
 ]
 

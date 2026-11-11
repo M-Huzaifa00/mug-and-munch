@@ -1,6 +1,6 @@
 import { BURGER_BUILDER, type BurgerLayerId } from '@/data/builder'
 import { deals } from '@/data/deals'
-import { getItemById, SPICE_LABELS, SWEETNESS_DEFAULT, type ItemOptions, type MenuItem, type OptionChoice, type SpiceLevel } from '@/data/menu'
+import { getItemById, isPriced, SPICE_LABELS, SWEETNESS_DEFAULT, type ItemOptions, type MenuItem, type OptionChoice, type PricedItem, type SpiceLevel } from '@/data/menu'
 import { WRAP_MAKER } from '@/data/wrapBuilder'
 import { burgerPrice } from '@/lib/burgerBuilder'
 import { wrapPrice } from '@/lib/wrapBuilder'
@@ -49,7 +49,7 @@ export function normalizeExtras(item: MenuItem, extras: readonly string[]): stri
   return [...new Set(extras)].filter((e) => order.includes(e)).sort((a, b) => order.indexOf(a) - order.indexOf(b))
 }
 
-export function unitPriceFor(item: MenuItem, sel: OptionSelection): number {
+export function unitPriceFor(item: PricedItem, sel: OptionSelection): number {
   const o: ItemOptions = item.options
   let price = item.price
   for (const group of Object.keys(SELECTION_KEY) as SingleGroup[]) {
@@ -116,11 +116,12 @@ export function priceLine(line: Pick<CartItem, 'itemId' | 'category' | 'options'
   }
   if (line.category === 'deal') {
     const deal = deals.find((d) => d.id === line.itemId)
-    if (!deal || !deal.items.every((l) => getItemById(l.itemId))) return { available: false }
+    if (!deal || !deal.items.every((l) => { const i = getItemById(l.itemId); return Boolean(i && isPriced(i)) })) return { available: false }
     return { available: true, unitPrice: deal.price }
   }
   const item = getItemById(line.itemId)
-  if (!item) return { available: false }
+  // Gone from the menu, or its price was removed ("Price coming soon") → can't be sent.
+  if (!item || !isPriced(item)) return { available: false }
   const sel = selectionFromOptions(o)
   const io = item.options
   const valid =
@@ -155,7 +156,7 @@ export function repriceLines(items: readonly CartItem[]): { items: CartItem[]; c
 }
 
 /** Turn a menu item + selection into a cart line input. Menu modal and Coffee maker both use this. */
-export function toCartInput(item: MenuItem, sel: OptionSelection = defaultSelection(item)): AddItemInput {
+export function toCartInput(item: PricedItem, sel: OptionSelection = defaultSelection(item)): AddItemInput {
   const extras = normalizeExtras(item, sel.extras)
   const options: CartOptions = {
     size: sel.size,

@@ -4,11 +4,11 @@ import { MASCOT_MOODS } from '@/components/mascot/mascotPoses'
 import { Seo } from '@/components/layout/Seo'
 import { MunchCharacter } from '@/components/munchRun/MunchCharacter'
 import { Button } from '@/components/ui/Button'
-import { getItemBySlug } from '@/data/menu'
+import { getPricedItems } from '@/data/menu'
 import { useAddToCart } from '@/hooks/useAddToCart'
 import { toCartInput } from '@/lib/itemOptions'
 
-const burger = getItemBySlug('classic-smash')
+const sample = getPricedItems()[0]
 
 /** DEV-ONLY review page (route only registered when import.meta.env.DEV). */
 export function MascotLab() {
@@ -50,7 +50,7 @@ export function MascotLab() {
               <h2 id="react" className="font-display text-3xl font-extrabold text-espresso">Cart reactions</h2>
               <p className="max-w-md text-ink">Follows your cursor. First add of the session → wave, every add → excited, 30s idle → sleep.</p>
               <div className="mt-4 flex flex-wrap gap-3">
-                <Button onClick={() => add(toCartInput(burger!))}>Add a burger</Button>
+                {sample && <Button onClick={() => add(toCartInput(sample))}>Add {sample.name}</Button>}
                 <Button variant="outline" onClick={() => sessionStorage.removeItem('mm-first-add')}>
                   Reset “first add”
                 </Button>

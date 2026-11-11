@@ -8,6 +8,8 @@ export const ORDER_TYPES: readonly OrderType[] = ['delivery', 'takeaway', 'dineI
 export interface PricedLine {
   unitPrice: number
   qty: number
+  /** Set by re-pricing when the item / option no longer exists (or lost its price): never counted. */
+  unavailable?: boolean
 }
 
 export interface OrderTotals {
@@ -35,7 +37,7 @@ export function getOrderTotals(
   { items, orderType }: { items: readonly PricedLine[]; orderType: OrderType },
   config: TotalsConfig = site.commerce,
 ): OrderTotals {
-  const subtotal = Math.round(items.reduce((sum, i) => sum + i.unitPrice * i.qty, 0))
+  const subtotal = Math.round(items.reduce((sum, i) => (i.unavailable ? sum : sum + i.unitPrice * i.qty), 0))
   const isDelivery = orderType === 'delivery'
   const freeUnlocked = subtotal >= config.freeDeliveryThreshold
   const deliveryFee = isDelivery && subtotal > 0 && !freeUnlocked ? config.deliveryFee : 0

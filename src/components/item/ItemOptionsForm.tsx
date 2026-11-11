@@ -12,7 +12,7 @@ interface ItemOptionsFormProps {
 const toPills = (choices: OptionChoice[]): PillOption[] =>
   choices.map((c) => ({ id: c.id, label: c.label, hint: c.priceDelta > 0 ? `+${formatPKR(c.priceDelta)}` : undefined }))
 
-/** Renders every option group the item has: size, hot/iced, milk, spice, extras. */
+/** Renders every option group the item has: size, temperature (hot / cold / blended), milk, spice, extras. */
 export function ItemOptionsForm({ item, value, onChange }: ItemOptionsFormProps) {
   const o = item.options
   const set = (patch: Partial<OptionSelection>) => onChange({ ...value, ...patch })
@@ -24,7 +24,7 @@ export function ItemOptionsForm({ item, value, onChange }: ItemOptionsFormProps)
         <OptionPills legend="Size" name="size" options={toPills(o.sizes)} selected={pick(value.size)} onToggle={(id) => set({ size: id })} />
       )}
       {o.temps && (
-        <OptionPills legend="Hot or iced" name="temp" options={toPills(o.temps)} selected={pick(value.temp)} onToggle={(id) => set({ temp: id })} />
+        <OptionPills legend="Hot, cold or blended" name="temp" options={toPills(o.temps)} selected={pick(value.temp)} onToggle={(id) => set({ temp: id })} />
       )}
       {o.milks && (
         <OptionPills legend="Milk" name="milk" options={toPills(o.milks)} selected={pick(value.milk)} onToggle={(id) => set({ milk: id })} />

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Search } from 'lucide-react'
 import { site } from '@/config/site'
-import { getBestsellers } from '@/data/menu'
+import { getFeatured } from '@/data/menu'
 import { useTransitionNavigate } from '@/hooks/useTransitionNavigate'
 import { Button, ButtonLink } from '@/components/ui/Button'
 import { ProductCard } from '@/components/ui/ProductCard'
@@ -9,16 +9,16 @@ import { Logo } from '@/components/brand/Logo'
 import { Seo } from '@/components/layout/Seo'
 import { Mascot } from '@/components/mascot/Mascot'
 
-const PICKS = getBestsellers().slice(0, 3)
+const PICKS = getFeatured().slice(0, 3)
 
-/** Fun 404: guilty Munchy, mini menu search (→ /menu?q=), 3 bestsellers, Home + Menu buttons. */
+/** Fun 404: guilty Munchy, mini menu search (→ /menu?q=), 3 of our picks, Home + Menu buttons. */
 export function NotFound() {
   const [q, setQ] = useState('')
   const navigate = useTransitionNavigate()
 
   return (
     <>
-      <Seo title="Page not found" description={`This page got munched. Search the ${site.brandName} menu or grab a bestseller instead.`} path="/404" />
+      <Seo title="Page not found" description={`This page got munched. Search the ${site.brandName} menu or grab one of our picks instead.`} path="/404" />
       <section className="grain flex flex-col items-center bg-oat px-4 pt-28 pb-16 text-center">
         <div className="flex items-end gap-4">
           <Mascot mood="guilty" className="h-44" label="Munchy looking guilty with crumbs" />
@@ -69,7 +69,7 @@ export function NotFound() {
       <section aria-labelledby="nf-picks" className="grain bg-cheese px-4 py-14 sm:px-6">
         <div className="mx-auto max-w-5xl">
           <h2 id="nf-picks" className="font-display text-3xl font-extrabold text-espresso">
-            While you're here, the crowd favourites
+            While you're here, a few of our picks
           </h2>
           <ul className="mt-6 grid gap-5 sm:grid-cols-3">
             {PICKS.map((item) => (

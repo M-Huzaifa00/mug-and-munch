@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { readdirSync, readFileSync } from 'node:fs'
 import { join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
@@ -89,6 +90,10 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
+  },
+  test: {
+    // Test-only menu items + deal (keeps option / deal code paths covered whatever the owner's data holds).
+    setupFiles: ['src/lib/__tests__/setup.ts'],
   },
   build: {
     rolldownOptions: {

@@ -9,20 +9,20 @@ Address: House 12, Street 34
 Landmark: Near the park
 
 *Items*
-2× *Classic Smash* — Rs 2,200
+2× *Test Smash* — Rs 2,200
    Desi Hot 🌶️ · +Extra cheese
 1× 🍔 *"Midnight Monster"* (custom burger) — Rs 2,320
    Sesame bun · Smash patty ×3 · Cheese ×2 · Jalapeños · Onion · Lettuce · House sauce ×2
-1× ☕ *Spanish Latte* — Rs 1,540
+1× ☕ *Test Latte* — Rs 1,450
    Large · Oat milk · Iced · Extra shot · Hazelnut syrup · Sweetness 25%
 1× 🌯 *"Late Night Lapet"* (custom wrap) — Rs 1,670
    Paratha · Malai boti ×2 · Mozzarella · Cheddar · Onions · Pickled onions · Mint chutney · Imli · Desi Hot 🌶️
-1× 🎁 *Student Deal* (deal) — Rs 1,199
-   Classic Smash · Classic Fries · Soft Drink
+1× 🎁 *Test Deal* (deal) — Rs 1,100
+   Test Smash · Tea / Chai
 
-Subtotal: Rs 8,929
+Subtotal: Rs 8,740
 Delivery: Free
-*Total: Rs 8,929*
+*Total: Rs 8,740*
 
 Payment: Cash on Delivery
 Name: Ali
@@ -37,19 +37,19 @@ exports[`buildWhatsAppOrderMessage > dineIn: full message with every layer + fil
 Table: 7
 
 *Items*
-2× *Classic Smash* — Rs 2,200
+2× *Test Smash* — Rs 2,200
    Desi Hot 🌶️ · +Extra cheese
 1× 🍔 *"Midnight Monster"* (custom burger) — Rs 2,320
    Sesame bun · Smash patty ×3 · Cheese ×2 · Jalapeños · Onion · Lettuce · House sauce ×2
-1× ☕ *Spanish Latte* — Rs 1,540
+1× ☕ *Test Latte* — Rs 1,450
    Large · Oat milk · Iced · Extra shot · Hazelnut syrup · Sweetness 25%
 1× 🌯 *"Late Night Lapet"* (custom wrap) — Rs 1,670
    Paratha · Malai boti ×2 · Mozzarella · Cheddar · Onions · Pickled onions · Mint chutney · Imli · Desi Hot 🌶️
-1× 🎁 *Student Deal* (deal) — Rs 1,199
-   Classic Smash · Classic Fries · Soft Drink
+1× 🎁 *Test Deal* (deal) — Rs 1,100
+   Test Smash · Tea / Chai
 
-Subtotal: Rs 8,929
-*Total: Rs 8,929*
+Subtotal: Rs 8,740
+*Total: Rs 8,740*
 
 Payment: Pay at the counter
 Name: Ali
@@ -64,19 +64,19 @@ exports[`buildWhatsAppOrderMessage > takeaway: full message with every layer + f
 Pickup: Today 9:30 PM
 
 *Items*
-2× *Classic Smash* — Rs 2,200
+2× *Test Smash* — Rs 2,200
    Desi Hot 🌶️ · +Extra cheese
 1× 🍔 *"Midnight Monster"* (custom burger) — Rs 2,320
    Sesame bun · Smash patty ×3 · Cheese ×2 · Jalapeños · Onion · Lettuce · House sauce ×2
-1× ☕ *Spanish Latte* — Rs 1,540
+1× ☕ *Test Latte* — Rs 1,450
    Large · Oat milk · Iced · Extra shot · Hazelnut syrup · Sweetness 25%
 1× 🌯 *"Late Night Lapet"* (custom wrap) — Rs 1,670
    Paratha · Malai boti ×2 · Mozzarella · Cheddar · Onions · Pickled onions · Mint chutney · Imli · Desi Hot 🌶️
-1× 🎁 *Student Deal* (deal) — Rs 1,199
-   Classic Smash · Classic Fries · Soft Drink
+1× 🎁 *Test Deal* (deal) — Rs 1,100
+   Test Smash · Tea / Chai
 
-Subtotal: Rs 8,929
-*Total: Rs 8,929*
+Subtotal: Rs 8,740
+*Total: Rs 8,740*
 
 Payment: Cash on pickup
 Name: Ali

@@ -1,12 +1,11 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { BURGER_BUILDER } from '@/data/builder'
-import { getItemById } from '@/data/menu'
 import { describeLine } from '@/lib/lineDescription'
 import { priceLine, repriceLines, toCartInput } from '@/lib/itemOptions'
 import { burgerToCartInput } from '@/lib/burgerBuilder'
 import { wrapToCartInput } from '@/lib/wrapBuilder'
 import { buildLineId } from '@/store/cart'
-import { bigBurger, FULL_WRAP, fullWrap, makerCoffee, smash, studentDeal, toLine } from './fixtures'
+import { bigBurger, FULL_WRAP, fullWrap, makerCoffee, pricedItem, smash, studentDeal, toLine } from './fixtures'
 
 describe('describeLine', () => {
   it('custom burger: quoted name, bun first, grouped layers bottom → top, sauces last', () => {
@@ -30,19 +29,19 @@ describe('describeLine', () => {
 
   it('coffee: size, milk, temp, add-ons in menu order, sweetness when not default', () => {
     const d = describeLine(toLine(makerCoffee()))
-    expect(d.title).toBe('Spanish Latte')
+    expect(d.title).toBe('Test Latte')
     expect(d.tag).toBeUndefined()
     expect(d.details).toEqual(['Large', 'Oat milk', 'Iced', 'Extra shot', 'Hazelnut syrup', 'Sweetness 25%'])
     expect(d.edit?.label).toBe('Tweak')
   })
 
   it('coffee at default sweetness hides it', () => {
-    const latte = getItemById('classic-latte')!
+    const latte = pricedItem('test-latte')
     expect(describeLine(toLine(toCartInput(latte))).details).not.toContain('Sweetness 50%')
   })
 
   it('maker coffee and the same menu coffee are identical (same text, same line → merge)', () => {
-    const latte = getItemById('spanish-latte')!
+    const latte = pricedItem('test-latte')
     const fromMenu = toCartInput(latte, { size: 'l', temp: 'iced', milk: 'oat', extras: ['extra-shot', 'hazelnut-syrup'], sweetness: 25 })
     const fromMaker = makerCoffee()
     expect(describeLine(toLine(fromMenu))).toEqual(describeLine(toLine(fromMaker)))
@@ -59,7 +58,7 @@ describe('describeLine', () => {
   it('deal: tag "Deal", details = what is inside', () => {
     const d = describeLine(toLine(studentDeal()))
     expect(d.tag).toBe('Deal')
-    expect(d.details).toEqual(['Classic Smash', 'Classic Fries', 'Soft Drink'])
+    expect(d.details).toEqual(['Test Smash', 'Tea / Chai'])
   })
 })
 

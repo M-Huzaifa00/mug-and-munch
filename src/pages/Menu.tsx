@@ -13,7 +13,7 @@ import { MenuEmpty } from '@/components/menu/MenuEmpty'
 import { MenuSearch } from '@/components/menu/MenuSearch'
 import { MenuSection } from '@/components/menu/MenuSection'
 
-const FILTERS: MenuFilter[] = ['veg', 'spicy', 'bestseller']
+const FILTERS: MenuFilter[] = ['orderable', 'spicy', 'picks']
 
 export function Menu() {
   // ?q= (e.g. from the 404 search) pre-fills the search box.

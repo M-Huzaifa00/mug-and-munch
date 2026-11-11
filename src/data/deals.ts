@@ -1,5 +1,5 @@
 /**
- * Combo deals. PLACEHOLDER PRICES — owner to update.
+ * Combo deals (owner data).
  * "Save Rs X" is ALWAYS computed from real menu prices; never hardcode savings.
  */
 import { getItemById } from './menu'
@@ -29,65 +29,12 @@ export interface Deal {
   window?: { start: string; end: string }
 }
 
-export const deals: Deal[] = [
-  {
-    id: 'student-deal',
-    slug: 'student-deal',
-    name: 'Student Deal',
-    tagline: 'Budget tight, bhook full.',
-    emoji: '🎒',
-    items: [
-      { itemId: 'classic-smash', qty: 1 },
-      { itemId: 'classic-fries', qty: 1 },
-      { itemId: 'soft-drink', qty: 1 },
-    ],
-    price: 1199,
-    type: 'solo',
-    availability: 'Show your student card at pickup', // TODO: owner confirms rule
-  },
-  {
-    id: 'study-grind',
-    slug: 'study-grind',
-    name: 'Study Grind',
-    tagline: 'Two lattes, two cookies, zero sleep.',
-    emoji: '📚',
-    items: [
-      { itemId: 'classic-latte', qty: 2 },
-      { itemId: 'choc-chunk-cookie', qty: 2 },
-    ],
-    price: 1699,
-    type: 'coffee',
-  },
-  {
-    id: 'midnight-deal',
-    slug: 'midnight-deal',
-    name: 'Midnight Deal',
-    tagline: 'Late-night munchies sorted.',
-    emoji: '🌙',
-    items: [
-      { itemId: 'double-smash', qty: 1 },
-      { itemId: 'loaded-fries', qty: 1 },
-      { itemId: 'cold-brew', qty: 1 },
-    ],
-    price: 2199,
-    type: 'late-night',
-    window: { start: '23:00', end: '02:00' }, // TODO: owner confirms window
-  },
-  {
-    id: 'duo-deal',
-    slug: 'duo-deal',
-    name: 'Duo Deal',
-    tagline: 'For you + your favourite person.',
-    emoji: '💕',
-    items: [
-      { itemId: 'classic-smash', qty: 2 },
-      { itemId: 'classic-fries', qty: 2 },
-      { itemId: 'spanish-latte', qty: 2 },
-    ],
-    price: 3499,
-    type: 'sharing',
-  },
-]
+/**
+ * No deals yet: the café's current list has none (2026-11-11). Home hides the deals strip and /deals says
+ * "coming soon" while this is empty. To add one: { id, slug, name, tagline, emoji, items: [{ itemId, qty }],
+ * price, type, availability?, window? }. Every item must exist in data/menu.ts WITH a price, or the deal can't be ordered.
+ */
+export const deals: Deal[] = []
 
 /** Sum of the individual menu prices for everything in the deal. */
 export function getDealOriginalPrice(deal: Deal): number {

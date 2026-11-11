@@ -4,11 +4,11 @@ import { BRAND_INK, brandSrc } from '@/lib/brand'
 
 const FILL: Record<Category, string> = {
   coffee: 'fill-caramel',
-  burger: 'fill-chili',
-  wrap: 'fill-pickle',
-  sides: 'fill-cheese',
+  matcha: 'fill-pickle',
   drinks: 'fill-bubblegum',
-  desserts: 'fill-bubblegum',
+  burger: 'fill-chili',
+  steak: 'fill-cheese',
+  wrap: 'fill-pickle',
 }
 const R = 100
 

@@ -14,23 +14,25 @@ export interface Vibe {
   picks: [string, string, string]
 }
 
+// Picks can include items without a price yet; the picker only adds the ones that have one.
 export const VIBES: Vibe[] = [
-  { id: 'sleepy', label: 'Sleepy', emoji: '😴', line: 'caffeine incoming ☕', picks: ['cold-brew', 'spanish-latte', 'choc-chunk-cookie'] },
-  { id: 'hangry', label: 'Hangry', emoji: '😤', line: 'go big or go home 🍔', picks: ['double-smash', 'loaded-fries', 'smoky-bbq-stack'] },
-  { id: 'study', label: 'Study grind', emoji: '📚', line: 'fuel for the all-nighter', picks: ['pistachio-latte', 'chicken-tikka-wrap', 'choc-chunk-cookie'] },
-  { id: 'date', label: 'Date night', emoji: '💕', line: 'share the cheesecake. or don’t.', picks: ['lotus-cheesecake', 'spanish-latte', 'mushroom-swiss'] },
-  { id: 'midnight', label: 'Midnight munchies', emoji: '🌙', line: 'late-night munchies sorted', picks: ['classic-smash', 'karak-chai', 'loaded-fries'] },
+  { id: 'sleepy', label: 'Sleepy', emoji: '😴', line: 'caffeine incoming ☕', picks: ['americano', 'spanish-latte', 'tiramisu-latte'] },
+  { id: 'hangry', label: 'Hangry', emoji: '😤', line: 'go big or go home 🍔', picks: ['smash-beast', 'munch-hellfire', 'munch-signature-steak'] },
+  { id: 'study', label: 'Study grind', emoji: '📚', line: 'fuel for the all-nighter', picks: ['flat-white', 'classic-matcha', 'jalapeno-jolt'] },
+  { id: 'chill', label: 'Thirsty', emoji: '🧊', line: 'instant cool-down sorted', picks: ['blue-mint-mojito', 'peach-iced-tea', 'green-apple-mojito'] },
+  { id: 'midnight', label: 'Midnight munchies', emoji: '🌙', line: 'late-night munchies sorted', picks: ['munch-zinger-burger', 'tea-chai', 'bbq-blaze'] },
 ]
 
 /* ---------- Snack Roulette ---------- */
-/** Menu item ids on the wheel (6–10 works best). Honest: normal prices, no fake discounts. */
+/** Menu item ids on the wheel (6–10 works best). Honest: normal prices, no fake discounts.
+ *  Only items WITH a price land on the wheel (unpriced ids are skipped), so add burgers/wraps once priced. */
 export const ROULETTE_ITEMS = [
-  'classic-smash',
   'spanish-latte',
-  'chicken-tikka-wrap',
-  'loaded-fries',
+  'strawberry-matcha',
   'mocha',
-  'peri-peri-wrap',
-  'nutella-brownie',
-  'mint-margarita',
+  'blue-mint-mojito',
+  'caramel-latte',
+  'peach-iced-tea',
+  'tiramisu-latte',
+  'green-apple-mojito',
 ]

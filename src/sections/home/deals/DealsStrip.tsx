@@ -5,8 +5,9 @@ import { Mascot } from '@/components/mascot/Mascot'
 import { SECTION_IDS } from '../sectionIds'
 import { DealCard } from './DealCard'
 
-/** Cheese combo strip. Savings always computed from real menu prices (data/deals.ts). */
+/** Cheese combo strip. Savings always computed from real menu prices (data/deals.ts). Hidden while there are no deals. */
 export function DealsStrip() {
+  if (deals.length === 0) return null
   return (
     <section id={SECTION_IDS.deals} aria-labelledby="deals-title" className="grain relative overflow-hidden bg-cheese px-4 py-20 sm:px-6 md:py-28">
       <Sticker kind="sparkle" className="top-10 left-[46%] hidden md:block" tilt={-10} />

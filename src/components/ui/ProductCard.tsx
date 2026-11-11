@@ -2,13 +2,14 @@ import { useRef } from 'react'
 import { motion } from 'motion/react'
 import { Plus } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router'
-import { CATEGORY_META, type MenuItem } from '@/data/menu'
+import { CATEGORY_META, isPriced, type MenuItem } from '@/data/menu'
 import { useAddToCart } from '@/hooks/useAddToCart'
 import { hasRequiredOptions, toCartInput } from '@/lib/itemOptions'
 import { SPRING } from '@/lib/motion-presets'
 import { modalStateFrom } from '@/lib/routing'
 import { cn, formatPKR } from '@/lib/utils'
 import { Badge } from './Badge'
+import { PriceComingSoon } from './PriceComingSoon'
 import { ProductImage } from './ProductImage'
 
 interface ProductCardProps {
@@ -24,7 +25,7 @@ const STRETCHED_LINK =
 
 /**
  * Neo-brutalist sticker card. The whole card is a link to the item (modal from inside the site);
- * the round chili "+" quick-adds (or opens the modal when a size must be picked).
+ * the round chili "+" quick-adds (or opens the modal when a size must be picked). No price yet → "Price coming soon", no "+".
  */
 export function ProductCard({ item, variant = 'default', className, onNavigate }: ProductCardProps) {
   const location = useLocation()
@@ -35,7 +36,9 @@ export function ProductCard({ item, variant = 'default', className, onNavigate }
   const to = `/menu/${item.slug}`
   const state = modalStateFrom(location)
 
+  const priced = isPriced(item)
   const onQuickAdd = () => {
+    if (!isPriced(item)) return
     if (hasRequiredOptions(item)) {
       onNavigate?.()
       void navigate(to, { state })
@@ -44,7 +47,7 @@ export function ProductCard({ item, variant = 'default', className, onNavigate }
     addToCart(toCartInput(item), { source: imageRef.current })
   }
 
-  const addButton = (
+  const addButton = priced && (
     <motion.button
       type="button"
       onClick={onQuickAdd}
@@ -59,7 +62,7 @@ export function ProductCard({ item, variant = 'default', className, onNavigate }
 
   if (variant === 'compact') {
     return (
-      <article data-cursor="add" className={cn('relative flex w-60 shrink-0 items-center gap-3 rounded-2xl border-2 border-espresso bg-oat p-2 shadow-hard-sm', className)}>
+      <article data-cursor={priced ? 'add' : undefined} className={cn('relative flex w-60 shrink-0 items-center gap-3 rounded-2xl border-2 border-espresso bg-oat p-2 shadow-hard-sm', className)}>
         <div ref={imageRef} className="size-14 shrink-0 overflow-hidden rounded-xl border-2 border-espresso">
           <ProductImage name={item.name} emoji={item.emoji} image={item.image} category={item.category} size="sm" showName={false} />
         </div>
@@ -69,7 +72,7 @@ export function ProductCard({ item, variant = 'default', className, onNavigate }
               {item.name}
             </Link>
           </h4>
-          <p className="font-display text-sm font-extrabold text-espresso">{formatPKR(item.price)}</p>
+          {priced ? <p className="font-display text-sm font-extrabold text-espresso">{formatPKR(item.price)}</p> : <PriceComingSoon className="mt-0.5" />}
         </div>
         {addButton}
       </article>
@@ -78,7 +81,7 @@ export function ProductCard({ item, variant = 'default', className, onNavigate }
 
   return (
     <motion.article
-      data-cursor="add"
+      data-cursor={priced ? 'add' : undefined}
       whileHover={{ y: -6, rotate: -1.2 }}
       whileTap={{ scale: 0.97 }}
       transition={SPRING.bouncy}
@@ -107,8 +110,8 @@ export function ProductCard({ item, variant = 'default', className, onNavigate }
           </Link>
         </h3>
         <p className="line-clamp-1 text-xs text-ink/80 sm:text-sm">{item.description}</p>
-        <div className="mt-auto flex items-center justify-between gap-2 pt-2">
-          <span className="font-display text-base font-extrabold text-espresso sm:text-lg">{formatPKR(item.price)}</span>
+        <div className="mt-auto flex min-h-13 items-center justify-between gap-2 pt-2">
+          {priced ? <span className="font-display text-base font-extrabold text-espresso sm:text-lg">{formatPKR(item.price)}</span> : <PriceComingSoon />}
           {addButton}
         </div>
       </div>

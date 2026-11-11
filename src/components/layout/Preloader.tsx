@@ -1,17 +1,10 @@
-import { useId, useRef } from 'react'
-import { brandSrc } from '@/lib/brand'
-import { removeBootScreen, setPreloaderPhase, whenPageReady } from '@/lib/preloader'
+import { useRef } from 'react'
+import { removeBootScreen, setPreloaderPhase, setSketchHandoff, whenPageReady } from '@/lib/preloader'
 import { gsap, MQ, ScrollTrigger, useGSAP } from '@/lib/gsap'
-import { EASE } from '@/lib/motion-presets'
 import { useScrollLock } from '@/hooks/useScrollLock'
-import { BRAND_ASPECT } from '@/components/brand/brandAssets'
-import { Mascot } from '@/components/mascot/Mascot'
+import { SketchArt } from '@/sections/home/hero/SketchArt'
 
-const H = 400
-const W = Math.round(H * BRAND_ASPECT.full)
-/** Wide liquid shape with a wavy top edge (period W/4 → shifting x by -W/2 loops seamlessly). */
-const WAVE = `M0 14 ${Array.from({ length: 8 }, (_, i) => `q${W / 8} ${i % 2 ? 28 : -28} ${W / 4} 0`).join(' ')} V${H * 2} H0 Z`
-/** Count quickly to here, then hold (wave still rolling) until the page is mounted. */
+/** Count quickly to here, then hold until the page is mounted. */
 const HOLD_AT = 88
 /** Never trap a visitor on a slow network: reveal after this even if the page isn't ready (a blank oat page shows). */
 const MAX_WAIT_MS = 6000
@@ -20,15 +13,16 @@ const FONT_WAIT_MS = 1200
 const sleep = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms))
 
 /**
- * THE loading screen, on every full page load (any route), rendered by the app shell so nothing shows before it:
- * index.html paints the same first frame before JS, this takes over, counts 0→88, waits for the page + fonts,
- * finishes to 100, Munchy pops, then the curtain slides up (transform only) while the page intro plays.
- * Reduced motion: same count, logo already full, Munchy just appears, curtain fades instead of sliding.
+ * THE loading screen, on every full page load (any route). The logo's tray (same art as the hero sketch) draws
+ * itself in ink as the count goes 0→100, so the wait builds something. Then:
+ * - Home with the hero sketch on screen: the drawing FLIES onto the hero's sketch while the oat fades away, and
+ *   the hero prints its colours in (seamless hand-off via `setSketchHandoff`).
+ * - anywhere else: the drawing lifts and the curtain slides up (transform only) while the page intro plays.
+ * Reduced motion: finished drawing, count, fade.
  */
 export function Preloader() {
   const root = useRef<HTMLDivElement>(null)
   const counter = useRef<HTMLSpanElement>(null)
-  const clipId = `mm-fill-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`
   useScrollLock(true)
 
   useGSAP(
@@ -37,30 +31,54 @@ export function Preloader() {
       const calm = window.matchMedia(MQ.reduced).matches
       const run = { cancelled: false }
       const progress = { v: 0 }
-      const waveY = gsap.quickSetter('[data-wave]', 'y')
+      gsap.set(['[data-sk-fill]', '[data-sk-arrow]', '[data-sk-steam]', '[data-sk-spark]', 'text'], { autoAlpha: 0 })
+      const draw = gsap.timeline({ paused: true }).fromTo('[data-sk-line]', { drawSVG: '0%' }, { drawSVG: '100%', duration: 0.7, ease: 'power2.inOut', stagger: 0.045 })
       const render = () => {
         if (counter.current) counter.current.textContent = String(Math.round(progress.v))
-        waveY(calm ? -30 : H - ((H + 30) * progress.v) / 100)
+        draw.progress(calm ? 1 : progress.v / 100)
       }
       render()
-      gsap.set('[data-steam] path', { y: calm ? 0 : 14, opacity: 0 })
-      if (!calm) gsap.to('[data-wave]', { x: -W / 2, duration: 1.1, ease: 'none', repeat: -1 })
-      const count = gsap.to(progress, { v: HOLD_AT, duration: 0.85, ease: 'power2.out', onUpdate: render })
+      const count = gsap.to(progress, { v: HOLD_AT, duration: 1.1, ease: 'power2.out', onUpdate: render })
 
       const finish = contextSafe?.(() => {
-        if (run.cancelled) return
+        if (run.cancelled || !root.current) return
+        const target = calm ? null : document.querySelector('[data-hero-sketch] [data-sk-svg]')?.getBoundingClientRect()
+        const art = root.current.querySelector('[data-pl-art]')?.getBoundingClientRect()
+        const handoff = Boolean(target && art && target.width > 0 && target.top < window.innerHeight * 0.85 && target.bottom > 0)
+
         const tl = gsap.timeline({
           onComplete: () => {
             setPreloaderPhase('done')
             requestAnimationFrame(() => ScrollTrigger.refresh())
           },
         })
-        tl.to(progress, { v: 100, duration: 0.3, ease: 'power1.inOut', onUpdate: render }).to('[data-steam] path', { y: 0, opacity: 1, duration: 0.3, stagger: 0.07, ease: EASE.out }, 0.1)
-        if (calm) tl.to('[data-pop]', { autoAlpha: 1, duration: 0.25 }, 0.12)
-        else tl.fromTo('[data-pop]', { scale: 0, rotation: -20, autoAlpha: 0 }, { scale: 1, rotation: 0, autoAlpha: 1, duration: 0.4, ease: EASE.bouncy }, 0.12)
-        tl.addLabel('exit', '+=0.18').call(() => setPreloaderPhase('revealing'), [], 'exit')
+        tl.to(progress, { v: 100, duration: 0.35, ease: 'power1.inOut', onUpdate: render })
+        tl.addLabel('exit', '+=0.15').call(
+          () => {
+            setSketchHandoff(handoff)
+            setPreloaderPhase('revealing')
+          },
+          [],
+          'exit',
+        )
         if (calm) tl.to(root.current, { autoAlpha: 0, duration: 0.4, ease: 'power1.out' }, 'exit')
-        else tl.to('[data-content]', { y: -70, autoAlpha: 0, duration: 0.45, ease: 'power3.in' }, 'exit').to(root.current, { yPercent: -100, duration: 0.65, ease: 'power3.inOut' }, 'exit+=0.05')
+        else if (handoff && target && art) {
+          tl.to('[data-pl-count]', { y: 24, autoAlpha: 0, duration: 0.3, ease: 'power2.in' }, 'exit')
+            .to(
+              '[data-pl-art]',
+              {
+                x: target.left + target.width / 2 - (art.left + art.width / 2),
+                y: target.top + target.height / 2 - (art.top + art.height / 2),
+                scale: target.width / art.width,
+                duration: 0.95,
+                ease: 'power3.inOut',
+              },
+              'exit',
+            )
+            .to('[data-pl-bg]', { autoAlpha: 0, duration: 0.75, ease: 'power1.out' }, 'exit+=0.15')
+        } else {
+          tl.to('[data-content]', { y: -70, autoAlpha: 0, duration: 0.45, ease: 'power3.in' }, 'exit').to(root.current, { yPercent: -100, duration: 0.65, ease: 'power3.inOut' }, 'exit+=0.05')
+        }
       })
 
       const fonts = Promise.race([document.fonts?.ready ?? Promise.resolve(), sleep(FONT_WAIT_MS)])
@@ -73,33 +91,14 @@ export function Preloader() {
   )
 
   return (
-    <div ref={root} className="grain fixed inset-0 z-[95] overflow-hidden rounded-b-[2.5rem] bg-oat will-change-transform" aria-hidden="true">
-      <div data-content className="flex h-full items-center justify-center">
-        <div className="relative">
-          <svg data-steam viewBox="0 0 60 40" className="absolute -top-10 left-1/2 h-10 w-16 -translate-x-1/2 fill-none stroke-caramel" strokeWidth="4" strokeLinecap="round">
-            <path d="M14 38c-6-8 4-12 0-22" />
-            <path d="M30 38c-6-10 6-14 0-30" />
-            <path d="M46 38c-6-8 4-12 0-22" />
-          </svg>
-          {/* Same size/position as the static #mm-boot frame in index.html → seamless hand-off. */}
-          <svg viewBox={`0 0 ${W} ${H}`} className="h-[min(46vh,320px)] w-auto">
-            <defs>
-              <clipPath id={clipId}>
-                <path data-wave d={WAVE} />
-              </clipPath>
-            </defs>
-            <image href={brandSrc('full', 512)} width={W} height={H} opacity={0.14} />
-            <image href={brandSrc('full', 512)} width={W} height={H} clipPath={`url(#${clipId})`} />
-          </svg>
-          {/* Phones: under the logo (beside it would cover the wordmark). sm+: beside it. */}
-          <div className="absolute -bottom-28 left-1/2 -translate-x-1/2 sm:bottom-2 sm:-right-24 sm:left-auto sm:translate-x-0">
-            <div data-pop className="invisible origin-bottom">
-              <Mascot mood="wave" className="h-24 sm:h-36" />
-            </div>
-          </div>
+    <div ref={root} className="fixed inset-0 z-[95] overflow-hidden will-change-transform" aria-hidden="true">
+      <div data-pl-bg className="grain absolute inset-0 rounded-b-[2.5rem] bg-oat" />
+      <div data-content className="relative flex h-full items-center justify-center px-6">
+        <div data-pl-art className="w-[min(80vw,34rem)]">
+          <SketchArt />
         </div>
       </div>
-      <span className="absolute right-5 bottom-5 font-display text-7xl font-extrabold tracking-tighter text-espresso tabular-nums sm:text-9xl">
+      <span data-pl-count className="absolute right-5 bottom-5 font-display text-7xl font-extrabold tracking-tighter text-espresso tabular-nums sm:text-9xl">
         <span ref={counter}>0</span>
         <span className="text-chili">%</span>
       </span>

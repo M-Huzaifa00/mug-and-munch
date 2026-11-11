@@ -37,12 +37,10 @@
       #mm-boot { display: none; }
       .mm-boot, .mm-boot body { background: #fff4e6; overflow: hidden; }
       .mm-boot #mm-boot { display: flex; position: fixed; inset: 0; z-index: 96; align-items: center; justify-content: center; background: #fff4e6; }
-      #mm-boot img { height: min(46vh, 320px); width: auto; opacity: 0.14; }
     </style>
-    <link rel="preload" as="image" href="/brand/logo-512.webp" type="image/webp" />
   </head>
   <body>
-    <div id="mm-boot" aria-hidden="true"><img src="/brand/logo-512.webp" alt="" /></div>
+    <div id="mm-boot" aria-hidden="true"></div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

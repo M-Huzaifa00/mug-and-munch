@@ -1,4 +1,5 @@
 import { getItemsByCategory, isPriced, menu, type Category, type MenuItem } from '@/data/menu'
+import { matchesAlias } from '@/data/searchAliases'
 
 export type MenuFilter = 'orderable' | 'spicy' | 'picks'
 
@@ -11,12 +12,12 @@ export const FILTER_LABELS: Record<MenuFilter, string> = {
 const matchesFilter = (item: MenuItem, f: MenuFilter): boolean =>
   f === 'orderable' ? isPriced(item) : f === 'picks' ? Boolean(item.featured) : item.badges.includes('spicy')
 
-/** Search name/description (case-insensitive) + every active filter must match. */
+/** Search name/description (case-insensitive) or a local alias ("chai", "thanda", "meetha"…) + every active filter must match. */
 export function filterMenu(query: string, filters: ReadonlySet<MenuFilter>, items: MenuItem[] = menu): MenuItem[] {
   const q = query.trim().toLowerCase()
   return items.filter(
     (item) =>
-      (!q || item.name.toLowerCase().includes(q) || item.description.toLowerCase().includes(q)) &&
+      (!q || item.name.toLowerCase().includes(q) || item.description.toLowerCase().includes(q) || matchesAlias(q, item)) &&
       [...filters].every((f) => matchesFilter(item, f)),
   )
 }

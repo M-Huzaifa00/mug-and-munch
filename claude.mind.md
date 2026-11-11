@@ -11,7 +11,7 @@
 - **Ordering = WhatsApp only, no backend.** Checkout builds a WhatsApp message (wa.me). Never fake an "order placed" / "confirmed".
 - **Phases 1–5 ✅, Munch Run ✅, real-menu work ✅. Next: Phase 6 (polish & QA) ⬜**, wait for the owner's "next".
 - **Menu = ONLY the owner's list** (section 2). Items without a price show **"Price coming soon"** and can NEVER reach the cart. Nothing invented (no fake items, prices, deals, reviews, bestseller claims).
-- **Loading:** the **0→100 preloader runs on every full page load, on any route** (calm variant for reduced motion). There is **no Suspense loading screen** anywhere (PageLoader deleted); page chunks are prefetched after load.
+- **Loading:** the **0→100 preloader runs on every full page load, on any route** (calm variant for reduced motion). Since 2026-11-12 it DRAWS the logo tray (same `SketchArt` as the hero) in ink as it counts; on Home (sketch on screen, desktop) the drawing FLIES onto the hero sketch (`setSketchHandoff`), elsewhere the curtain lifts. There is **no Suspense loading screen** anywhere (PageLoader deleted); page chunks are prefetched after load.
 - **Hero = "The Sketch"** (owner pick 2026-11-12, after rejecting many concepts; see 2b): oat bg, left = live info row, "Bhook lagi? We got you.", stacked SIP. / BITE. (chili) / REPEAT. (cheese offset shadow) rising out of masks, Munch Run burger parked after REPEAT., hero line, Order Now (Munchy peek "psst… order here!") + See the Menu. Right = the logo's tray (iced coffee, smash burger, triangle wrap, "MUG N MUNCH" on a chili tray) drawn live in the logo ink line (DrawSVG), flat token fills printed off-register (risograph), hand-written notes + arrows linking REAL items (Spanish Latte Rs 750, Smash Beast + Jalapeño Jolt "Price coming soon"). Idle: items bob, steam curls, sparkles twinkle. Text copy fixed by the owner: never change "Bhook lagi? We got you.", "SIP. BITE. REPEAT.", `site.heroLine`, "Order Now", "See the Menu". No photo in the hero.
 - **Navbar = floating islands** (owner: link names + cart icon are perfect, design revamped): logo island, centre link pill (≥1024px; numbered 01–04, letters roll, one gliding blob), chili "Order Now ↗" + cart; below 1024px a menu button opens a full-screen espresso menu (circle wipe, giant links, open badge, address, Instagram).
 - **Craft your own:** all three makers **playable** (`site.craftMakers` = `'play'`), opens on Burger; CTA = disabled **"Add to cart · coming soon"**; burger/wrap placeholder prices hidden (coffee shows real menu prices). **Spin (roulette):** lands on any menu item, add = "coming soon" (`site.spinOrdering: false`) + "See it on the menu".
@@ -119,10 +119,12 @@ Categories (`CATEGORY_ORDER`): Coffee → Starters → Burgers → Wraps → Ste
 | ProductCard (default + compact; "Price coming soon" pill, no "+" / Add cursor when unpriced) | ✅ | `ui/ProductCard.tsx`, `ui/PriceComingSoon.tsx` |
 | ProductImage (`virtual:photos`, styled emoji fallback + logo watermark) | ✅ | `ui/ProductImage.tsx`, `vite.config.ts` |
 | Home "Kya khaoge aaj?" menu preview (coffee / burger / wrap tabs; picks → priced → rest) | ✅ | `sections/home/MenuPreview*.tsx`, `lib/menuFilter.ts` |
+| **Hot / Cold / Blended chips on menu cards** (`ui/TempChips.tsx`, default card variant, priced items with >1 temp; "+" adds the chosen one, no modal) | ✅ | `ui/ProductCard.tsx`, `ui/TempChips.tsx` |
+| **Local-word search** (`data/searchAliases.ts`: chai, thanda, meetha, teekha, burgur, kofi… prefix ≥3 letters; test `search.test.ts`) | ✅ | `lib/menuFilter.ts` |
 | Menu page (sticky scroll-spy chips, search, filters **Order online / Spicy / Our picks**, `?q=`, **`#cat-<category>` deep links**) | ✅ | `pages/Menu.tsx`, `components/menu/*` (`menuIds.ts`: `sectionId`, `JUMP_OFFSET`, `menuCategoryHref`) |
 | Item modal / page (`ItemIntro` + orderable view with options & sticky add bar, or coming-soon view with call link; "from" only when options change price) | ✅ | `components/item/*`, `pages/ItemDetail.tsx` |
 | CartDrawer (swipe-to-remove, free-delivery bar, upsell (priced only), summary, empty state + craft links) | ✅ | `layout/CartDrawer.tsx`, `layout/cart/*` |
-| Fly-to-cart, jelly bounce, odometer, first-add confetti, toasts + Undo | ✅ | `hooks/useFlyToCart.ts`, `hooks/useAddToCart.ts`, `lib/celebrate.ts`, `lib/notify.tsx` |
+| Fly-to-cart, jelly bounce, odometer, first-add confetti, toasts + Undo, **12 ms haptic tick on add (Android, not reduced motion)** | ✅ | `hooks/useFlyToCart.ts`, `hooks/useAddToCart.ts`, `lib/celebrate.ts`, `lib/notify.tsx` |
 
 ### Phase 3: Brand, mascot & Home wow ✅
 | Feature | Status | Files |
@@ -132,8 +134,8 @@ Categories (`CATEGORY_ORDER`): Coffee → Starters → Burgers → Wraps → Ste
 | index.html build vars (`%BRAND_NAME%`…), icons, OG; **static `#mm-boot` first frame** | ✅ | `index.html`, `vite.config.ts` (`siteHtmlVars`) |
 | Logo 5-click coffee-spill easter egg | ✅ | `lib/easterEgg.ts`, `layout/CoffeeSpill.tsx` |
 | Munchy mascot (9 moods, mouth morph, reactions) | ✅ | `components/mascot/*` |
-| **Preloader (THE loading screen)**: every full load, any route. `index.html` paints the same first frame, React takes over: count 0→88, hold (wave rolling) until the routed page mounted (`PageReady`) + fonts (≤1.2 s) [max 6 s], → 100, Munchy pops, curtain slides up (transform) while the page intro plays. Reduced motion: calm version (logo full, count, fade). Scroll locked meanwhile. | ✅ | `layout/Preloader.tsx`, `lib/preloader.ts` (phase store loading → revealing → done, `markPageReady`/`whenPageReady`, `removeBootScreen`), `RootLayout.tsx`, `index.html` |
-| **Hero "The Sketch"** (2026-11-12): `HeroMeta` · "Bhook lagi?" · stacked SIP./BITE./REPEAT. lines rise out of masks (`[data-hn-line]`), Munch Stop 1 slot after REPEAT. (outside the animated text) · line + magnetic Order Now (`HeroOrderPeek`) / See the Menu · right: `HeroSketch` (notes = Links to real items via `getItemBySlug`, price or "Price coming soon") over `SketchArt` (SVG 600×520, `[data-sk-line]` drawn, `[data-sk-fill]` off-register fills, `[data-sk-item]` bob, `[data-sk-steam]`, `[data-sk-arrow]`, `[data-sk-spark]`; tray label = `site.brandName`). Scroll: art drifts up. Reduced motion: finished drawing, static. Old Golden Hour Stage (pills, cinema, backdrop, MiniMunchy) deleted | ✅ | `sections/home/hero/{Hero,HeroMeta,HeroOrderPeek,HeroSketch,SketchArt}.tsx` |
+| **Preloader (THE loading screen)**: every full load, any route. `index.html` paints a plain oat first frame, React takes over: the logo tray ink drawing (`SketchArt`, lines only) draws with the count 0→88, holds until the routed page mounted (`PageReady`) + fonts (≤1.2 s) [max 6 s], → 100. Home with the hero sketch on screen: drawing flies (x/y/scale) onto `[data-hero-sketch] [data-sk-svg]`, oat layer fades, hero prints colours (`setSketchHandoff` → `useSketchMotion` waits for `whenPreloaderDone`). Otherwise content lifts + curtain slides up. Reduced motion: finished drawing, count, fade. Scroll locked meanwhile. | ✅ | `layout/Preloader.tsx`, `lib/preloader.ts` (phase store loading → revealing → done, `markPageReady`/`whenPageReady`, `removeBootScreen`), `RootLayout.tsx`, `index.html` |
+| **Hero "The Sketch"** (2026-11-12; + interactions same day: hover an item = it redraws + its note underlines, click/tap an item = opens it (`data/heroSketch.ts` picks the 3 items); honest closed note under the CTAs (`getOpenStatus`); `OrderAgain` for returning visitors (last order from `mm-last-order`, still-orderable lines re-priced, one tap → cart + drawer); Munch slot after REPEAT. hidden on phones; motion in `hero/useSketchMotion.ts`): `HeroMeta` · "Bhook lagi?" · stacked SIP./BITE./REPEAT. lines rise out of masks (`[data-hn-line]`), Munch Stop 1 slot after REPEAT. (outside the animated text) · line + magnetic Order Now (`HeroOrderPeek`) / See the Menu · right: `HeroSketch` (notes = Links to real items via `getItemBySlug`, price or "Price coming soon") over `SketchArt` (SVG 600×520, `[data-sk-line]` drawn, `[data-sk-fill]` off-register fills, `[data-sk-item]` bob, `[data-sk-steam]`, `[data-sk-arrow]`, `[data-sk-spark]`; tray label = `site.brandName`). Scroll: art drifts up. Reduced motion: finished drawing, static. Old Golden Hour Stage (pills, cinema, backdrop, MiniMunchy) deleted | ✅ | `sections/home/hero/{Hero,HeroMeta,HeroOrderPeek,HeroSketch,SketchArt}.tsx` |
 | Marquee (2 tilted strips, scroll-velocity speed; item line = "Our picks") | ✅ | `sections/home/Marquee.tsx` |
 | **"Our picks"** strip (was Bestsellers; ids/file still `bestsellers`): desktop pin + scrub, mobile snap carousel, Caveat notes | ✅ | `sections/home/Bestsellers.tsx` |
 | **Home deals section** (2026-11-11, in the old Vibe Picker slot after Craft): chili stage, giant drifting "DEALS ✦ COMBOS" backdrop type, "paisay bachao, pait bharo 💸". **Deals exist since 2026-11-12** (7 proposed combos) → up to 4 DealCards + "See all deals". **No deals** → "Deals are cooking" + golden-ticket teaser (`DealsTicket`: notched cheese ticket, "??? ✦ ???", "Rs ???", spinning "coming soon" stamp `animate-stamp-spin`, sheen sweep, Munchy waving) + Follow @instagram / Order from the menu. **Deals exist** → same stage with up to 4 `DealCard`s + "See all deals". Loops pause off-screen | ✅ | `sections/home/deals/{DealsStrip,DealsTicket,DealCard}.tsx` |
@@ -162,6 +164,7 @@ Categories (`CATEGORY_ORDER`): Coffee → Starters → Burgers → Wraps → Ste
 | 10–12 | Our Story (no invented facts), Find Us (address-search map until a pin exists), 404 (search + 3 picks) | ✅ | `pages/OurStory.tsx`, `data/story.ts`, `pages/FindUs.tsx`, `sections/findus/*`, `pages/NotFound.tsx` |
 
 ### Feature: Munch Run ✅ (decorative scroll traveler on Home)
+- **Not on phones (<768px) since 2026-11-12** (owner OK'd: less clutter, smoother scroll); the hero slot after REPEAT. is `hidden md:inline-block`.
 - Burger (hero) → hops the marquee → morphs into a wrap (MenuPreview) → coffee (Our picks). Config `data/munchRun.ts` (Stop 1 anchor perches top-right of the hero visual box), timings `MUNCH_RUN`. Engine `components/munchRun/useMunchRun.ts` (morph timelines **pre-rendered on mount** to avoid mid-scroll hitches). aria-hidden, never focusable. Reduced motion → `MunchStatic`.
 - **Stop 1 = inline slot after "REPEAT."** in the hero headline (`anchorClass: 'top-0 left-0'`, note on the right). Parks with 0px delta at 360 / 768 / 1440.
 - **Tap:** opens `#craft-<form>` unless that maker is `'off'` (then the menu category, `/menu#cat-…`); cursor label "Make one".
@@ -225,7 +228,9 @@ src/data/builder.ts, wrapBuilder.ts   burger / wrap maker data (PLACEHOLDER pric
 src/data/story.ts               Our Story copy + owner facts (render only when filled)
 src/data/reviews.ts             PLACEHOLDER reviews (DEV only)
 src/data/munchRun.ts            Munch Run stops / anchors / thresholds
-src/data/heroPhoto.ts           GENERATED by npm run photos
+src/data/heroPhoto.ts           GENERATED by npm run photos (unused since the Sketch hero)
+src/data/heroSketch.ts          which real items the hero sketch's cup / burger / wrap point at
+src/data/searchAliases.ts       local search words → items
 src/lib/gsap.ts, motion-presets.ts, brand.ts, notify.tsx, utils.ts, events.ts (track stub), easterEgg.ts, celebrate.ts, routing.ts
 src/lib/preloader.ts            phase store (usePreloaderPhase/getPreloaderPhase/setPreloaderPhase), markPageReady/whenPageReady, removeBootScreen
 src/lib/cartSync.ts             syncCart(): purge + re-price + one notice
@@ -248,7 +253,7 @@ src/components/checkout/        CheckoutCard, CheckoutField, fieldStyles, OrderT
 src/components/brand/           Logo, BrandImage, LogoStamp, brandAssets.ts (generated)
 src/components/mascot/          Mascot, MascotFace, mascotPoses, useMascotAnimation, useMascotReactions, mascotFollow, mascotLook
 src/components/munchRun/        MunchRun, MunchCharacter, MunchStop, MunchStatic, MunchNote, MunchPuffs, useMunchRun, munchRunMath, munchTimelines, munchActions, munchEffects, readEls, forms/*
-src/sections/home/              hero/{Hero ("The Sketch"), HeroMeta, HeroOrderPeek, HeroSketch, SketchArt}, Marquee, MenuPreview(+Tabs), Bestsellers ("Our picks"), craft/*, vibe/*, roulette/*, deals/*, reviews/*, FindUsTeaser, sectionIds
+src/sections/home/              hero/{Hero ("The Sketch"), HeroMeta, HeroOrderPeek, HeroSketch, SketchArt (also used by the Preloader), useSketchMotion, OrderAgain}, Marquee, MenuPreview(+Tabs), Bestsellers ("Our picks"), craft/*, vibe/*, roulette/*, deals/*, reviews/*, FindUsTeaser, sectionIds
 src/sections/story/, findus/    StoryPanels, StorySteps · HoursTable, MapFacade
 src/pages/                      Home, Menu, ItemDetail, Deals, Checkout, OrderSuccess, OurStory, FindUs, NotFound, MascotLab (DEV)
 REMOVED                         old hero (HeroHeadline, HeroPills, MiniMunchy, HeroCinema, HeroBackdrop, heroPhotoSrc; hero photo files + data/heroPhoto.ts + npm run photos now unused), sections/home/Preloader.tsx (→ layout/Preloader), components/layout/PageLoader.tsx (no Suspense loader), Phase-4 builders
@@ -292,6 +297,13 @@ Node/Supabase backend + orders DB · JazzCash / Easypaisa / card payments (need 
 ---
 
 ## 10. Changelog (Asia/Karachi dates)
+### 2026-11-12 (6): UX + motion round (owner: "implement it asap")
+- Preloader draws the logo tray in ink with the count and hands the drawing to the hero sketch on Home (desktop); boot frame is plain oat now (logo img + preload removed).
+- Hero sketch: hover redraw + note underline, click/tap opens the item; closed note under the CTAs; "Order again" card for returning visitors.
+- Hot / Cold / Blended chips on menu cards; local-word search (chai, thanda, meetha, teekha…); haptic tick on add; Munch Run off on phones.
+- Verified (prod preview, headless Chrome): hand-off frames at 1440 (draw → fly → print), 360 hero (no Munch Run, Order Now in first screen), order again re-adds at today's prices, Blended chip adds "Spanish Latte · Blended", sketch burger click → /menu/smash-beast modal; 0 console messages. 100 tests, lint, build green. Committed locally (not pushed).
+- Still suggested, not built: one heading-reveal style for all sections, ink-line page transition.
+
 ### 2026-11-12 (5): New hero "The Sketch" (owner pick), old hero removed; pushed
 - After several rejected candidates (arch photo, physics mug, sunset sun, burger build) the owner picked "The Sketch": the logo's tray drawn live in the logo ink with risograph fills + hand-written notes to real items/prices, next to the owner's stacked text. Old Golden Hour Stage hero + `?hero=new` toggle removed; `HeroMeta` / `HeroOrderPeek` kept.
 - Verified at 1920 / 1440 / 360: Munch Stop 1 delta 0, 0 console messages, no overflow. 96 tests, lint, build green. Pushed to `main`.

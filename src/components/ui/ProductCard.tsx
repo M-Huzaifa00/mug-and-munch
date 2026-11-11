@@ -1,16 +1,17 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { motion } from 'motion/react'
 import { Plus } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router'
 import { CATEGORY_META, isPriced, type MenuItem } from '@/data/menu'
 import { useAddToCart } from '@/hooks/useAddToCart'
-import { hasRequiredOptions, toCartInput } from '@/lib/itemOptions'
+import { defaultSelection, hasRequiredOptions, toCartInput } from '@/lib/itemOptions'
 import { SPRING } from '@/lib/motion-presets'
 import { modalStateFrom } from '@/lib/routing'
 import { cn, formatPKR } from '@/lib/utils'
 import { Badge } from './Badge'
 import { PriceComingSoon } from './PriceComingSoon'
 import { ProductImage } from './ProductImage'
+import { TempChips } from './TempChips'
 
 interface ProductCardProps {
   item: MenuItem
@@ -37,6 +38,9 @@ export function ProductCard({ item, variant = 'default', className, onNavigate }
   const state = modalStateFrom(location)
 
   const priced = isPriced(item)
+  // Hot / Cold / Blended right on the card (flavoured lattes): pick, then "+" adds that one. No modal needed.
+  const temps = priced && variant === 'default' && (item.options.temps?.length ?? 0) > 1 ? item.options.temps : undefined
+  const [temp, setTemp] = useState(() => item.options.temps?.[0]?.id)
   const onQuickAdd = () => {
     if (!isPriced(item)) return
     if (hasRequiredOptions(item)) {
@@ -44,7 +48,7 @@ export function ProductCard({ item, variant = 'default', className, onNavigate }
       void navigate(to, { state })
       return
     }
-    addToCart(toCartInput(item), { source: imageRef.current })
+    addToCart(toCartInput(item, temps ? { ...defaultSelection(item), temp } : undefined), { source: imageRef.current })
   }
 
   const addButton = priced && (
@@ -110,6 +114,7 @@ export function ProductCard({ item, variant = 'default', className, onNavigate }
           </Link>
         </h3>
         <p className="line-clamp-1 text-xs text-ink/80 sm:text-sm">{item.description}</p>
+        {temps && temp && <TempChips name={item.name} choices={temps} value={temp} onChange={setTemp} />}
         <div className="mt-auto flex min-h-13 items-center justify-between gap-2 pt-2">
           {priced ? <span className="font-display text-base font-extrabold text-espresso sm:text-lg">{formatPKR(item.price)}</span> : <PriceComingSoon />}
           {addButton}

@@ -16,7 +16,7 @@ interface AddOptions {
 
 /**
  * The ONE way to add to cart from UI: store update → fly-to-cart arc → jelly bounce →
- * first-add-of-session confetti → "Nice pick!" toast with Undo.
+ * first-add-of-session confetti → haptic tick (Android) → "Nice pick!" toast with Undo.
  * Reduced motion: toast only.
  */
 export function useAddToCart() {
@@ -40,6 +40,8 @@ export function useAddToCart() {
         return
       }
       const { isFirstAdd } = addItem(input, qty)
+      // Tiny haptic tick on Android (iOS Safari has no vibrate API; skipped for reduced motion).
+      if (!reduced && 'vibrate' in navigator) navigator.vibrate(12)
 
       // Don't fly behind the open drawer's backdrop.
       const flew = !isOpen && fly(source, {

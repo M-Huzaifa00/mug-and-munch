@@ -49,6 +49,28 @@ export function whenPageReady(maxMs: number): Promise<void> {
   })
 }
 
+/** Resolves once the preloader has fully finished (phase `done`). */
+export function whenPreloaderDone(): Promise<void> {
+  if (phase === 'done') return Promise.resolve()
+  return new Promise((resolve) => {
+    const unsub = subscribe(() => {
+      if (phase !== 'done') return
+      unsub()
+      resolve()
+    })
+  })
+}
+
+/**
+ * Home only: the preloader's ink drawing flies onto the hero sketch instead of lifting with the curtain.
+ * Set by the preloader BEFORE `revealing`; the hero then keeps its lines drawn and only prints the colours in.
+ */
+let sketchHandoff = false
+export const setSketchHandoff = (v: boolean) => {
+  sketchHandoff = v
+}
+export const getSketchHandoff = () => sketchHandoff
+
 /** Remove the static index.html first frame (no-op when it isn't there). */
 export function removeBootScreen() {
   document.getElementById(BOOT_ID)?.remove()

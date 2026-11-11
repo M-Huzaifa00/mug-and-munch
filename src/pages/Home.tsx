@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { useIdleMount } from '@/hooks/useIdleMount'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useLocation } from 'react-router'
 import { site } from '@/config/site'
 import { usePreloaderPhase } from '@/lib/preloader'
@@ -30,6 +31,8 @@ export function Home() {
   const preloading = usePreloaderPhase() === 'loading'
   const { hash } = useLocation()
   const munchReady = useIdleMount(!preloading)
+  // Phones: no Munch Run (less clutter + smoother scroll on mid-range Android); the hero keeps Munchy's peek + the sketch.
+  const phone = useMediaQuery('(max-width: 767px)')
 
   return (
     <>
@@ -50,7 +53,7 @@ export function Home() {
       <DealsStrip />
       <Reviews />
       <FindUsTeaser />
-      {munchReady && (
+      {munchReady && !phone && (
         <Suspense fallback={null}>
           <MunchRun />
         </Suspense>

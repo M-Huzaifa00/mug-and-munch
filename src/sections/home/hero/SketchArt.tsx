@@ -1,5 +1,6 @@
 import { useId } from 'react'
 import { site } from '@/config/site'
+import { SKETCH_ITEMS, type SketchPart } from '@/data/heroSketch'
 import { BRAND_INK } from '@/lib/brand'
 
 /**
@@ -10,6 +11,8 @@ import { BRAND_INK } from '@/lib/brand'
  */
 const mix = (a: string, b: string, p: number) => `color-mix(in oklab, var(--color-${a}) ${p}%, var(--color-${b}))`
 const OFF = 'translate(7 7)'
+/** A tappable item group: redraws on hover, opens the item on click (wired in useSketchMotion). */
+const part = (p: SketchPart) => ({ 'data-sk-item': '', 'data-sk-slug': SKETCH_ITEMS[p], 'data-cursor': 'view', 'data-cursor-label': 'See it', className: 'cursor-pointer' })
 
 const lettuce = () => {
   let d = 'M240 360'
@@ -29,7 +32,7 @@ export function SketchArt() {
   )
 
   return (
-    <svg viewBox="0 0 600 520" className="block h-auto w-full overflow-visible" aria-hidden="true">
+    <svg data-sk-svg viewBox="0 0 600 520" className="block h-auto w-full overflow-visible" aria-hidden="true">
       <defs>{check}</defs>
       <g fill="none" stroke={BRAND_INK} strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
         {/* tray + checkered liner */}
@@ -46,7 +49,7 @@ export function SketchArt() {
         </g>
 
         {/* iced coffee */}
-        <g data-sk-item>
+        <g {...part('cup')}>
           <g data-sk-fill transform={OFF} stroke="none">
             <path d="M80 152 H220 L204 430 H96 Z" style={{ fill: mix('oat', 'caramel', 70) }} />
             <path d="M86 202 Q116 190 150 202 T216 200 L204 430 H96 Z" style={{ fill: mix('caramel', 'oat', 78) }} />
@@ -66,7 +69,7 @@ export function SketchArt() {
         </g>
 
         {/* smash burger */}
-        <g data-sk-item>
+        <g {...part('burger')}>
           <g data-sk-fill transform={OFF} stroke="none">
             <path d="M252 398 H468 Q470 432 440 432 H280 Q250 432 252 398 Z" style={{ fill: mix('caramel', 'cheese', 70) }} />
             <path d="M246 372 Q240 386 252 398 H468 Q480 386 474 372 Q470 364 460 366 H260 Q250 364 246 372 Z" style={{ fill: mix('espresso', 'caramel', 55) }} />
@@ -86,7 +89,7 @@ export function SketchArt() {
         </g>
 
         {/* triangle wrap in a checkered sleeve */}
-        <g data-sk-item>
+        <g {...part('wrap')}>
           <g data-sk-fill transform={OFF} stroke="none">
             <path d="M488 430 L566 430 L534 292 Z" style={{ fill: mix('cheese', 'oat', 45) }} />
             <path d="M515 316 Q522 300 534 292 L540 318 Q528 312 515 316 Z" style={{ fill: 'var(--color-pickle)' }} />

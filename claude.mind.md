@@ -291,6 +291,12 @@ Node/Supabase backend + orders DB · JazzCash / Easypaisa / card payments (need 
 ---
 
 ## 10. Changelog (Asia/Karachi dates)
+### 2026-11-12 (4): NEW hero candidate (owner comparing); WhatsApp order flow verified
+- Owner felt the current hero is "too much" and asked for a totally new version to compare in dev. Added `sections/home/hero-alt/{HeroAlt,HeroArch,HeroVariantToggle}.tsx`: calm editorial hero, left = info row, "Bhook lagi?", giant stacked SIP. / BITE. (chili) / REPEAT. (espresso + hard cheese offset shadow; a text-stroke outline showed the variable font's overlapping contours), line, Order Now with the Munchy peek + See the Menu; right = one tall arch window with the golden-hour photo (clip-path wipe + zoom settle + scroll drift), logo stamp, caption, "Coffee from" chip. No pills / colour wash / cinema panel. Munch Stop 1 slot sits outside the animated text line (anchor never moves).
+- **How to compare:** `/?hero=new` shows the new one; DEV-only toggle bottom-left ("Hero: current | new", full reload so the preloader + intro play). Production still shows the current hero. **Pending owner decision:** keep one, delete the other (and the toggle + `?hero` switch in `pages/Home.tsx`).
+- Checkout verified end-to-end (headless, dine-in, 2× Spanish Latte): Send opens `https://wa.me/923475253550?text=…` with the full order message, then /order-success.
+- Verified new hero at 1920 / 1440 / 360: Munch Stop 1 delta 0, 0 console messages, no overflow. 96 tests, lint, build green.
+
 ### 2026-11-12 (3): Hero decluttered; footer "n" fixed for good
 - Hero: removed the two floating stickers (one collided with the BITE pill at 1920px, the star crowded the bubble) and the Munch Run "follow me" note at Stop 1 (it competed with "psst… order here!"). One call-out in the hero now. `MUNCH_STOPS[].note` may be '' (no note); `readEls` keeps notes positional (null gaps) so stop indexes never shift.
 - Footer wordmark: the script "n" no longer sits in an overflow mask (its slanted glyph overhangs its box, so any mask clipped its right edge at some widths); it fades + rises in on scroll instead. Verified at 1920 / 1440.

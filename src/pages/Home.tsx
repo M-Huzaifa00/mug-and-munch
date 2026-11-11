@@ -9,6 +9,8 @@ import { Bestsellers } from '@/sections/home/Bestsellers'
 import { DealsStrip } from '@/sections/home/deals/DealsStrip'
 import { FindUsTeaser } from '@/sections/home/FindUsTeaser'
 import { Hero } from '@/sections/home/hero/Hero'
+import { HeroAlt } from '@/sections/home/hero-alt/HeroAlt'
+import { HeroVariantToggle } from '@/sections/home/hero-alt/HeroVariantToggle'
 import { Marquee } from '@/sections/home/Marquee'
 import { MenuPreview } from '@/sections/home/MenuPreview'
 import { Reviews } from '@/sections/home/reviews/Reviews'
@@ -28,7 +30,9 @@ const MunchRun = lazy(() => import('@/components/munchRun/MunchRun').then((m) =>
 export function Home() {
   // The preloader lives in the app shell (RootLayout tells it when this page mounted); the intro starts as the curtain lifts.
   const preloading = usePreloaderPhase() === 'loading'
-  const { hash } = useLocation()
+  const { hash, search } = useLocation()
+  // Owner is comparing two heroes: ?hero=new shows the calm editorial candidate (DEV toggle bottom-left).
+  const newHero = new URLSearchParams(search).get('hero') === 'new'
   const munchReady = useIdleMount(!preloading)
 
   return (
@@ -37,7 +41,8 @@ export function Home() {
         description={`${site.brandName}: Islamabad's late-night coffee & smash spot. Lattes, smash burgers and wraps for delivery, takeaway or dine-in.`}
         path="/"
       />
-      <Hero play={!preloading} />
+      {newHero ? <HeroAlt play={!preloading} /> : <Hero play={!preloading} />}
+      {import.meta.env.DEV && <HeroVariantToggle />}
       <Marquee />
       <MenuPreview />
       <Bestsellers />

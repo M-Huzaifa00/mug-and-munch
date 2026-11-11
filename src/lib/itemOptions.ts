@@ -119,7 +119,8 @@ export function priceLine(line: Pick<CartItem, 'itemId' | 'category' | 'options'
   }
   if (line.category === 'deal') {
     const deal = deals.find((d) => d.id === line.itemId)
-    if (!deal || !deal.items.every((l) => { const i = getItemById(l.itemId); return Boolean(i && isPriced(i)) })) return { available: false }
+    // A deal has its own price: its items must still be on the menu (they may not have an individual price).
+    if (!deal || !deal.items.every((l) => getItemById(l.itemId))) return { available: false }
     return { available: true, unitPrice: deal.price }
   }
   const item = getItemById(line.itemId)

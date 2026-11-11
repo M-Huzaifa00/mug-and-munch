@@ -40,7 +40,8 @@ export function FooterWordmark() {
       {middle ? (
         <>
           <span data-letters aria-hidden="true">{words[0]?.toUpperCase()}</span>
-          <span aria-hidden="true" className="inline-block overflow-hidden">
+          {/* reveal mask: side padding (cancelled by negative margins) so the slanted script "n" isn't clipped */}
+          <span aria-hidden="true" className="-mx-[0.12em] inline-block overflow-hidden px-[0.16em]">
             <span data-script className="inline-block font-hand text-[1.15em] leading-none font-bold text-chili">
               {middle}
             </span>

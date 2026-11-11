@@ -109,7 +109,12 @@ export function Footer() {
         <p>
           © {YEAR} {site.brandName}. All rights munched.
         </p>
-        <p>Made with ☕ in {site.address.city}</p>
+        <p className="text-center sm:text-right">
+          Made with ☕ in {site.address.city} · Designed &amp; developed by{' '}
+          <a href={site.credit.url} target="_blank" rel="noopener noreferrer" className="font-bold text-cheese underline decoration-2 underline-offset-4 hover:text-oat">
+            {site.credit.label}
+          </a>
+        </p>
       </div>
     </footer>
   )

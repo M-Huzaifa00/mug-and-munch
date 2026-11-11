@@ -58,7 +58,9 @@
 | Map | no exact pin yet → map embed + directions **search the address** | `site.address.lat/lng = null`, `mapsUrl` = Google Maps search link |
 | Instagram | `mugnmunchh` → https://www.instagram.com/mugnmunchh/ | `site.socials.instagram`, `instagramUrl` |
 | TikTok | none given → **hidden** (never link a handle we don't own) | `site.socials.tiktok = ''`, `tiktokUrl = null` |
-| WhatsApp / phone / email / hours / delivery areas / fees | **still placeholders** (see section 6) | `site.ts` |
+| Phone + WhatsApp (ALL orders go here) | **0347 5253550** → `whatsappNumber: '923475253550'`, `phoneHref: tel:+923475253550` (owner, 2026-11-12). Online WhatsApp ordering is now LIVE in production | `site.contact` |
+| Footer credit | "Designed & developed by M-Huzaifa00" → https://github.com/M-Huzaifa00 | `site.credit`, `Footer.tsx` |
+| Email / hours / delivery areas / fees | **still placeholders** (see section 6) | `site.ts` |
 
 ### 2b. Owner decisions log (respect these)
 - 2026-11-11: Items without a price → **"Price coming soon"**, not orderable (no placeholder prices on real items).
@@ -133,7 +135,7 @@ Categories (`CATEGORY_ORDER`): Coffee → Starters → Burgers → Wraps → Ste
 | **Hero "Golden Hour Stage"** (2026-11-11): `HeroMeta` (OpenBadge + 📍 address → /find-us) · "Bhook lagi?" · `HeroHeadline` (SplitText elastic chars, DrawSVG underlines, **cartoon pills, no images** inside the type (`HeroPills.tsx` + `MiniMunchy.tsx`, em-sized; GSAP grows each pill scaleX on intro): **SIP pill** (caramel) = mini Munchy, eyes shut in bliss, sipping a kawaii iced coffee through a bendy chili straw (oat dashes flow along it, cheeks puff, hearts float, cup squishes); **BITE pill** (cheese) = mini Munchy leans in and chomps a kawaii burger (bun squish, crumbs, "nom!", chewing bob). Loops pause off-screen, run 2.5× on hover; desktop: letters hop on hover, SIP/BITE units drift apart on scroll (REPEAT. never moves: it holds the Munch anchor); inline Munch Run Stop 1 slot after REPEAT.) · line + magnetic Order Now / See the Menu, with **`HeroOrderPeek`**: Munchy hides behind Order Now (clipped window at the button middle), peeks up, waves, settles (follow on desktop / idle on touch), bubble "psst… order here! 👇"; hover/focus the button → excited jump + "yes, that one! 😋" · `HeroCinema` (full-colour sticker panel; scrubbed scale 0.86→1 desktop / 0.93→1 phone + img zoom 1.25→1.02 + drift, transform only; big Caveat caption, LogoStamp, editorial labels "( 01 ) — Golden hour" + address, cursor bubble "Golden hour ✨", "☕ Coffee from Rs X →" chip = cheapest priced coffee → /menu#cat-coffee) · `HeroBackdrop` (pre-blurred photo wash). No corner mascot, no spin badge (owner: don't clutter) | ✅ | `sections/home/hero/{Hero,HeroMeta,HeroHeadline,HeroCapsule,HeroCinema,HeroBackdrop,heroPhotoSrc,HeroMascot}.tsx`, `scripts/photo-assets.mjs`, `data/heroPhoto.ts` (generated, incl. `blur`) |
 | Marquee (2 tilted strips, scroll-velocity speed; item line = "Our picks") | ✅ | `sections/home/Marquee.tsx` |
 | **"Our picks"** strip (was Bestsellers; ids/file still `bestsellers`): desktop pin + scrub, mobile snap carousel, Caveat notes | ✅ | `sections/home/Bestsellers.tsx` |
-| **Home deals section** (2026-11-11, in the old Vibe Picker slot after Craft): chili stage, giant drifting "DEALS ✦ COMBOS" backdrop type, "paisay bachao, pait bharo 💸". **No deals** → "Deals are cooking" + golden-ticket teaser (`DealsTicket`: notched cheese ticket, "??? ✦ ???", "Rs ???", spinning "coming soon" stamp `animate-stamp-spin`, sheen sweep, Munchy waving) + Follow @instagram / Order from the menu. **Deals exist** → same stage with up to 4 `DealCard`s + "See all deals". Loops pause off-screen | ✅ | `sections/home/deals/{DealsStrip,DealsTicket,DealCard}.tsx` |
+| **Home deals section** (2026-11-11, in the old Vibe Picker slot after Craft): chili stage, giant drifting "DEALS ✦ COMBOS" backdrop type, "paisay bachao, pait bharo 💸". **Deals exist since 2026-11-12** (7 proposed combos) → up to 4 DealCards + "See all deals". **No deals** → "Deals are cooking" + golden-ticket teaser (`DealsTicket`: notched cheese ticket, "??? ✦ ???", "Rs ???", spinning "coming soon" stamp `animate-stamp-spin`, sheen sweep, Munchy waving) + Follow @instagram / Order from the menu. **Deals exist** → same stage with up to 4 `DealCard`s + "See all deals". Loops pause off-screen | ✅ | `sections/home/deals/{DealsStrip,DealsTicket,DealCard}.tsx` |
 | Reviews (sticker board + IG grid; placeholders DEV-only) | ✅ | `sections/home/reviews/*`, `data/reviews.ts` |
 | Find Us teaser (open/closed, hours, address line, directions + call) | ✅ | `sections/home/FindUsTeaser.tsx` |
 | Footer wordmark reveal; page-transition wipe (chili/cheese + logo, ~0.6 s; skipped for item modal links) | ✅ | `layout/FooterWordmark.tsx`, `layout/PageTransition.tsx` |
@@ -252,11 +254,11 @@ REMOVED                         sections/home/Preloader.tsx (→ layout/Preloade
 ```
 
 ## 6. Owner TODOs (data still missing)
-1. **`site.contact.whatsappNumber`** (digits, e.g. `923001234567`): until set, production shows "Online ordering is coming soon, call us" and hides WhatsApp links. Also `phoneDisplay` / `phoneHref` / `email` are placeholders (the "Price coming soon" item view links to the phone).
+1. ~~WhatsApp number~~ DONE 2026-11-12 (0347 5253550). Still placeholder: .
 2. **Prices for every `price: null`** in `data/menu.ts` (18 items: all burgers, steak, wraps, starters, Green Tea, Passion Fruit Mojito). Confirm Raspberry Iced Tea = 650. Real ingredients/descriptions if wanted.
 3. **Address details:** shop # / street (`address.line1`), Google Maps share link (`mapsUrl`), exact pin (`lat`/`lng`, also enables JSON-LD geo), parking/landmark (`addressNotes`).
 4. **Real opening hours** (`site.hours`, currently placeholders), **delivery areas** (current list is invented and far from Ghouri Town), delivery fee, free-delivery threshold, tax rate, min delivery order, ETA, table count, order prefix, real domain (`site.url`).
-5. **Deals:** none yet; add real ones to `data/deals.ts` (format in the file comment). Home strip + /deals switch on automatically.
+5. **Deals: CONFIRM the 7 proposed combos + prices** in  (Student Saver 999, Coffee & Club 1,349, Wing It 1,449, Matcha Duo 1,749, Midnight Munch 2,199 [11 PM–2 AM], Hellfire Duo 3,399, Squad Box 5,999). They were set by the developer from Islamabad market research (zinger ~Rs 500–600, smash ~Rs 850–1,375, double ~Rs 1,150–1,250, loaded fries ~Rs 630–1,195, wings ~Rs 470–1,095), NOT approved by the café yet, and are orderable via WhatsApp now.
 6. **Custom burger / wrap orders?** If yes: real ingredient prices in `data/builder.ts` / `wrapBuilder.ts`, set `BURGER_PRICES_CONFIRMED` / `WRAP_PRICES_CONFIRMED = true` and `site.craftMakers.burger/wrap = 'order'`. Same for coffee creations (`craftMakers.coffee = 'order'`) and the Spin (`spinOrdering = true`) when the owner wants them orderable.
 7. TikTok handle (optional), real reviews with permission (`data/reviews.ts`, `isPlaceholder: false`), real Instagram posts for `InstaGrid`, Our Story facts + photos (`data/story.ts`, `public/images/brand/{kitchen,team,counter}.webp`), product photos (`public/images/<folder>/<slug>.webp`, ~1200px).
 8. Replace logo → `public/brand/logo.png` + `npm run brand`. Replace hero photo → `assets/photos/hero-golden-hour.png` + `npm run photos`.
@@ -289,6 +291,12 @@ Node/Supabase backend + orders DB · JazzCash / Easypaisa / card payments (need 
 ---
 
 ## 10. Changelog (Asia/Karachi dates)
+### 2026-11-12: Deals added, real phone/WhatsApp, footer credit
+- Owner asked for deals priced by the developer's research: 7 combos in `data/deals.ts` (TODO(owner) confirm). Rule change: a deal is orderable at its own price even if an item inside has no menu price; "Save Rs X" / strike-through only when every item has a real price (`getDealOriginalPrice` → null otherwise). Tests added (95).
+- Phone + WhatsApp = 0347 5253550 (all orders); WhatsApp ordering + FAB now live in production. Footer: "Designed & developed by M-Huzaifa00" (GitHub link).
+- Fixed the footer wordmark's script "n" being clipped on the right (reveal mask got side padding with cancelling negative margins).
+- Verified: /deals shows 7 cards (only Matcha Duo shows savings), wa.me links → 923475253550, credit link, 0 console errors at 360 + 1440.
+
 ### 2026-11-11 (7): Deals section replaces the Vibe Picker; Spin hidden; pushed
 - Home order now: Hero → Marquee → Menu preview → Our picks → Craft your own → **Deals** → Reviews → Find Us.
 - Deals section: chili stage + drifting backdrop type + golden-ticket "coming soon" teaser (honest: "??? ✦ ???", "Rs ???", no fake items/prices/timers) with Munchy waving; switches to real DealCards when `data/deals.ts` has deals. Follow button stays on one line at 360px.

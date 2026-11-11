@@ -78,7 +78,8 @@ export function DealCard({ deal, index }: { deal: Deal; index: number }) {
       {deal.availability && <p className="mt-2 text-xs font-semibold text-ink/80">{deal.availability}</p>}
       <div className="mt-auto flex items-end justify-between gap-2 pt-4">
         <p>
-          <s className="block text-sm text-ink/70">{formatPKR(original)}</s>
+          {/* strike-through only when every item has a real menu price (honest savings) */}
+          {original !== null && original > deal.price && <s className="block text-sm text-ink/70">{formatPKR(original)}</s>}
           <span className={cn('font-display text-2xl font-extrabold text-espresso')}>{formatPKR(deal.price)}</span>
         </p>
         <Button size="sm" onClick={add} aria-label={`Add ${deal.name} to cart`}>

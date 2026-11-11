@@ -32,9 +32,10 @@ export const site = {
   ogImage: '/brand/og-image.png',
 
   contact: {
-    whatsappNumber: '923000000000', // TODO: owner fills (international format, digits only, no +)
-    phoneDisplay: '0300-0000000', // TODO: owner fills
-    phoneHref: 'tel:+923000000000', // TODO: owner fills
+    /** Every WhatsApp order is sent here (owner, 2026-11-12: 0347 5253550). Digits only, international format. */
+    whatsappNumber: '923475253550',
+    phoneDisplay: '0347 5253550',
+    phoneHref: 'tel:+923475253550',
     email: 'hello@mugandmunch.pk', // TODO: owner fills
   },
 
@@ -49,6 +50,9 @@ export const site = {
     lat: null as number | null,
     lng: null as number | null,
   },
+
+  /** Footer credit (owner, 2026-11-12). */
+  credit: { label: 'M-Huzaifa00', url: 'https://github.com/M-Huzaifa00' },
 
   socials: {
     instagram: 'mugnmunchh', // https://www.instagram.com/mugnmunchh/ (from the owner, 2026-11-11)

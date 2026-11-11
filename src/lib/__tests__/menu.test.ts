@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { COFFEE_DRINKS } from '@/data/coffeeBuilder'
+import { deals, getDealOriginalPrice, getDealSavings } from '@/data/deals'
 import { getFeatured, getItemById, isPriced, menu } from '@/data/menu'
 import { ROULETTE_ITEMS, VIBES } from '@/data/toys'
 import { describeLine } from '@/lib/lineDescription'
@@ -70,5 +71,32 @@ describe('craft makers in play / off mode (site.craftMakers)', () => {
       makers.burger = 'order'
       makers.wrap = 'order'
     }
+  })
+})
+
+describe('deals (proposed combos)', () => {
+  const real = deals.filter((d) => !d.id.startsWith('test-'))
+
+  it('every deal item is on the menu, prices are whole PKR, ids unique', () => {
+    expect(new Set(real.map((d) => d.id)).size).toBe(real.length)
+    for (const d of real) {
+      expect(Number.isInteger(d.price) && d.price > 0, d.id).toBe(true)
+      for (const l of d.items) expect(getItemById(l.itemId), `${d.id}: ${l.itemId}`).toBeDefined()
+    }
+  })
+
+  it('a deal with unpriced items is orderable at its own price, with NO invented savings', () => {
+    const saver = deals.find((d) => d.id === 'student-saver')!
+    expect(getDealOriginalPrice(saver)).toBeNull()
+    expect(getDealSavings(saver)).toBe(0)
+    const line = { itemId: saver.id, category: 'deal' as const, options: {} }
+    expect(priceLine(line)).toEqual({ available: true, unitPrice: saver.price })
+  })
+
+  it('savings are real when every item has a menu price (Matcha Duo)', () => {
+    const duo = deals.find((d) => d.id === 'matcha-duo')!
+    const sum = duo.items.reduce((s, l) => s + (getItemById(l.itemId)!.price as number) * l.qty, 0)
+    expect(getDealOriginalPrice(duo)).toBe(sum)
+    expect(getDealSavings(duo)).toBe(sum - duo.price)
   })
 })

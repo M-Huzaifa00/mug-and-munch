@@ -206,6 +206,16 @@
 @utility animate-wiggle {
   animation: wiggle 2.8s ease-in-out infinite;
 }
+@keyframes stamp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Slow sticker / stamp rotation (deals ticket). Stopped by the reduced-motion rule below. */
+@utility animate-stamp-spin {
+  animation: stamp-spin 14s linear infinite;
+}
 @utility animate-pulse-ring {
   animation: pulse-ring 1.8s ease-out infinite;
 }

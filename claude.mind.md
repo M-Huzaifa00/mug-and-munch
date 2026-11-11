@@ -15,7 +15,7 @@
 - **Hero = "Golden Hour Stage"** (owner asked for an awwwards-level redesign, 2026-11-11): live info row (open badge + address) → "Bhook lagi? We got you." → picture-typography headline "SIP. (frappe capsule) BITE. (box capsule) REPEAT. (Munch Run burger parked inline)" → hero line + CTAs → golden-hour **cinema panel** that grows to full width on scroll; warm pre-blurred photo wash behind. Text copy is fixed by the owner: never change "Bhook lagi? We got you.", "SIP. BITE. REPEAT.", `site.heroLine`, "Order Now", "See the Menu".
 - **Navbar = floating islands** (owner: link names + cart icon are perfect, design revamped): logo island, centre link pill (≥1024px; numbered 01–04, letters roll, one gliding blob), chili "Order Now ↗" + cart; below 1024px a menu button opens a full-screen espresso menu (circle wipe, giant links, open badge, address, Instagram).
 - **Craft your own:** all three makers **playable** (`site.craftMakers` = `'play'`), opens on Burger; CTA = disabled **"Add to cart · coming soon"**; burger/wrap placeholder prices hidden (coffee shows real menu prices). **Spin (roulette):** lands on any menu item, add = "coming soon" (`site.spinOrdering: false`) + "See it on the menu".
-- **Repo:** https://github.com/M-Huzaifa00/mug-and-munch, branch `main`. Local commit after each completed step; **push only at the end of a phase** after build + lint + tests pass. Last pushed: end of Phase 5 (commits after `5d56fbe` are local only until the owner says push / next phase).
+- **Repo:** https://github.com/M-Huzaifa00/mug-and-munch, branch `main`. Local commit after each completed step; push only when the owner says so / end of a phase, after build + lint + tests pass. **Last pushed: 2026-11-11** (owner asked to push after the deals + hero round).
 - **Owner / contacts in chat:** the owner sends menu updates forwarded from **Syed Ahmed** (café side). The repo owner's git user is `M-Huzaifa00`.
 
 ### Hard rules (never break)
@@ -68,6 +68,7 @@
 - 2026-11-11: Hero photo tried as postcard → soft banner (rejected: "doesn't look good, repels") → photo window → owner asked to **totally redesign hero + navbar "like an awwwards-winning website"** → current "Golden Hour Stage" + islands navbar. Keep hero texts and nav link names + cart icon exactly.
 - 2026-11-11: Only the 0→100 loader; remove the Suspense loading screen ("looks bad").
 - 2026-11-11: Craft makers: briefly switched off, then owner: **keep burger + coffee (+ wrap) makers as they were, playable, with "Add to cart · coming soon"** so the start feels simple; same for the Spin ("add to cart coming soon").
+- 2026-11-11: **"What's your vibe?" replaced by a Deals section** ("make it sexy"); **Spin (Snack Roulette) hidden from Home** (code kept). Hero: only light polish allowed now ("don't add over-complications").
 
 ### 2c. The real menu (`src/data/menu.ts`; owner list from Syed Ahmed, 2026-11-07 + Starters 2026-11-11)
 Categories (`CATEGORY_ORDER`): Coffee → Starters → Burgers → Wraps → Steaks → Matcha → Teas & Mojitos. `null` = "Price coming soon".
@@ -132,7 +133,7 @@ Categories (`CATEGORY_ORDER`): Coffee → Starters → Burgers → Wraps → Ste
 | **Hero "Golden Hour Stage"** (2026-11-11): `HeroMeta` (OpenBadge + 📍 address → /find-us) · "Bhook lagi?" · `HeroHeadline` (SplitText elastic chars, DrawSVG underlines, **cartoon pills, no images** inside the type (`HeroPills.tsx` + `MiniMunchy.tsx`, em-sized; GSAP grows each pill scaleX on intro): **SIP pill** (caramel) = mini Munchy, eyes shut in bliss, sipping a kawaii iced coffee through a bendy chili straw (oat dashes flow along it, cheeks puff, hearts float, cup squishes); **BITE pill** (cheese) = mini Munchy leans in and chomps a kawaii burger (bun squish, crumbs, "nom!", chewing bob). Loops pause off-screen, run 2.5× on hover; desktop: letters hop on hover, SIP/BITE units drift apart on scroll (REPEAT. never moves: it holds the Munch anchor); inline Munch Run Stop 1 slot after REPEAT.) · line + magnetic Order Now / See the Menu, with **`HeroOrderPeek`**: Munchy hides behind Order Now (clipped window at the button middle), peeks up, waves, settles (follow on desktop / idle on touch), bubble "psst… order here! 👇"; hover/focus the button → excited jump + "yes, that one! 😋" · `HeroCinema` (full-colour sticker panel; scrubbed scale 0.86→1 desktop / 0.93→1 phone + img zoom 1.25→1.02 + drift, transform only; big Caveat caption, LogoStamp, editorial labels "( 01 ) — Golden hour" + address, cursor bubble "Golden hour ✨", "☕ Coffee from Rs X →" chip = cheapest priced coffee → /menu#cat-coffee) · `HeroBackdrop` (pre-blurred photo wash). No corner mascot, no spin badge (owner: don't clutter) | ✅ | `sections/home/hero/{Hero,HeroMeta,HeroHeadline,HeroCapsule,HeroCinema,HeroBackdrop,heroPhotoSrc,HeroMascot}.tsx`, `scripts/photo-assets.mjs`, `data/heroPhoto.ts` (generated, incl. `blur`) |
 | Marquee (2 tilted strips, scroll-velocity speed; item line = "Our picks") | ✅ | `sections/home/Marquee.tsx` |
 | **"Our picks"** strip (was Bestsellers; ids/file still `bestsellers`): desktop pin + scrub, mobile snap carousel, Caveat notes | ✅ | `sections/home/Bestsellers.tsx` |
-| Deals strip (hidden while `deals` is empty) | ✅ | `sections/home/deals/*` |
+| **Home deals section** (2026-11-11, in the old Vibe Picker slot after Craft): chili stage, giant drifting "DEALS ✦ COMBOS" backdrop type, "paisay bachao, pait bharo 💸". **No deals** → "Deals are cooking" + golden-ticket teaser (`DealsTicket`: notched cheese ticket, "??? ✦ ???", "Rs ???", spinning "coming soon" stamp `animate-stamp-spin`, sheen sweep, Munchy waving) + Follow @instagram / Order from the menu. **Deals exist** → same stage with up to 4 `DealCard`s + "See all deals". Loops pause off-screen | ✅ | `sections/home/deals/{DealsStrip,DealsTicket,DealCard}.tsx` |
 | Reviews (sticker board + IG grid; placeholders DEV-only) | ✅ | `sections/home/reviews/*`, `data/reviews.ts` |
 | Find Us teaser (open/closed, hours, address line, directions + call) | ✅ | `sections/home/FindUsTeaser.tsx` |
 | Footer wordmark reveal; page-transition wipe (chili/cheese + logo, ~0.6 s; skipped for item modal links) | ✅ | `layout/FooterWordmark.tsx`, `layout/PageTransition.tsx` |
@@ -140,8 +141,8 @@ Categories (`CATEGORY_ORDER`): Coffee → Starters → Burgers → Wraps → Ste
 ### Phase 4: Toys ✅
 | Feature | Status | Files |
 |---|---|---|
-| Vibe Picker (Sleepy / Hangry / Study grind / Thirsty / Midnight munchies; Flip reshuffle; "Add" only the priced picks) | ✅ | `sections/home/vibe/VibePicker.tsx`, `data/toys.ts` |
-| Snack Roulette (any menu item can land; "Add · coming soon" while `site.spinOrdering` is false, or for unpriced items; "See it on the menu" opens the item modal) | ✅ | `sections/home/roulette/*`, `data/toys.ts` |
+| Vibe Picker (**not on Home since 2026-11-11**, code kept; Sleepy / Hangry / Study grind / Thirsty / Midnight munchies; Flip reshuffle; "Add" only the priced picks) | ✅ | `sections/home/vibe/VibePicker.tsx`, `data/toys.ts` |
+| Snack Roulette (**hidden from Home since 2026-11-11**, code kept; any menu item can land; "Add · coming soon" while `site.spinOrdering` is false, or for unpriced items; "See it on the menu" opens the item modal) | ✅ | `sections/home/roulette/*`, `data/toys.ts` |
 | Custom cursor ("Add +", "Drag", `view` label) | ✅ | `app/providers/Cursor.tsx` |
 | Sounds | ⬜ never built | — |
 
@@ -288,6 +289,12 @@ Node/Supabase backend + orders DB · JazzCash / Easypaisa / card payments (need 
 ---
 
 ## 10. Changelog (Asia/Karachi dates)
+### 2026-11-11 (7): Deals section replaces the Vibe Picker; Spin hidden; pushed
+- Home order now: Hero → Marquee → Menu preview → Our picks → Craft your own → **Deals** → Reviews → Find Us.
+- Deals section: chili stage + drifting backdrop type + golden-ticket "coming soon" teaser (honest: "??? ✦ ???", "Rs ???", no fake items/prices/timers) with Munchy waving; switches to real DealCards when `data/deals.ts` has deals. Follow button stays on one line at 360px.
+- Hero light polish: two floating brand stickers (sparkle + star) balance the right side on desktop. Nothing else added.
+- Verified: 0 console errors at 360/768/1440, Munch Stop 1 delta 0, no overflow; 92 tests, build, lint green. Colour tokens unchanged (index.css: only a `stamp-spin` keyframe + utility added outside @theme). Pushed to `main`.
+
 ### 2026-11-11 (6): Munchy stories in the pills, "order here" peek
 - Owner: pills must not use images, make them creative with mascot animations; remove the arrow badge (clutter); add a cute mascot peeking behind Order Now asking to order. Done: SIP pill = mini Munchy sipping coffee through a bendy straw (flow, hearts); BITE pill = mini Munchy chomping a burger (crumbs, "nom!"); `HeroOrderPeek` Munchy behind Order Now with speech bubble + excited on hover; removed `HeroSpinBadge`, `HeroCapsule` (photo pills) and the bottom-right `HeroMascot`.
 - Verified: Munch Stop 1 delta 0 at 360/768/1440, 0 console errors, no overflow; 92 tests, build, lint green.

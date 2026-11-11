@@ -12,9 +12,7 @@ import { Hero } from '@/sections/home/hero/Hero'
 import { Marquee } from '@/sections/home/Marquee'
 import { MenuPreview } from '@/sections/home/MenuPreview'
 import { Reviews } from '@/sections/home/reviews/Reviews'
-import { SnackRoulette } from '@/sections/home/roulette/SnackRoulette'
 import { SECTION_IDS } from '@/sections/home/sectionIds'
-import { VibePicker } from '@/sections/home/vibe/VibePicker'
 
 // Lazy chunk, mounted only near the viewport (or immediately for a #craft-* deep link).
 const CraftSection = lazy(() => import('@/sections/home/craft/CraftSection').then((m) => ({ default: m.CraftSection })))
@@ -25,7 +23,7 @@ const MunchRun = lazy(() => import('@/components/munchRun/MunchRun').then((m) =>
 
 /**
  * Home: (shell Preloader) → Hero → Marquee → MenuPreview → Bestsellers → Craft your own (coffee / burger / wrap)
- * → Vibe Picker → Snack Roulette → Deals → Reviews → Find Us → (Footer).
+ * → Deals → Reviews → Find Us → (Footer). (Vibe Picker + Snack Roulette are off Home; code kept.)
  */
 export function Home() {
   // The preloader lives in the app shell (RootLayout tells it when this page mounted); the intro starts as the curtain lifts.
@@ -48,8 +46,7 @@ export function Home() {
           <CraftSection />
         </Suspense>
       </LazyMount>
-      <VibePicker />
-      <SnackRoulette />
+      {/* Deals took the "What's your vibe?" slot; Vibe Picker + Snack Roulette are off Home (code kept). */}
       <DealsStrip />
       <Reviews />
       <FindUsTeaser />

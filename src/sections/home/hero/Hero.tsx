@@ -2,6 +2,7 @@ import { useLenis } from 'lenis/react'
 import { site } from '@/config/site'
 import { Button, ButtonLink } from '@/components/ui/Button'
 import { MagneticButton } from '@/components/ui/MagneticButton'
+import { Sticker } from '@/components/ui/Sticker'
 import { HeroBackdrop } from './HeroBackdrop'
 import { HeroCinema } from './HeroCinema'
 import { HeroHeadline } from './HeroHeadline'
@@ -35,6 +36,9 @@ export function Hero({ play }: { play: boolean }) {
         <p className="mt-6 mb-2 -rotate-2 font-hand text-3xl text-ink sm:text-4xl md:mt-8 md:mb-4">Bhook lagi? We got you.</p>
         <div className="relative">
           <HeroHeadline play={play} />
+          {/* two quiet brand stickers balance the empty space right of the headline (desktop only) */}
+          <Sticker kind="sparkle" tilt={-10} className="top-[6%] right-[14%] hidden size-16 lg:block" />
+          <Sticker kind="star" tilt={12} className="right-[4%] bottom-[14%] hidden lg:block" />
         </div>
         <div className="mt-8 flex flex-col gap-6 md:mt-10 md:flex-row md:items-end md:justify-between">
           <p className="max-w-md text-lg font-medium text-ink sm:text-xl">{site.heroLine}</p>

@@ -12,8 +12,9 @@
 - **Phases 1–5 ✅, Munch Run ✅, real-menu work ✅. Next: Phase 6 (polish & QA) ⬜**, wait for the owner's "next".
 - **Menu = ONLY the owner's list** (section 2). Items without a price show **"Price coming soon"** and can NEVER reach the cart. Nothing invented (no fake items, prices, deals, reviews, bestseller claims).
 - **Loading:** the **0→100 preloader runs on every full page load, on any route** (calm variant for reduced motion). There is **no Suspense loading screen** anywhere (PageLoader deleted); page chunks are prefetched after load.
-- **Hero:** owner photo as a **soft low-opacity banner background** (`site.heroPhotoStyle: 'banner'`, the owner's choice). The taped "postcard" variant still exists behind the same switch.
-- **Craft your own:** only the **coffee maker** is on (`site.craftMakers`). Burger / wrap makers are built but **off** (custom items aren't on the menu).
+- **Hero = "Golden Hour Stage"** (owner asked for an awwwards-level redesign, 2026-11-11): live info row (open badge + address) → "Bhook lagi? We got you." → picture-typography headline "SIP. (frappe capsule) BITE. (box capsule) REPEAT. (Munch Run burger parked inline)" → hero line + CTAs → golden-hour **cinema panel** that grows to full width on scroll; warm pre-blurred photo wash behind. Text copy is fixed by the owner: never change "Bhook lagi? We got you.", "SIP. BITE. REPEAT.", `site.heroLine`, "Order Now", "See the Menu".
+- **Navbar = floating islands** (owner: link names + cart icon are perfect, design revamped): logo island, centre link pill (≥1024px; numbered 01–04, letters roll, one gliding blob), chili "Order Now ↗" + cart; below 1024px a menu button opens a full-screen espresso menu (circle wipe, giant links, open badge, address, Instagram).
+- **Craft your own:** all three makers **playable** (`site.craftMakers` = `'play'`), opens on Burger; CTA = disabled **"Add to cart · coming soon"**; burger/wrap placeholder prices hidden (coffee shows real menu prices). **Spin (roulette):** lands on any menu item, add = "coming soon" (`site.spinOrdering: false`) + "See it on the menu".
 - **Repo:** https://github.com/M-Huzaifa00/mug-and-munch, branch `main`. Local commit after each completed step; **push only at the end of a phase** after build + lint + tests pass. Last pushed: end of Phase 5 (commits after `5d56fbe` are local only until the owner says push / next phase).
 - **Owner / contacts in chat:** the owner sends menu updates forwarded from **Syed Ahmed** (café side). The repo owner's git user is `M-Huzaifa00`.
 
@@ -63,9 +64,9 @@
 - 2026-11-11: Remove everything not on the list (old sides / desserts / soft drinks / invented deals). Deals pages say "coming soon" until real deals arrive.
 - 2026-11-11: Coffees match the list: one price; flavoured lattes Hot / Cold / Blended **at the same price**; no sizes / milks / sweetness / add-ons.
 - 2026-11-11: "Bestsellers" renamed **"Our picks"** (no sales data → no popularity claims); picks = `featured: true` in `data/menu.ts`.
-- 2026-11-11: Hero photo as a **banner background with soft opacity** (after first seeing the postcard). Keep it classy, never fighting the text.
+- 2026-11-11: Hero photo tried as postcard → soft banner (rejected: "doesn't look good, repels") → photo window → owner asked to **totally redesign hero + navbar "like an awwwards-winning website"** → current "Golden Hour Stage" + islands navbar. Keep hero texts and nav link names + cart icon exactly.
 - 2026-11-11: Only the 0→100 loader; remove the Suspense loading screen ("looks bad").
-- 2026-11-11: Burger / wrap **craft makers off** (custom items aren't on the menu). Coffee maker stays (it configures real menu coffees at menu prices).
+- 2026-11-11: Craft makers: briefly switched off, then owner: **keep burger + coffee (+ wrap) makers as they were, playable, with "Add to cart · coming soon"** so the start feels simple; same for the Spin ("add to cart coming soon").
 
 ### 2c. The real menu (`src/data/menu.ts`; owner list from Syed Ahmed, 2026-11-07 + Starters 2026-11-11)
 Categories (`CATEGORY_ORDER`): Coffee → Starters → Burgers → Wraps → Steaks → Matcha → Teas & Mojitos. `null` = "Price coming soon".
@@ -99,7 +100,7 @@ Categories (`CATEGORY_ORDER`): Coffee → Starters → Burgers → Wraps → Ste
 | Router, all pages lazy; **no Suspense loader** (blank oat fallback + `PageReady` signal; chunks prefetched on idle) | ✅ | `src/app/router.tsx`, `routes.tsx` (`LOADERS`, `prefetchPages`), `RootLayout.tsx` |
 | Scroll-to-top on page change (Lenis + modal aware) | ✅ | `ScrollToTop.tsx` |
 | Per-page SEO | ✅ | `Seo.tsx` |
-| Glassy navbar (shrink, hide on scroll down) | ✅ | `Navbar.tsx`, `NavLogo.tsx`, `useScrollState.ts` |
+| **Islands navbar** (2026-11-11): logo island (glass sticker + wordmark tucks on scroll), centre link pill ≥1024px (`NavLinksPill`: 01–04 numbers, `RollText` hover roll, Motion `layoutId="nav-blob"`: espresso on hover, cheese on current page), "Order Now ↗" (arrow turns on hover) + cart; <1024px `MenuToggle` → `MenuOverlay` (z-60 dialog, circle wipe from the button, giant numbered links, open badge, address, Instagram, Order Now; focus trap + Esc + scroll lock, closes on navigation; reduced motion = fade). Hides on scroll down. Fixes the old 768px link wrap | ✅ | `layout/Navbar.tsx`, `layout/NavLogo.tsx`, `layout/nav/{NavLinksPill,RollText,MenuToggle,MenuOverlay}.tsx`, `useScrollState.ts` |
 | Cart button (aria-live count), mobile bottom tab bar + "View cart · Rs X" pill, WhatsApp FAB, footer | ✅ | `components/layout/*` |
 | Live Open/Closed badge (Asia/Karachi, overnight hours) | ✅ | `lib/hours.ts`, `ui/OpenBadge.tsx` |
 | Button / ButtonLink / `buttonClasses(variant, size, className)` (positional args!) | ✅ | `ui/Button.tsx`, `ui/buttonClasses.ts` |
@@ -127,7 +128,7 @@ Categories (`CATEGORY_ORDER`): Coffee → Starters → Burgers → Wraps → Ste
 | Logo 5-click coffee-spill easter egg | ✅ | `lib/easterEgg.ts`, `layout/CoffeeSpill.tsx` |
 | Munchy mascot (9 moods, mouth morph, reactions) | ✅ | `components/mascot/*` |
 | **Preloader (THE loading screen)**: every full load, any route. `index.html` paints the same first frame, React takes over: count 0→88, hold (wave rolling) until the routed page mounted (`PageReady`) + fonts (≤1.2 s) [max 6 s], → 100, Munchy pops, curtain slides up (transform) while the page intro plays. Reduced motion: calm version (logo full, count, fade). Scroll locked meanwhile. | ✅ | `layout/Preloader.tsx`, `lib/preloader.ts` (phase store loading → revealing → done, `markPageReady`/`whenPageReady`, `removeBootScreen`), `RootLayout.tsx`, `index.html` |
-| Hero (SplitText chars, DrawSVG underlines, **banner backdrop** (soft multiply photo, oat fades, settle-in zoom + scroll drift) or postcard via `site.heroPhotoStyle`, stamp, Munchy peek, magnetic Order Now, scroll hint) | ✅ | `sections/home/hero/*` (`HeroBackdrop`, `HeroPhoto`, `heroPhotoSrc`, `HeroVisuals` `framed` prop), `scripts/photo-assets.mjs`, `data/heroPhoto.ts` (generated) |
+| **Hero "Golden Hour Stage"** (2026-11-11): `HeroMeta` (OpenBadge + 📍 address → /find-us) · "Bhook lagi?" · `HeroHeadline` (SplitText elastic chars, DrawSVG underlines, `HeroCapsule` photo pills inside the type, em-sized, zoomed with CSS `scale` + `transform-origin` on the img; GSAP grows the capsule wrapper scaleX; inline Munch Run Stop 1 slot after REPEAT.) · line + magnetic Order Now / See the Menu · `HeroCinema` (full-colour sticker panel; scrubbed scale 0.86→1 desktop / 0.93→1 phone + img zoom 1.25→1.02 + drift, transform only; big Caveat caption, LogoStamp, "☕ Coffee from Rs X →" chip = cheapest priced coffee → /menu#cat-coffee) · `HeroBackdrop` (pre-blurred photo wash) · Munchy peek | ✅ | `sections/home/hero/{Hero,HeroMeta,HeroHeadline,HeroCapsule,HeroCinema,HeroBackdrop,heroPhotoSrc,HeroMascot}.tsx`, `scripts/photo-assets.mjs`, `data/heroPhoto.ts` (generated, incl. `blur`) |
 | Marquee (2 tilted strips, scroll-velocity speed; item line = "Our picks") | ✅ | `sections/home/Marquee.tsx` |
 | **"Our picks"** strip (was Bestsellers; ids/file still `bestsellers`): desktop pin + scrub, mobile snap carousel, Caveat notes | ✅ | `sections/home/Bestsellers.tsx` |
 | Deals strip (hidden while `deals` is empty) | ✅ | `sections/home/deals/*` |
@@ -139,16 +140,16 @@ Categories (`CATEGORY_ORDER`): Coffee → Starters → Burgers → Wraps → Ste
 | Feature | Status | Files |
 |---|---|---|
 | Vibe Picker (Sleepy / Hangry / Study grind / Thirsty / Midnight munchies; Flip reshuffle; "Add" only the priced picks) | ✅ | `sections/home/vibe/VibePicker.tsx`, `data/toys.ts` |
-| Snack Roulette (priced items only; unpriced ids skipped) | ✅ | `sections/home/roulette/*`, `data/toys.ts` |
+| Snack Roulette (any menu item can land; "Add · coming soon" while `site.spinOrdering` is false, or for unpriced items; "See it on the menu" opens the item modal) | ✅ | `sections/home/roulette/*`, `data/toys.ts` |
 | Custom cursor ("Add +", "Drag", `view` label) | ✅ | `app/providers/Cursor.tsx` |
 | Sounds | ⬜ never built | — |
 
 ### Phase 5: Craft, WhatsApp checkout, content pages ✅
 | Step | Scope | Status | Files |
 |---|---|---|---|
-| 1–3 | Builder kit + ONE "Craft your own" section (id `craft`, `#craft-<tab>` deep links, state per tab, lazy makers). **Enabled makers only (`site.craftMakers`): coffee on, burger/wrap off** → no switch when one tab; disabled deep links fall back to coffee | ✅ | `components/builder/*`, `sections/home/craft/*` |
+| 1–3 | Builder kit + ONE "Craft your own" section (id `craft`, `#craft-<tab>` deep links, state per tab, lazy makers, opens on Burger). Per maker `site.craftMakers`: `'order'` (adds to cart) / `'play'` (CTA "Add to cart · coming soon", disabled) / `'off'` (hidden; deep links fall back). Currently **all `'play'`**. `BuilderModeContext` per maker → `IngredientTile` hides prices + `BuilderActions` shows the coming-soon CTA (+ note); `showPrices` = coffee always, burger/wrap only when `BURGER_PRICES_CONFIRMED` / `WRAP_PRICES_CONFIRMED` | ✅ | `components/builder/*` (`builderMode.ts`), `sections/home/craft/*` |
 | Coffee maker: drinks = priced Coffee items; Hot/Cold/Blended on flavoured lattes; size / milk / add-on / sweetness steps only if a drink has them | ✅ | `craft/CoffeeMaker.tsx`, `data/coffeeBuilder.ts` |
-| Burger maker (realistic layer art) / Wrap maker | ✅ built, **off** | `craft/BurgerMaker.tsx` (+`burgerArt.tsx`), `craft/WrapMaker.tsx`, `data/builder.ts`, `data/wrapBuilder.ts` (PLACEHOLDER prices) |
+| Burger maker (realistic layer art) / Wrap maker | ✅ playable, ordering coming soon | `craft/BurgerMaker.tsx` (+`burgerArt.tsx`), `craft/WrapMaker.tsx`, `data/builder.ts`, `data/wrapBuilder.ts` (PLACEHOLDER prices, hidden) |
 | 4 | Order logic (phone, totals, order number, order snapshot, zod schema, WhatsApp message < 2,000 chars, `submitOrder` stub unused) | ✅ | `src/lib/{phone,orderTotals,orderNumber,order,orderApi,checkoutSchema,whatsapp}.ts` |
 | 5 | `describeLine` (one formatter everywhere), re-pricing, merge rules, Edit/Tweak, tag chips | ✅ | `lib/lineDescription.ts`, `layout/cart/*`, `craft/useCraftEdit.ts` |
 | 6–8 | Checkout (order types, pickup slots, validation, draft, remember-me, cash only, sticky CTA), synchronous wa.me flow, order success (pending → "Yes, I've sent it" → sent) | ✅ | `pages/Checkout.tsx`, `components/checkout/*`, `pages/OrderSuccess.tsx` |
@@ -157,7 +158,8 @@ Categories (`CATEGORY_ORDER`): Coffee → Starters → Burgers → Wraps → Ste
 
 ### Feature: Munch Run ✅ (decorative scroll traveler on Home)
 - Burger (hero) → hops the marquee → morphs into a wrap (MenuPreview) → coffee (Our picks). Config `data/munchRun.ts` (Stop 1 anchor perches top-right of the hero visual box), timings `MUNCH_RUN`. Engine `components/munchRun/useMunchRun.ts` (morph timelines **pre-rendered on mount** to avoid mid-scroll hitches). aria-hidden, never focusable. Reduced motion → `MunchStatic`.
-- **Tap:** opens `#craft-<form>` if that maker is on, otherwise the menu category (`/menu#cat-burger`, `#cat-wrap`); cursor label "Hungry?".
+- **Stop 1 = inline slot after "REPEAT."** in the hero headline (`anchorClass: 'top-0 left-0'`, note on the right). Parks with 0px delta at 360 / 768 / 1440.
+- **Tap:** opens `#craft-<form>` unless that maker is `'off'` (then the menu category, `/menu#cat-…`); cursor label "Make one".
 
 ### Real-menu integration ✅ (2026-11-11)
 | Part | Files |
@@ -184,8 +186,9 @@ Reduced-motion + low-end audit, a11y pass, JSON-LD openingHours, image optimisat
 - Pages wait on the phase: Home `play` (hero intro) = phase !== `loading`; Menu `#cat-` deep link waits for `done` (scroll is locked during the preloader).
 
 ### Hero photo
-- Master `assets/photos/hero-golden-hour.png` (not shipped) → `npm run photos` → 4:3 crop (`FOCUS_X` 0.6) AVIF + WebP at 480/720/960/1189 in `public/images/brand/` + generated `src/data/heroPhoto.ts`.
-- Banner (`HeroBackdrop`): wrapper opacity 60% (phones, photo strip at the bottom of the hero, `overflow-hidden`, oat fade over its top edge) / 45% (≥768px, full-bleed, oat fade left + top), `mix-blend-multiply`, `-z-10` below the section grain. GSAP touches only the `<img>` (scale / yPercent / autoAlpha).
+- Master `assets/photos/hero-golden-hour.png` (not shipped) → `npm run photos` → 4:3 crop (`FOCUS_X` 0.6) AVIF + WebP at 480/720/960/1189 + a 160px pre-blurred `-blur.webp` (<1 KB) in `public/images/brand/` + generated `src/data/heroPhoto.ts`.
+- Used three ways: capsules in the headline (480/720 widths, CSS zoom on the subject), the cinema panel (full srcset, lazy), the backdrop wash (blur file, upscaled, oat gradient on top, `-z-10` under the grain).
+- Capsule crops are `transform-origin` + `scale` per subject in `HeroCapsule` (`CROPS`); retune them if the photo changes.
 
 ### Mobile scroll
 - Lenis is off for touch (native scroll). `lenis.css` gives `[data-lenis-prevent-wheel]` `overscroll-behavior: contain` on both axes; an unlayered rule in `index.css` sets y back to `auto` (otherwise vertical swipes starting on the Our-picks carousel / Menu chips never scroll the page).
@@ -208,12 +211,12 @@ src/app/App.tsx                 MotionConfig + SmoothScroll + RouterProvider + T
 src/app/router.tsx, routes.tsx  data router; LOADERS + lazy pages + prefetchPages(); /mascot-lab DEV only
 src/app/RootLayout.tsx          routes (background ?? location), PageReady, Preloader, syncCart + prefetch after load, chrome, CartDrawer, PageTransition, ItemModal
 src/app/providers/              SmoothScroll (Lenis), Cursor
-src/config/site.ts              owner settings: brand, heroPhotoStyle, craftMakers, contact, address (+addressLine), socials (+instagramUrl, tiktokUrl|null), hours, commerce, orderPrefix, tableCount, etaMinutes, payments, addressNotes, deliveryAreas
+src/config/site.ts              owner settings: brand, craftMakers (order|play|off), spinOrdering, contact, address (+addressLine), socials (+instagramUrl, tiktokUrl|null), hours, commerce, orderPrefix, tableCount, etaMinutes, payments, addressNotes, deliveryAreas
 src/data/menu.ts                REAL menu (price null = coming soon; featured; categories + meta + order)
 src/data/deals.ts               Deal type + helpers; deals = [] (none yet)
 src/data/toys.ts                VIBES (5 moods), ROULETTE_ITEMS (priced only)
 src/data/coffeeBuilder.ts       coffee maker icons/tints; COFFEE_DRINKS derived from priced Coffee items
-src/data/builder.ts, wrapBuilder.ts   burger / wrap maker data (PLACEHOLDER prices; makers off)
+src/data/builder.ts, wrapBuilder.ts   burger / wrap maker data (PLACEHOLDER prices, hidden until *_PRICES_CONFIRMED; makers playable)
 src/data/story.ts               Our Story copy + owner facts (render only when filled)
 src/data/reviews.ts             PLACEHOLDER reviews (DEV only)
 src/data/munchRun.ts            Munch Run stops / anchors / thresholds
@@ -231,16 +234,16 @@ src/lib/builder.ts, burgerBuilder.ts, wrapBuilder.ts   maker pricing + cart inpu
 src/lib/__tests__/              setup.ts (test-only items/deal/makers), fixtures, menu, lines, whatsapp (+snapshots), orderTotals, builder, phone, pickupSlots, dealWindow, munchRunMath
 src/store/cart.ts               Zustand cart (persist mm-cart v2: items + orderType); reprice() drops unorderable lines
 src/hooks/                      useAddToCart (guard), useFlyToCart, useReducedMotion, useIsTouch, useScrollState, useScrollLock, useFocusTrap, useMagnetic, useMediaQuery, useDebouncedValue, useIdleMount, useIsItemPage, useIsCheckout, useTransitionNavigate
-src/components/layout/          Navbar, NavLogo, CartButton, CartDrawer (+cart/*: CartContents, CartLineItem, CartSummary, CartUpsell, FreeDeliveryBar, LineTag, EditCreationLink, CraftLinks), MobileBottomBar, WhatsAppFab, Footer, FooterWordmark, Preloader, PageTransition, CoffeeSpill, ScrollToTop, Seo, JsonLd, PagePlaceholder, navLinks
+src/components/layout/          Navbar (islands), nav/{NavLinksPill, RollText, MenuToggle, MenuOverlay}, NavLogo, CartButton, CartDrawer (+cart/*: CartContents, CartLineItem, CartSummary, CartUpsell, FreeDeliveryBar, LineTag, EditCreationLink, CraftLinks), MobileBottomBar, WhatsAppFab, Footer, FooterWordmark, Preloader, PageTransition, CoffeeSpill, ScrollToTop, Seo, JsonLd, PagePlaceholder, navLinks
 src/components/ui/              Button, buttonClasses, PriceComingSoon, ProductCard, ProductImage, Badge, Chip, OpenBadge, SocialIcons, QuantityStepper, RollingNumber, Sticker, HandArrow, MagneticButton, Modal, Drawer, RevealHeading, LazyMount, StylisedMap
 src/components/item/            ItemDetailContent (orderable / coming soon), ItemIntro, ItemOptionsForm, OptionPills, StickyAddBar, ItemModal
 src/components/menu/            CategoryNav, MenuSearch, MenuSection, MenuEmpty, menuIds
-src/components/builder/         IngredientTile, IngredientIcon, TileGroup, TileTray, BuilderActions
+src/components/builder/         builderMode (context: ordering / showPrices), IngredientTile, IngredientIcon, TileGroup, TileTray, BuilderActions (coming-soon CTA)
 src/components/checkout/        CheckoutCard, CheckoutField, fieldStyles, OrderTypeSwitch, OrderTypeFields, DetailsFields, PaymentOptions, OrderReview, CheckoutTotals, SendOrderButton, ErrorSummary, CheckoutBanners, CheckoutEmpty, MessagePreview (DEV), OrderSnapshot, useCheckoutForm, useSendOrder
 src/components/brand/           Logo, BrandImage, LogoStamp, brandAssets.ts (generated)
 src/components/mascot/          Mascot, MascotFace, mascotPoses, useMascotAnimation, useMascotReactions, mascotFollow, mascotLook
 src/components/munchRun/        MunchRun, MunchCharacter, MunchStop, MunchStatic, MunchNote, MunchPuffs, useMunchRun, munchRunMath, munchTimelines, munchActions, munchEffects, readEls, forms/*
-src/sections/home/              hero/{Hero, HeroHeadline, HeroVisuals, HeroBackdrop, HeroPhoto, heroPhotoSrc, HeroMascot, ScrollHint}, Marquee, MenuPreview(+Tabs), Bestsellers ("Our picks"), craft/*, vibe/*, roulette/*, deals/*, reviews/*, FindUsTeaser, sectionIds
+src/sections/home/              hero/{Hero, HeroMeta, HeroHeadline, HeroCapsule, HeroCinema, HeroBackdrop, heroPhotoSrc, HeroMascot}, Marquee, MenuPreview(+Tabs), Bestsellers ("Our picks"), craft/*, vibe/*, roulette/*, deals/*, reviews/*, FindUsTeaser, sectionIds
 src/sections/story/, findus/    StoryPanels, StorySteps · HoursTable, MapFacade
 src/pages/                      Home, Menu, ItemDetail, Deals, Checkout, OrderSuccess, OurStory, FindUs, NotFound, MascotLab (DEV)
 REMOVED                         sections/home/Preloader.tsx (→ layout/Preloader), components/layout/PageLoader.tsx (no Suspense loader), Phase-4 builders
@@ -252,7 +255,7 @@ REMOVED                         sections/home/Preloader.tsx (→ layout/Preloade
 3. **Address details:** shop # / street (`address.line1`), Google Maps share link (`mapsUrl`), exact pin (`lat`/`lng`, also enables JSON-LD geo), parking/landmark (`addressNotes`).
 4. **Real opening hours** (`site.hours`, currently placeholders), **delivery areas** (current list is invented and far from Ghouri Town), delivery fee, free-delivery threshold, tax rate, min delivery order, ETA, table count, order prefix, real domain (`site.url`).
 5. **Deals:** none yet; add real ones to `data/deals.ts` (format in the file comment). Home strip + /deals switch on automatically.
-6. **Custom burger / wrap orders?** If yes: real ingredient prices in `data/builder.ts` / `wrapBuilder.ts`, then `site.craftMakers.burger/wrap = true`.
+6. **Custom burger / wrap orders?** If yes: real ingredient prices in `data/builder.ts` / `wrapBuilder.ts`, set `BURGER_PRICES_CONFIRMED` / `WRAP_PRICES_CONFIRMED = true` and `site.craftMakers.burger/wrap = 'order'`. Same for coffee creations (`craftMakers.coffee = 'order'`) and the Spin (`spinOrdering = true`) when the owner wants them orderable.
 7. TikTok handle (optional), real reviews with permission (`data/reviews.ts`, `isPlaceholder: false`), real Instagram posts for `InstaGrid`, Our Story facts + photos (`data/story.ts`, `public/images/brand/{kitchen,team,counter}.webp`), product photos (`public/images/<folder>/<slug>.webp`, ~1200px).
 8. Replace logo → `public/brand/logo.png` + `npm run brand`. Replace hero photo → `assets/photos/hero-golden-hour.png` + `npm run photos`.
 
@@ -263,7 +266,7 @@ REMOVED                         sections/home/Preloader.tsx (→ layout/Preloade
 - The owner only learns about an order when the customer actually sends it in WhatsApp ("Yes, I've sent it" is the customer's word).
 - Vitest prints a Node "localStorage is not available" ExperimentalWarning (Node 26 + zustand persist); tests pass.
 - The preloader adds ~1.5–2 s to every full load (owner's choice); in-app navigation never shows it.
-- 768px: navbar links wrap to two lines (Phase 6). Noto Nastaliq Urdu subset is 239 KB (footer only; Phase 6). GSAP (~86 KB gz) + Motion (~46 KB gz) in the shell.
+- Noto Nastaliq Urdu subset is 239 KB (footer only; Phase 6). GSAP (~86 KB gz) + Motion (~46 KB gz) in the shell.
 - Our-picks pin uses ScrollTrigger pin spacing (full-page screenshots show an empty band above it; normal).
 - Munch Run: no sounds; notes only ≥768px; low-end (≤4 cores) skips crumbs/sparkles.
 - Coffee "Tweak" applies to every coffee in the maker list (maker and menu coffees are the same line by design). Editing a creation into one identical to another line merges them.
@@ -284,6 +287,12 @@ Node/Supabase backend + orders DB · JazzCash / Easypaisa / card payments (need 
 ---
 
 ## 10. Changelog (Asia/Karachi dates)
+### 2026-11-11 (4): Awwwards-style hero + navbar; playable makers; spin coming soon
+- **Hero "Golden Hour Stage"**: info row (live badge + address), photo capsules inside "SIP. BITE." and the Munch Run burger parked inline after "REPEAT.", line + CTAs, golden-hour cinema panel that grows to full width on scroll (transform-only scrub), warm pre-blurred photo wash. Same owner copy. Removed the postcard / banner variants and `site.heroPhotoStyle` (files HeroVisuals, HeroPhoto, ScrollHint deleted).
+- **Islands navbar**: logo island, numbered rolling links with a gliding blob, "Order Now ↗" + same cart icon; full-screen circle-wipe menu below 1024px (fixes the 768px link wrap).
+- **Craft makers back** (Coffee / Burger / Wrap, opens on Burger), playable with "Add to cart · coming soon"; burger/wrap placeholder prices hidden. **Spin** lands on any menu item; "Add · coming soon" + "See it on the menu".
+- Verified (prod preview, headless Chrome): Munch Run Stop 1 delta 0 at 360/768/1440; menu overlay opens with focus inside, Esc closes; no horizontal overflow; craft CTA disabled with 0 burger prices shown; spin buttons as above; 0 console errors. 92 Vitest tests, build, lint green. Colour tokens unchanged.
+
 ### 2026-11-11 (3): Menu-only cart, loader everywhere, hero banner, café info, Starters
 - **Only the owner's menu can be ordered:** `useAddToCart` guard (re-checks every add against current data, uses the data price); `cart.reprice()` now drops unorderable lines; `syncCart()` runs after load / drawer / checkout / before send with one notice. Old saved carts (e.g. Classic Smash, custom burgers) are removed instead of lingering faded in the drawer and counting in the badge/pill.
 - **Starters** added from Syed Ahmed's 2026-11-11 list: Simple Fries, Loaded Fries, Munch Club, Golden Munch Wings, Nuggets (all "Price coming soon"); new `starters` category (cheese), upsell / vibe hooks (skipped until priced).

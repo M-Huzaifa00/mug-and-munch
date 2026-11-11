@@ -3,13 +3,18 @@ import { site } from '@/config/site'
 import { Button, ButtonLink } from '@/components/ui/Button'
 import { MagneticButton } from '@/components/ui/MagneticButton'
 import { HeroBackdrop } from './HeroBackdrop'
+import { HeroCinema } from './HeroCinema'
 import { HeroHeadline } from './HeroHeadline'
 import { HeroMascot } from './HeroMascot'
-import { HeroVisuals } from './HeroVisuals'
-import { ScrollHint } from './ScrollHint'
+import { HeroMeta } from './HeroMeta'
 import { SECTION_IDS } from '../sectionIds'
 
-/** Home hero. `play` = false while the preloader is on screen (intro waits for it). */
+/**
+ * Home hero, "Golden Hour Stage": live info row → "Bhook lagi?" → picture-typography headline (photo capsules
+ * inside SIP. BITE. REPEAT., the Munch Run burger parked after REPEAT.) → line + CTAs → the golden-hour cinema
+ * panel that grows to full width on scroll. Warm photo-colour wash behind it all.
+ * `play` = false while the preloader is on screen (intro waits for it).
+ */
 export function Hero({ play }: { play: boolean }) {
   const lenis = useLenis()
 
@@ -21,15 +26,16 @@ export function Hero({ play }: { play: boolean }) {
   }
 
   return (
-    <section aria-label="Welcome" className="grain relative overflow-hidden bg-oat px-4 pt-28 pb-24 sm:px-6 md:min-h-dvh md:pb-20">
+    <section aria-label="Welcome" className="grain relative overflow-hidden bg-oat px-4 pt-24 pb-20 sm:px-6 md:pt-32 md:pb-24">
       <HeroBackdrop />
 
-      <div className="relative mx-auto grid max-w-7xl items-center gap-10 md:min-h-[calc(100dvh-12rem)] md:grid-cols-[1.05fr_0.95fr] md:gap-12">
-        <div>
-          <p className="-rotate-2 font-hand text-3xl text-ink sm:text-4xl">Bhook lagi? We got you.</p>
-          <HeroHeadline play={play} />
-          <p className="mt-6 max-w-md text-lg font-medium text-ink sm:text-xl">{site.heroLine}</p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
+      <div className="relative mx-auto max-w-7xl">
+        <HeroMeta />
+        <p className="mt-6 mb-2 -rotate-2 font-hand text-3xl text-ink sm:text-4xl md:mt-8 md:mb-4">Bhook lagi? We got you.</p>
+        <HeroHeadline play={play} />
+        <div className="mt-8 flex flex-col gap-6 md:mt-10 md:flex-row md:items-end md:justify-between">
+          <p className="max-w-md text-lg font-medium text-ink sm:text-xl">{site.heroLine}</p>
+          <div className="flex flex-wrap items-center gap-3">
             <MagneticButton>
               <Button size="lg" onClick={toMenu}>
                 Order Now
@@ -40,11 +46,10 @@ export function Hero({ play }: { play: boolean }) {
             </ButtonLink>
           </div>
         </div>
-        <HeroVisuals play={play} />
+        <HeroCinema play={play} />
       </div>
 
       {play && <HeroMascot />}
-      <ScrollHint />
     </section>
   )
 }

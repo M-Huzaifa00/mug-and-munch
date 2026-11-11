@@ -31,9 +31,9 @@ export const MUNCH_STOPS: readonly MunchStopConfig[] = [
     form: 'burger',
     note: 'follow me 👇',
     craftHash: '#craft-burger',
-    noteSide: 'left',
-    // Inside HeroVisuals: perched on the postcard photo's top edge, right side (clear of the mosque + tape).
-    anchorClass: '-top-[9%] right-[4%] md:-top-[8%] md:right-[3%]',
+    noteSide: 'right',
+    // Inline slot right after "REPEAT." in the hero headline (HeroHeadline): the burger parks like part of the type.
+    anchorClass: 'top-0 left-0',
   },
   {
     stop: 2,

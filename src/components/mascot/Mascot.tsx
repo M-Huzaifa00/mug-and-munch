@@ -28,8 +28,8 @@ const arm = (side: 'armL' | 'armR', rotation: number, d: string, hand: [number, 
 }
 
 /**
- * Munchy, the Mug n Munch kid: curly hair, cap, wink + tongue grin, balancing the café tray.
- * Hand-built from the logo. Each mood = static pose (reduced motion) + GSAP timeline.
+ * Munchy, the Mug n Munch kid, chibi + kawaii: big round face framed by curls, cap with curly bangs, huge sparkly
+ * eyes, rosy cheeks, happy smile with a tiny tongue, little heart, balancing the café tray. Built from the logo. Each mood = static pose (reduced motion) + GSAP timeline.
  */
 export function Mascot({ mood = 'idle', reactive = false, onPeekEnd, className, label }: MascotProps) {
   const activeMood = useMascotReactions(mood, reactive)
@@ -60,33 +60,32 @@ export function Mascot({ mood = 'idle', reactive = false, onPeekEnd, className, 
           <path d="M94 300c0-9 6-13 14-13s11 5 11 13zM126 300c0-8 3-13 11-13s14 4 14 13z" fill="currentColor" />
         </g>
         <g data-part="body">
-          <path d="M98 222c-12 18-12 40 2 50h44c14-10 14-32 2-50z" className="fill-oat" />
+          <path d="M98 224c-12 18-12 40 2 48h44c14-8 14-30 2-48z" className="fill-oat" />
+          {/* little heart on the chest */}
+          <path d="M122 260c-7-5-10-8-10-12 0-3 3-5 6-5 2 0 3 1 4 3 1-2 2-3 4-3 3 0 6 2 6 5 0 4-3 7-10 12z" className="fill-chili" strokeWidth="2.5" />
         </g>
 
-        <g data-part="head" transform="rotate(-12 128 168)">
+        <g data-part="head">
+          {/* curls sit BEHIND the face: they frame the head, never cover it */}
           <g fill="currentColor" stroke="none">
-            <path d="M62 148L110 150 112 232 70 240 38 200z" />
-            <circle cx="60" cy="156" r="17" /><circle cx="44" cy="180" r="17" /><circle cx="44" cy="206" r="16" />
-            <circle cx="58" cy="228" r="16" /><circle cx="80" cy="240" r="15" /><circle cx="102" cy="238" r="12" />
-            <circle cx="198" cy="148" r="12" /><circle cx="204" cy="168" r="11" /><circle cx="196" cy="186" r="9" />
+            <circle cx="64" cy="146" r="16" /><circle cx="53" cy="170" r="15" /><circle cx="56" cy="196" r="14" /><circle cx="68" cy="216" r="12" />
+            <circle cx="184" cy="146" r="16" /><circle cx="195" cy="170" r="15" /><circle cx="192" cy="196" r="14" /><circle cx="180" cy="216" r="12" />
           </g>
-          <path d="M58 170c0-40 30-66 74-66 42 0 74 28 74 66 0 38-36 62-78 62-42 0-70-24-70-62z" className="fill-oat" />
-          <g fill="currentColor" stroke="none">
-            <path d="M56 160l50-8 6 60-14 16-40-6z" />
-            <circle cx="104" cy="214" r="9" /><circle cx="90" cy="226" r="11" />
-          </g>
-          <path d="M78 214c-11-4-19 7-12 17 4 6 12 8 18 2" className="fill-oat" />
-          <path d="M69 224h9M73.5 219v10" strokeWidth="3.5" />
-          <g fill="currentColor" stroke="none">
-            <path d="M112 134L200 112 206 140 116 150z" />
-            <circle cx="124" cy="146" r="9" /><circle cx="141" cy="148" r="10" /><circle cx="160" cy="146" r="10" />
-            <circle cx="179" cy="140" r="10" /><circle cx="196" cy="142" r="9" />
-          </g>
+          {/* big round face */}
+          <ellipse cx="124" cy="176" rx="68" ry="58" className="fill-oat" />
+          {/* soft cap with a seam (the tray balances on top) */}
           <g data-part="cap">
-            <path d="M50 162c-14-36 16-72 64-76 40-2 68 18 76 40-30-12-82-6-110 22-12 12-22 16-30 14z" className="fill-oat" />
-            <path d="M100 142c30-24 70-30 102-20" />
-            <path d="M64 112c-9-4-9-17 1-19 7-1 11 3 12 9" className="fill-oat" />
+            <path d="M56 152c-2-36 28-60 68-60s70 24 68 60c-22-10-46-14-68-14s-46 4-68 14z" className="fill-oat" />
+            {/* little brim tilted to the side, like the logo cap */}
+            <path d="M168 142c14-8 32-8 42 2-10 6-26 8-40 6z" className="fill-oat" strokeWidth="4" />
+            <path d="M84 118c16-8 46-10 74 0" fill="none" strokeWidth="4" />
           </g>
+          {/* scalloped curly bangs peeking under the brim */}
+          <path
+            d="M64 150Q124 132 184 150l0 2q-8 11-17 2q-8 11-17 2q-8 11-17 2q-8 11-17 2q-8 11-17 2q-8 11-17 2q-6 9-14 0z"
+            fill="currentColor"
+            strokeWidth="3"
+          />
           <MascotFace pose={pose} />
         </g>
 
@@ -94,7 +93,7 @@ export function Mascot({ mood = 'idle', reactive = false, onPeekEnd, className, 
         {arm('armL', ARM_ROTATION.armL[pose.armL], 'M100 242c-12 6-18 14-20 24', [79, 270])}
         {arm('armR', ARM_ROTATION.armR[pose.armR], 'M146 240c12 4 18 14 20 24', [167, 270])}
 
-        <g data-part="accessory" transform="rotate(-10 156 80)">
+        <g data-part="accessory" transform="translate(-36 -2) rotate(-6 156 80)">
           <path d="M104 84h108v12H104z" fill={`url(#${checkId})`} strokeWidth="5" />
           <path d="M110 48h42l-4 36h-34z" className="fill-oat" />
           <path d="M110 48c6-7 36-7 42 0-6 6-36 6-42 0z" fill="currentColor" strokeWidth="4" />

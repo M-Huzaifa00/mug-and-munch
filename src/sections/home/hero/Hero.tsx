@@ -3,10 +3,11 @@ import { site } from '@/config/site'
 import { Button, ButtonLink } from '@/components/ui/Button'
 import { MagneticButton } from '@/components/ui/MagneticButton'
 import { HeroBackdrop } from './HeroBackdrop'
-import { HeroCinema } from './HeroCinema'
+import { HERO_CINEMA_ID, HeroCinema } from './HeroCinema'
 import { HeroHeadline } from './HeroHeadline'
 import { HeroMascot } from './HeroMascot'
 import { HeroMeta } from './HeroMeta'
+import { HeroSpinBadge } from './HeroSpinBadge'
 import { SECTION_IDS } from '../sectionIds'
 
 /**
@@ -32,7 +33,11 @@ export function Hero({ play }: { play: boolean }) {
       <div className="relative mx-auto max-w-7xl">
         <HeroMeta />
         <p className="mt-6 mb-2 -rotate-2 font-hand text-3xl text-ink sm:text-4xl md:mt-8 md:mb-4">Bhook lagi? We got you.</p>
-        <HeroHeadline play={play} />
+        <div className="relative">
+          <HeroHeadline play={play} />
+          {/* fills the empty right side of the headline on desktop */}
+          <HeroSpinBadge targetId={HERO_CINEMA_ID} className="absolute top-1/2 right-0 hidden -translate-y-1/2 xl:flex" />
+        </div>
         <div className="mt-8 flex flex-col gap-6 md:mt-10 md:flex-row md:items-end md:justify-between">
           <p className="max-w-md text-lg font-medium text-ink sm:text-xl">{site.heroLine}</p>
           <div className="flex flex-wrap items-center gap-3">

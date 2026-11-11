@@ -1,31 +1,35 @@
 import type { ReactNode } from 'react'
 import type { MascotPose, MouthPose } from './mascotPoses'
 
-const EYE_L = { x: 124, y: 158 }
-const EYE_R = { x: 158, y: 154 }
+/** Eye centres (viewBox units). Big, low-set kawaii eyes. */
+const EYE_L = { x: 100, y: 178 }
+const EYE_R = { x: 148, y: 178 }
 
-/** Solid teardrop eye like the logo's open eye (ink filled, tiny highlight). */
+/** Big glossy eye: ink oval + two sparkle highlights (the cute part). */
 const eye = (x: number, y: number, dx: number) => (
   <>
-    <path d={`M${x + dx} ${y}c7 0 12 10 11 19-1 6-8 7-12 2-6-7-7-21 1-21z`} fill="currentColor" stroke="none" />
-    <circle cx={x + dx + 2} cy={y + 17} r="1.8" className="fill-oat" stroke="none" />
+    <ellipse cx={x + dx} cy={y} rx="10" ry="13" fill="currentColor" stroke="none" />
+    <circle cx={x + dx + 3.5} cy={y - 5} r="4" className="fill-oat" stroke="none" />
+    <circle cx={x + dx - 3.5} cy={y + 5} r="1.8" className="fill-oat" stroke="none" />
   </>
 )
 
 /** Main mouth outline per pose: ONE path so GSAP MorphSVG can morph between moods. */
 const MOUTH_D: Record<MouthPose, string> = {
-  tongue: 'M120 212c16 16 54 16 72-8',
-  open: 'M124 206c10 22 56 22 66-6z',
-  o: 'M152 206c3 0 5 3 5 6s-2 6-5 6-5-3-5-6 2-6 5-6z',
-  frown: 'M130 220c10-12 34-14 48-4',
-  wobbly: 'M130 214c5-5 10 5 15 0s10 5 15 0 10 5 15 0',
+  // happy "D" smile (filled) with a little tongue
+  tongue: 'M110 204c4 14 24 14 28 0z',
+  // big excited open smile
+  open: 'M106 202c4 22 32 22 36 0z',
+  o: 'M124 206c4 0 6 3 6 6s-2 6-6 6-6-3-6-6 2-6 6-6z',
+  frown: 'M112 214c6-8 18-8 24 0',
+  wobbly: 'M110 210c4-4 7 4 11 0s7 4 11 0 7 4 11 0',
 }
-const FILLED: Record<MouthPose, boolean> = { tongue: false, open: true, o: true, frown: false, wobbly: false }
+const FILLED: Record<MouthPose, boolean> = { tongue: true, open: true, o: true, frown: false, wobbly: false }
 
 /** Extra mouth details layered on the outline. */
 const MOUTH_EXTRA: Partial<Record<MouthPose, ReactNode>> = {
-  tongue: <path data-part="tongue" d="M128 216c-2-11 10-14 14-4l6 12c-8 2-14 0-20-8z" fill="currentColor" strokeWidth="3" />,
-  open: <path data-part="tongue" d="M140 220c6-6 18-6 24 0-6 6-18 6-24 0z" className="fill-chili" stroke="none" />,
+  tongue: <path data-part="tongue" d="M118 212c3-4 9-4 12 0-3 3-9 3-12 0z" className="fill-bubblegum" stroke="none" />,
+  open: <path data-part="tongue" d="M114 216c5-6 15-6 20 0-5 5-15 5-20 0z" className="fill-bubblegum" stroke="none" />,
 }
 
 /** Face features. Groups carry data-part for GSAP (blink, follow, mouth morph). */
@@ -44,27 +48,31 @@ export function MascotFace({ pose }: { pose: MascotPose }) {
         <g data-part="pupilR">{eye(EYE_R.x, EYE_R.y, shift)}</g>
       </g>
       <g data-part="eyelids" fill="none">
-        {eyes === 'wink' && <path d="M154 160c4 6 12 8 18 6M156 168c4-2 10-2 14 2" />}
-        {eyes === 'closed' && <path d="M118 170c4 5 12 5 16 0M152 166c4 5 12 5 16 0" />}
-        {eyes === 'happy' && <path d="M118 172c3-8 13-8 16 0M152 168c3-8 13-8 16 0" />}
-        {eyes === 'droopy' && <path d="M116 152l16 4M152 152l16-6" />}
-        {eyes === 'side' && <path d="M118 156h16M152 152h16" />}
+        {/* signature wink: a happy "^" on the right */}
+        {eyes === 'wink' && <path d="M138 182c4-9 16-9 20 0" />}
+        {eyes === 'closed' && <path d="M90 180c4 5 16 5 20 0M138 180c4 5 16 5 20 0" />}
+        {eyes === 'happy' && <path d="M90 184c4-10 16-10 20 0M138 184c4-10 16-10 20 0" />}
+        {/* sad: soft worried brows (inner ends up), never angry */}
+        {eyes === 'droopy' && <path d="M88 158c6-1 12-4 16-8M160 158c-6-1-12-4-16-8" strokeWidth="3.5" />}
+        {/* guilty: sleepy half-lids, cheeky not mean */}
+        {eyes === 'side' && <path d="M88 172h22M136 172h22" strokeWidth="4" />}
       </g>
-      <path data-part="nose" d="M141 192c2-7 12-9 15-3 3 6-1 13-8 12" fill="none" />
-      <g data-part="blush" stroke="none" className="fill-bubblegum" opacity={0.55}>
-        <ellipse cx="116" cy="200" rx="8" ry="4.5" />
-        <ellipse cx="188" cy="190" rx="8" ry="4.5" />
+      {/* tiny nose: the logo's little curl, kept small */}
+      <path data-part="nose" d="M121 194c2-3 7-3 7 1" fill="none" strokeWidth="3.5" />
+      <g data-part="blush" stroke="none" className="fill-bubblegum" opacity={0.75}>
+        <ellipse cx="80" cy="198" rx="11" ry="6.5" />
+        <ellipse cx="168" cy="198" rx="11" ry="6.5" />
       </g>
-      <g data-part="mouth">
+      <g data-part="mouth" strokeWidth="4">
         <path data-part="mouthShape" d={MOUTH_D[pose.mouth]} fill={FILLED[pose.mouth] ? 'currentColor' : 'none'} />
         {MOUTH_EXTRA[pose.mouth]}
       </g>
-      {pose.extra === 'tear' && <path data-part="tear" d="M170 176c3 6 6 10 3 13-3 2-7 0-6-4z" className="fill-oat" strokeWidth="2.5" />}
+      {pose.extra === 'tear' && <path data-part="tear" d="M156 190c3 6 6 10 3 13-3 2-7 0-6-4z" className="fill-oat" strokeWidth="2.5" />}
       {pose.extra === 'crumbs' && (
         <g data-part="crumbs" fill="currentColor" stroke="none">
-          <circle cx="124" cy="226" r="2.2" />
-          <circle cx="134" cy="232" r="1.6" />
-          <circle cx="182" cy="214" r="2" />
+          <circle cx="104" cy="216" r="2.2" />
+          <circle cx="112" cy="224" r="1.6" />
+          <circle cx="146" cy="214" r="2" />
         </g>
       )}
     </g>

@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { addressLine } from '@/config/site'
 import { Link } from 'react-router'
 import { HERO_PHOTO } from '@/data/heroPhoto'
 import { gsap, MQ, refreshScrollTriggersSoon, useGSAP } from '@/lib/gsap'
@@ -7,6 +8,9 @@ import { formatPKR } from '@/lib/utils'
 import { LogoStamp } from '@/components/brand/LogoStamp'
 import { menuCategoryHref } from '@/components/menu/menuIds'
 import { COFFEE_FROM, HERO_ALT, HERO_FALLBACK_SRC, heroSrcSet } from './heroPhotoSrc'
+
+/** Anchor id for the spin badge's scroll target. */
+export const HERO_CINEMA_ID = 'golden-hour'
 
 /**
  * The golden-hour "cinema": the photo at full colour in a wide sticker panel that peeks in under the headline,
@@ -36,9 +40,11 @@ export function HeroCinema({ play }: { play: boolean }) {
   )
 
   return (
-    <div ref={ref} className="relative mt-12 md:mt-16">
+    <div ref={ref} id={HERO_CINEMA_ID} className="relative mt-12 md:mt-16">
       <div
         data-cinema
+        data-cursor="view"
+        data-cursor-label="Golden hour ✨"
         className="relative aspect-square w-full origin-top overflow-hidden rounded-[2rem] border-[3px] border-espresso bg-caramel/30 shadow-hard-lg sm:aspect-[4/3] md:aspect-auto md:h-[min(80vh,760px)] md:rounded-[3rem]"
       >
         <picture>
@@ -57,6 +63,14 @@ export function HeroCinema({ play }: { play: boolean }) {
           />
         </picture>
         <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-espresso/60 to-transparent" />
+        <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-1/4 bg-linear-to-b from-espresso/35 to-transparent" />
+        {/* editorial film labels */}
+        <span aria-hidden="true" className="absolute top-5 left-5 font-sans text-[0.65rem] font-bold tracking-[0.3em] text-oat uppercase sm:top-7 sm:left-8 sm:text-xs">
+          ( 01 ) — Golden hour
+        </span>
+        <span aria-hidden="true" className="absolute right-6 bottom-6 hidden font-sans text-xs font-bold tracking-[0.3em] text-oat/90 uppercase md:block">
+          {addressLine}
+        </span>
         <p className="absolute bottom-5 left-5 max-w-[75%] -rotate-2 font-hand text-4xl leading-none text-oat drop-shadow-[0_2px_0_var(--color-espresso)] sm:bottom-8 sm:left-8 sm:text-6xl md:text-7xl">
           golden hour, Islamabad 🌄
         </p>

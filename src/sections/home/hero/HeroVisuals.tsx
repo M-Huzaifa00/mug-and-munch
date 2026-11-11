@@ -1,23 +1,18 @@
 import { useRef } from 'react'
-import { getItemBySlug } from '@/data/menu'
 import { gsap, MQ, useGSAP } from '@/lib/gsap'
 import { DUR, EASE } from '@/lib/motion-presets'
-import { cn } from '@/lib/utils'
 import { LogoStamp } from '@/components/brand/LogoStamp'
-import { ProductImage } from '@/components/ui/ProductImage'
 import { MunchStop } from '@/components/munchRun/MunchStop'
-
-const VISUALS = [
-  // The burger is the Munch Run traveler (parks top-right of this box), so no burger photo here.
-  { slug: 'spanish-latte', depth: 1, tag: 'iced latte 🧊', box: 'left-[4%] top-[18%] w-[54%]', tilt: -6, shape: 'rounded-[46%_54%_42%_58%/55%_45%_55%_45%]' },
-  { slug: 'chicken-tikka-wrap', depth: 0.3, tag: 'tikka wrap', box: 'right-[6%] bottom-[2%] w-[42%]', tilt: -10, shape: 'rounded-[40%_60%_55%_45%/50%_40%_60%_50%]' },
-] as const
+import { HeroPhoto } from './HeroPhoto'
 
 /**
- * Floating hero items (latte + wrap + stamp; the burger is the Munch Run traveler) (real photos if present in public/images, else styled blobs).
- * 3 depth layers of mouse parallax on fine pointers; gentle idle float everywhere (smaller on touch).
+ * Hero visual: the golden-hour postcard photo + logo stamp (the burger is the Munch Run traveler, perched on
+ * the postcard's top edge via its anchor). Motion (only with motion OK):
+ * - intro: postcard drops in with a bouncy tilt while the photo settles from a zoom; tape + caption pop after.
+ * - scroll: the photo drifts inside its frame (one composited transform, scrubbed) for depth.
+ * - idle: gentle float; fine pointers also get 2-layer mouse parallax.
  */
-export function HeroVisuals({ play }: { play: boolean }) {
+export function HeroVisuals({ play, framed = true }: { play: boolean; framed?: boolean }) {
   const ref = useRef<HTMLDivElement>(null)
 
   useGSAP(
@@ -26,13 +21,27 @@ export function HeroVisuals({ play }: { play: boolean }) {
       mm.add({ motion: MQ.motionOk, fine: MQ.finePointer }, (ctx) => {
         const { motion, fine } = ctx.conditions as { motion: boolean; fine: boolean }
         if (!motion) return
-        const layers = gsap.utils.toArray<HTMLElement>('[data-depth]')
-        if (play) gsap.from('[data-float] > div', { scale: 0.5, opacity: 0, duration: DUR.slow, ease: EASE.bouncy, stagger: 0.12, delay: 0.3 })
-        gsap.utils.toArray<HTMLElement>('[data-float]').forEach((el, i) => {
-          gsap.to(el, { y: fine ? -14 : -8, rotate: i % 2 ? 2 : -2, duration: 2.4 + i * 0.5, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: i * 0.3 })
-        })
+        if (play) gsap.from('[data-stamp]', { scale: 0.4, rotation: -60, autoAlpha: 0, duration: DUR.slow, ease: EASE.bouncy, delay: 0.25 + DUR.base })
+        if (framed) {
+          const img = '[data-photo-img]'
+          gsap.set(img, { scale: 1.1 })
+          if (play) {
+            gsap
+              .timeline({ delay: 0.25 })
+              .from('[data-photo-card]', { yPercent: 14, rotation: -7, scale: 0.86, autoAlpha: 0, duration: DUR.slow, ease: EASE.bouncy })
+              .from(img, { scale: 1.3, duration: DUR.hero * 1.6, ease: EASE.out }, 0)
+              .from('[data-photo-tape]', { scale: 0, autoAlpha: 0, duration: DUR.fast, ease: EASE.bouncy }, DUR.base)
+              .from('[data-photo-tag]', { y: 14, autoAlpha: 0, duration: DUR.base, ease: EASE.bouncy }, DUR.base + 0.1)
+          }
+          gsap.fromTo(
+            img,
+            { yPercent: -4 },
+            { yPercent: 4, ease: 'none', scrollTrigger: { trigger: ref.current, start: 'top bottom', end: 'bottom top', scrub: true } },
+          )
+          gsap.to('[data-float]', { y: fine ? -12 : -6, rotation: 1, duration: 3, ease: 'sine.inOut', yoyo: true, repeat: -1 })
+        }
         if (!fine) return
-        const movers = layers.map((el) => ({
+        const movers = gsap.utils.toArray<HTMLElement>('[data-depth]').map((el) => ({
           depth: Number(el.dataset.depth),
           x: gsap.quickTo(el, 'x', { duration: 0.8, ease: EASE.out }),
           y: gsap.quickTo(el, 'y', { duration: 0.8, ease: EASE.out }),
@@ -41,39 +50,35 @@ export function HeroVisuals({ play }: { play: boolean }) {
           const nx = e.clientX / window.innerWidth - 0.5
           const ny = e.clientY / window.innerHeight - 0.5
           for (const m of movers) {
-            m.x(nx * 46 * m.depth)
-            m.y(ny * 34 * m.depth)
+            m.x(nx * 30 * m.depth)
+            m.y(ny * 22 * m.depth)
           }
         }
         window.addEventListener('pointermove', onMove, { passive: true })
         return () => window.removeEventListener('pointermove', onMove)
       })
     },
-    { scope: ref, dependencies: [play], revertOnUpdate: true },
+    { scope: ref, dependencies: [play, framed], revertOnUpdate: true },
   )
 
   return (
-    <div ref={ref} className="relative mx-auto aspect-square w-full max-w-[min(88vw,560px)]" aria-hidden="true">
-      <span className="absolute inset-[12%] rounded-full bg-cheese/50 blur-3xl" />
-      <MunchStop stop={1} />
-      {VISUALS.map((v) => {
-        const item = getItemBySlug(v.slug)
-        if (!item) return null
-        return (
-          <div key={v.slug} data-depth={v.depth} className={cn('absolute', v.box)}>
-            <div data-float style={{ rotate: `${v.tilt}deg` }}>
-              <div className={cn('sticker aspect-square overflow-hidden', v.shape)}>
-                <ProductImage name={item.name} emoji={item.emoji} image={item.image} category={item.category} showName={false} priority={v.depth === 1} />
-              </div>
-              <span className="sticker absolute -bottom-3 left-1/2 -translate-x-1/2 -rotate-3 rounded-full bg-oat px-3 py-0.5 font-hand text-lg whitespace-nowrap text-ink sm:text-xl">
-                {v.tag}
-              </span>
+    <div ref={ref} className="relative mx-auto aspect-[4/3] w-full max-w-[min(88vw,560px)]">
+      {/* Banner style: the photo is the hero background, so this box only keeps the Munch Run anchor + stamp. */}
+      {framed && (
+        <>
+          <span aria-hidden="true" className="absolute inset-[6%] rounded-full bg-cheese/50 blur-3xl" />
+          <div data-depth="0.4" className="absolute inset-0">
+            <div data-float className="h-full w-full">
+              <HeroPhoto />
             </div>
           </div>
-        )
-      })}
-      <div data-depth="0.8" className="absolute bottom-[8%] left-[2%]">
-        <LogoStamp size={112} className="-rotate-12" />
+        </>
+      )}
+      <MunchStop stop={1} />
+      <div data-depth="1" aria-hidden="true" className="absolute -top-[9%] -left-[5%] hidden md:block">
+        <div data-stamp>
+          <LogoStamp size={104} className="-rotate-12" />
+        </div>
       </div>
     </div>
   )

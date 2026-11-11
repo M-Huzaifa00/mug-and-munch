@@ -2,6 +2,7 @@ import { useLenis } from 'lenis/react'
 import { site } from '@/config/site'
 import { Button, ButtonLink } from '@/components/ui/Button'
 import { MagneticButton } from '@/components/ui/MagneticButton'
+import { HeroBackdrop } from './HeroBackdrop'
 import { HeroHeadline } from './HeroHeadline'
 import { HeroMascot } from './HeroMascot'
 import { HeroVisuals } from './HeroVisuals'
@@ -11,6 +12,7 @@ import { SECTION_IDS } from '../sectionIds'
 /** Home hero. `play` = false while the preloader is on screen (intro waits for it). */
 export function Hero({ play }: { play: boolean }) {
   const lenis = useLenis()
+  const banner = site.heroPhotoStyle === 'banner'
 
   const toMenu = () => {
     const el = document.getElementById(SECTION_IDS.menuPreview)
@@ -21,8 +23,14 @@ export function Hero({ play }: { play: boolean }) {
 
   return (
     <section aria-label="Welcome" className="grain relative overflow-hidden bg-oat px-4 pt-28 pb-24 sm:px-6 md:min-h-dvh md:pb-20">
-      <span aria-hidden="true" className="absolute -top-24 -left-24 size-80 rounded-full bg-chili/15 blur-3xl" />
-      <span aria-hidden="true" className="absolute right-0 bottom-0 size-96 rounded-full bg-pickle/20 blur-3xl" />
+      {banner ? (
+        <HeroBackdrop play={play} />
+      ) : (
+        <>
+          <span aria-hidden="true" className="absolute -top-24 -left-24 size-80 rounded-full bg-chili/15 blur-3xl" />
+          <span aria-hidden="true" className="absolute right-0 bottom-0 size-96 rounded-full bg-pickle/20 blur-3xl" />
+        </>
+      )}
 
       <div className="relative mx-auto grid max-w-7xl items-center gap-10 md:min-h-[calc(100dvh-12rem)] md:grid-cols-[1.15fr_0.85fr]">
         <div>
@@ -40,7 +48,7 @@ export function Hero({ play }: { play: boolean }) {
             </ButtonLink>
           </div>
         </div>
-        <HeroVisuals play={play} />
+        <HeroVisuals play={play} framed={!banner} />
       </div>
 
       {play && <HeroMascot />}

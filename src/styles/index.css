@@ -142,6 +142,15 @@
   padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
 }
 
+/* Lenis' stylesheet gives [data-lenis-prevent-wheel] `overscroll-behavior: contain` on BOTH axes. On our
+   horizontal strips (Bestsellers carousel, Menu category chips) that trapped vertical touch swipes, so the
+   page stopped scrolling on phones whenever the finger started on the cards. Release the vertical axis;
+   keep x contained so a sideways swipe never triggers browser back/forward. Unlayered + after lenis.css → wins. */
+.lenis [data-lenis-prevent-wheel] {
+  overscroll-behavior-x: contain;
+  overscroll-behavior-y: auto;
+}
+
 /* ---------- Keyframes ---------- */
 @keyframes float-idle {
   0%,

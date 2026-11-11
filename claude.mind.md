@@ -82,8 +82,8 @@
 | Logo everywhere: navbar (wordmark tucks away on scroll, wiggle), preloader, footer (full + stamp), cart pill, fallback-card watermark, Suspense loader (pulse), page-transition wipe, toasts, 404, empty cart, order success, stamp doodles (hero, bestsellers, reviews, find us), JSON-LD logo + alternateName | ✅ | see file map |
 | Logo 5-click easter egg: coffee spills down the screen and mops itself up | ✅ | `src/lib/easterEgg.ts`, `src/components/layout/CoffeeSpill.tsx`, `NavLogo.tsx` |
 | Munchy mascot: layered SVG, 9 animated moods, mouth morph, cart reactions, idle sleep; replaced all Phase 2 placeholders | ✅ | `src/components/mascot/*`, `src/pages/MascotLab.tsx` (DEV-only) |
-| Preloader (logo coffee-wave fill + counter → Munchy pops & waves → wipe up; ≤1.8s; once per session; skipped with reduced motion; refreshes ScrollTrigger) | ✅ | `src/sections/home/Preloader.tsx`, `src/lib/preloader.ts` |
-| Hero (SplitText elastic chars, DrawSVG word underlines, parallax floating items, stamp, Munchy peek → follow, magnetic Order Now → Lenis scroll to menu, See the Menu, scroll hint) | ✅ | `src/sections/home/hero/*` |
+| Preloader (logo coffee-wave fill + counter → Munchy pops & waves → curtain slides up; once per session; skipped with reduced motion; refreshes ScrollTrigger). **2026-11-11: lives in the app shell (not the Home chunk) and is the ONLY first-visit loader**: `index.html` paints the same first frame (`#mm-boot`) before JS, the count holds at 88% until Home is mounted + fonts ready (max 6s), hero intro starts as the curtain lifts | ✅ | `src/components/layout/Preloader.tsx`, `src/lib/preloader.ts` (phase store: loading → revealing → done), `index.html`, `RootLayout.tsx` |
+| Hero (SplitText elastic chars, DrawSVG word underlines, **owner photo as a taped "postcard"** (2026-11-11; or full-bleed banner via `site.heroPhotoStyle`), stamp, Munchy peek → follow, magnetic Order Now → Lenis scroll to menu, See the Menu, scroll hint) | ✅ | `src/sections/home/hero/*` (`HeroPhoto`, `HeroBackdrop`, `heroPhotoSrc`), `scripts/photo-assets.mjs`, `src/data/heroPhoto.ts` (generated) |
 | Marquee (2 tilted strips, seamless, scroll-velocity speed/direction, hover pause, logo separators) | ✅ | `src/sections/home/Marquee.tsx` |
 | Bestsellers (desktop pin + scrub + progress bar; mobile snap carousel; Caveat notes + arrows) | ✅ | `src/sections/home/Bestsellers.tsx` |
 | Deals strip (computed savings, tilt on hover, one-line "Add deal", reactive Munchy) | ✅ | `src/sections/home/deals/*` |
@@ -138,6 +138,7 @@ Reduced-motion + low-end audit, a11y pass, JSON-LD openingHours, image optimisat
 index.html                      %BRAND_NAME%/%ALT_NAME%/%SITE_URL% placeholders (filled from site.ts), icons, OG
 vite.config.ts                  react + tailwind, @ alias, vendor chunks, `virtual:photos`, `siteHtmlVars`
 scripts/brand-assets.mjs        sharp: logo crops/sizes, favicons, apple icon, OG image, brandAssets.ts (npm run brand)
+scripts/photo-assets.mjs        sharp: hero photo master (assets/photos/, not shipped) → 4:3 crop AVIF+WebP ×4 widths in public/images/brand + src/data/heroPhoto.ts (npm run photos)
 public/brand/                   logo.png (master) + generated logo*/og-image; public/favicon.ico, favicon-32.png, apple-touch-icon.png
 src/main.tsx                    fonts, lenis.css, index.css, brand.css, mounts <App/>
 src/styles/index.css            @theme tokens (LOCKED), base, utilities, keyframes, reduced-motion CSS
@@ -151,7 +152,7 @@ src/lib/gsap.ts                 plugin registry, MQ, refreshScrollTriggersSoon()
 src/lib/motion-presets.ts       EASE, DUR, STAGGER, MASCOT, SCENE (GSAP); SPRING, TAP_SQUISH, FADE_UP (Motion)
 src/lib/brand.ts                BRAND_INK, brandSrc(kind, height)
 src/lib/notify.tsx              branded sonner toast (logo icon + Undo)
-src/lib/preloader.ts            shouldShowPreloader(), markPreloaderSeen() (sessionStorage mm-preloaded)
+src/lib/preloader.ts            shouldShowPreloader(), markPreloaderSeen() (sessionStorage mm-preloaded; index.html mirrors the check), phase store usePreloaderPhase/setPreloaderPhase, markHomeReady/whenHomeReady, removeBootScreen
 src/lib/easterEgg.ts            registerLogoClick() → SPILL_EVENT on 5 clicks / 2s
 src/lib/hours.ts                getOpenStatus() {isOpen, detail, label}, getTodayKey(), formatDayHours, DAY_LABELS, WEEK_ORDER (+ exported toMinutes, nowInCafeTz, hoursFor)
 src/lib/utils.ts, menuFilter.ts, recommendations.ts, routing.ts, celebrate.ts, events.ts (track stub)
@@ -186,9 +187,9 @@ src/components/ui/              Button, buttonClasses, OpenBadge, SocialIcons, P
 src/components/layout/cart/     CartContents, CartLineItem, CartSummary, CartUpsell, FreeDeliveryBar, LineTag, EditCreationLink, CraftLinks
 src/components/item/*           ItemDetailContent, ItemOptionsForm, OptionPills, StickyAddBar, ItemModal
 src/components/menu/*           CategoryNav, MenuSearch, MenuSection, MenuEmpty, menuIds
-src/components/layout/          Navbar, NavLogo, CartButton, CartDrawer (+cart/*), MobileBottomBar, WhatsAppFab, Footer, FooterWordmark, PageLoader, PageTransition, CoffeeSpill, ScrollToTop, Seo, JsonLd, PagePlaceholder, navLinks
+src/components/layout/          Navbar, NavLogo, CartButton, CartDrawer (+cart/*), MobileBottomBar, WhatsAppFab, Footer, FooterWordmark, Preloader (first-visit Home, shell), PageLoader (Suspense fallback, not shown while the preloader runs), PageTransition, CoffeeSpill, ScrollToTop, Seo, JsonLd, PagePlaceholder, navLinks
 src/components/munchRun/        MunchRun (layer), MunchCharacter, MunchStop (anchor, in the Home chunk), MunchStatic (reduced motion), MunchNote, MunchPuffs, useMunchRun (engine), munchRunMath, munchTimelines, munchActions, munchEffects, readEls, forms/*
-src/sections/home/              Preloader, hero/{Hero, HeroHeadline, HeroVisuals, HeroMascot, ScrollHint}, Marquee, MenuPreview, MenuPreviewTabs, Bestsellers, deals/{DealsStrip, DealCard}, reviews/{Reviews, ReviewsBoard, InstaGrid}, FindUsTeaser, sectionIds
+src/sections/home/              hero/{Hero, HeroHeadline, HeroVisuals, HeroPhoto (postcard), HeroBackdrop (banner), heroPhotoSrc, HeroMascot, ScrollHint}, Marquee, MenuPreview, MenuPreviewTabs, Bestsellers, deals/{DealsStrip, DealCard}, reviews/{Reviews, ReviewsBoard, InstaGrid}, FindUsTeaser, sectionIds
 src/pages/*                     Home, Menu, ItemDetail, Deals, Checkout, OrderSuccess, OurStory, FindUs, NotFound, MascotLab (DEV)
 public/images/{coffee,burgers,wraps,sides,drinks,desserts,deals,brand}/  photos as <slug>.webp
 ```
@@ -221,6 +222,7 @@ public/images/{coffee,burgers,wraps,sides,drinks,desserts,deals,brand}/  photos 
 - **TODO (reviews):** `src/data/reviews.ts` holds PLACEHOLDER reviews. They render only in development (labelled "sample"); production shows "Reviews coming soon" until real reviews (with permission) are added with `isPlaceholder: false`. Never present placeholder reviews as real.
 - **TODO (Instagram):** `InstaGrid` shows menu tiles as placeholders; swap for real posts/embed later.
 - Photos: `public/images/<folder>/<slug>.webp`, ~1200px.
+- Hero photo: replace `assets/photos/hero-golden-hour.png` and run `npm run photos` (tweak `FOCUS_X` in the script if the subject moves). `site.heroPhotoStyle`: `'postcard'` (default, chosen 2026-11-11 after a side-by-side) or `'banner'`.
 - Logo: replace `public/brand/logo.png` (or add `logo.svg`) then run `npm run brand` to regenerate everything.
 
 ## 6. Known issues / tech debt
@@ -248,6 +250,13 @@ Node/Supabase backend + real orders DB · real JazzCash / Easypaisa / card gatew
 - **Online payments (JazzCash / Easypaisa / card) need the backend first** (`site.payments` flags + `TODO(payments)` in `PaymentOptions`).
 
 ## 8. Changelog (Asia/Karachi dates)
+### 2026-11-11: Mobile scroll fix, hero photo, single loading screen
+- **Mobile scroll bug:** touch scrolling stopped whenever a swipe started on the Bestsellers carousel (also the Menu category chips). Cause: `lenis.css` gives `[data-lenis-prevent-wheel]` `overscroll-behavior: contain` on BOTH axes, trapping vertical swipes in a horizontal scroller. Fix in `index.css` (unlayered rule, y → auto, x stays contain). Verified: 22 touch swipes now reach the page bottom (stalled at ~2,445px before).
+- **Smoother Home:** Munch Run morph timelines are pre-rendered on mount (MorphSVG built its rotational data on the first mid-scroll frame → 100–167 ms hitches); frames > 50 ms during a full mobile swipe 15 → ~5 (60 fps median unthrottled). Craft placeholder uses `svh` (dvh resized it under the finger when the URL bar collapsed).
+- **Hero photo:** owner's golden-hour photo (frappe + burger box + Faisal Mosque) as a taped, oat-bordered postcard with Caveat caption, drop-in + zoom-settle intro, scroll drift, idle float; Munch Run Stop 1 perches on its top edge (parks with 0px delta at 360/768/1440). Banner variant built and compared at 360 + 1440: postcard kept (banner crops to a giant box behind the buttons on phones, and the products sit under the headline on desktop). ~49 KB AVIF on a 3× phone.
+- **Loading:** first Home visit shows only the 0→100 preloader (was: blank → Suspense logo pulse → preloader). Verified with a throttled network: boot frame → counter → hero, PageLoader never rendered.
+- 84 Vitest tests, build, lint green; 0 console errors. Colour tokens unchanged.
+
 ### 2026-11-09: Realistic burger maker
 - Owner asked for realistic burgers in the Craft burger maker: shaded toasted sesame bun, seared crispy-edged patty, melting glossy cheese, ruffled lettuce, red onion rings, jalapeno slices, drippy sauce (`craft/burgerArt.tsx`). Token color-mix shades only; animations unchanged. Verified at 360 + 1440. Menu cards still show emoji until real photos are added; Munch Run stays a cartoon mascot.
 

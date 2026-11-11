@@ -51,6 +51,11 @@ export function useMunchRun(root: RefObject<HTMLDivElement | null>, onTap: (stop
         const [A1, A2, A3] = anchors as [HTMLElement, HTMLElement, HTMLElement]
         const weak = lowEnd()
         const tl = [buildSegmentTimeline(els.svg, 'burger', 'wrap'), buildSegmentTimeline(els.svg, 'wrap', 'coffee')]
+        // Pre-warm: MorphSVG builds its (rotational) shape data on a tween's first render. Do that now, on
+        // mount (idle, after the preloader), not mid-scroll where it caused 100ms+ frames on phones.
+        // Order matters: segment 1 first, then segment 0 back to its start, so the burger is what's left showing.
+        tl[1]?.progress(1).progress(0)
+        tl[0]?.progress(1).progress(0)
         gsap.set(els.svg.querySelectorAll('[data-part="steam"]'), { opacity: 0 })
         const set = {
           x: gsap.quickSetter(els.outer, 'x', 'px'),

@@ -32,8 +32,8 @@ export const MUNCH_STOPS: readonly MunchStopConfig[] = [
     note: 'follow me 👇',
     craftHash: '#craft-burger',
     noteSide: 'left',
-    // Inside HeroVisuals (top-right of the floating items), where the old floating burger area was.
-    anchorClass: 'top-[1%] right-[3%] md:top-[0%] md:right-[2%]',
+    // Inside HeroVisuals: perched on the postcard photo's top edge, right side (clear of the mosque + tape).
+    anchorClass: '-top-[9%] right-[4%] md:-top-[8%] md:right-[3%]',
   },
   {
     stop: 2,

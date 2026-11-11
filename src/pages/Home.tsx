@@ -1,8 +1,8 @@
-import { lazy, Suspense, useState } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { useIdleMount } from '@/hooks/useIdleMount'
 import { useLocation } from 'react-router'
 import { site } from '@/config/site'
-import { shouldShowPreloader } from '@/lib/preloader'
+import { markHomeReady, usePreloaderPhase } from '@/lib/preloader'
 import { LazyMount } from '@/components/ui/LazyMount'
 import { Seo } from '@/components/layout/Seo'
 import { Bestsellers } from '@/sections/home/Bestsellers'
@@ -11,7 +11,6 @@ import { FindUsTeaser } from '@/sections/home/FindUsTeaser'
 import { Hero } from '@/sections/home/hero/Hero'
 import { Marquee } from '@/sections/home/Marquee'
 import { MenuPreview } from '@/sections/home/MenuPreview'
-import { Preloader } from '@/sections/home/Preloader'
 import { Reviews } from '@/sections/home/reviews/Reviews'
 import { SnackRoulette } from '@/sections/home/roulette/SnackRoulette'
 import { SECTION_IDS } from '@/sections/home/sectionIds'
@@ -19,16 +18,19 @@ import { VibePicker } from '@/sections/home/vibe/VibePicker'
 
 // Lazy chunk, mounted only near the viewport (or immediately for a #craft-* deep link).
 const CraftSection = lazy(() => import('@/sections/home/craft/CraftSection').then((m) => ({ default: m.CraftSection })))
-const CRAFT_SPACE = 'min(100dvh, 900px)'
+// svh, not dvh: dvh changes as the phone's URL bar collapses mid-scroll, resizing this placeholder under the finger.
+const CRAFT_SPACE = 'min(100svh, 900px)'
 // Decorative Munch Run traveler: its own chunk, loaded after the preloader on idle (never affects LCP).
 const MunchRun = lazy(() => import('@/components/munchRun/MunchRun').then((m) => ({ default: m.MunchRun })))
 
 /**
- * Home: Preloader → Hero → Marquee → MenuPreview → Bestsellers → Craft your own (coffee / burger / wrap)
+ * Home: (shell Preloader) → Hero → Marquee → MenuPreview → Bestsellers → Craft your own (coffee / burger / wrap)
  * → Vibe Picker → Snack Roulette → Deals → Reviews → Find Us → (Footer).
  */
 export function Home() {
-  const [preloading, setPreloading] = useState(shouldShowPreloader)
+  // The preloader lives in the app shell; Home tells it when it's mounted, and starts its intro as the curtain lifts.
+  const preloading = usePreloaderPhase() === 'loading'
+  useEffect(() => markHomeReady(), [])
   const { hash } = useLocation()
   const munchReady = useIdleMount(!preloading)
 
@@ -38,7 +40,6 @@ export function Home() {
         description={`${site.brandName}: Islamabad's late-night coffee & smash spot. Lattes, smash burgers and wraps for delivery, takeaway or dine-in.`}
         path="/"
       />
-      {preloading && <Preloader onDone={() => setPreloading(false)} />}
       <Hero play={!preloading} />
       <Marquee />
       <MenuPreview />

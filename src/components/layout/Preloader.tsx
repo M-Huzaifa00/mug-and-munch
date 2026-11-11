@@ -1,7 +1,7 @@
 import { useId, useRef } from 'react'
 import { brandSrc } from '@/lib/brand'
-import { removeBootScreen, setPreloaderPhase, whenHomeReady } from '@/lib/preloader'
-import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap'
+import { removeBootScreen, setPreloaderPhase, whenPageReady } from '@/lib/preloader'
+import { gsap, MQ, ScrollTrigger, useGSAP } from '@/lib/gsap'
 import { EASE } from '@/lib/motion-presets'
 import { useScrollLock } from '@/hooks/useScrollLock'
 import { BRAND_ASPECT } from '@/components/brand/brandAssets'
@@ -11,18 +11,19 @@ const H = 400
 const W = Math.round(H * BRAND_ASPECT.full)
 /** Wide liquid shape with a wavy top edge (period W/4 → shifting x by -W/2 loops seamlessly). */
 const WAVE = `M0 14 ${Array.from({ length: 8 }, (_, i) => `q${W / 8} ${i % 2 ? 28 : -28} ${W / 4} 0`).join(' ')} V${H * 2} H0 Z`
-/** Count quickly to here, then hold (wave still rolling) until Home is mounted. */
+/** Count quickly to here, then hold (wave still rolling) until the page is mounted. */
 const HOLD_AT = 88
-/** Never trap a visitor on a slow network: reveal after this even if Home isn't ready (Suspense takes over). */
+/** Never trap a visitor on a slow network: reveal after this even if the page isn't ready (a blank oat page shows). */
 const MAX_WAIT_MS = 6000
 const FONT_WAIT_MS = 1200
 
 const sleep = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms))
 
 /**
- * First-visit Home preloader, rendered by the app shell (not the lazy Home chunk) so it's the ONLY loading
- * screen: index.html paints the same first frame before JS, this takes over, counts 0→88, waits for Home +
- * fonts, finishes to 100, Munchy pops, then the curtain slides up (transform only) while the hero intro plays.
+ * THE loading screen, on every full page load (any route), rendered by the app shell so nothing shows before it:
+ * index.html paints the same first frame before JS, this takes over, counts 0→88, waits for the page + fonts,
+ * finishes to 100, Munchy pops, then the curtain slides up (transform only) while the page intro plays.
+ * Reduced motion: same count, logo already full, Munchy just appears, curtain fades instead of sliding.
  */
 export function Preloader() {
   const root = useRef<HTMLDivElement>(null)
@@ -33,38 +34,37 @@ export function Preloader() {
   useGSAP(
     (_ctx, contextSafe) => {
       removeBootScreen()
+      const calm = window.matchMedia(MQ.reduced).matches
       const run = { cancelled: false }
       const progress = { v: 0 }
       const waveY = gsap.quickSetter('[data-wave]', 'y')
       const render = () => {
         if (counter.current) counter.current.textContent = String(Math.round(progress.v))
-        waveY(H - ((H + 30) * progress.v) / 100)
+        waveY(calm ? -30 : H - ((H + 30) * progress.v) / 100)
       }
       render()
-      gsap.set('[data-steam] path', { y: 14, opacity: 0 })
-      gsap.to('[data-wave]', { x: -W / 2, duration: 1.1, ease: 'none', repeat: -1 })
+      gsap.set('[data-steam] path', { y: calm ? 0 : 14, opacity: 0 })
+      if (!calm) gsap.to('[data-wave]', { x: -W / 2, duration: 1.1, ease: 'none', repeat: -1 })
       const count = gsap.to(progress, { v: HOLD_AT, duration: 0.85, ease: 'power2.out', onUpdate: render })
 
       const finish = contextSafe?.(() => {
         if (run.cancelled) return
-        gsap
-          .timeline({
-            onComplete: () => {
-              setPreloaderPhase('done')
-              requestAnimationFrame(() => ScrollTrigger.refresh())
-            },
-          })
-          .to(progress, { v: 100, duration: 0.3, ease: 'power1.inOut', onUpdate: render })
-          .to('[data-steam] path', { y: 0, opacity: 1, duration: 0.3, stagger: 0.07, ease: EASE.out }, 0.1)
-          .fromTo('[data-pop]', { scale: 0, rotation: -20, autoAlpha: 0 }, { scale: 1, rotation: 0, autoAlpha: 1, duration: 0.4, ease: EASE.bouncy }, 0.12)
-          .addLabel('exit', '+=0.18')
-          .call(() => setPreloaderPhase('revealing'), [], 'exit')
-          .to('[data-content]', { y: -70, autoAlpha: 0, duration: 0.45, ease: 'power3.in' }, 'exit')
-          .to(root.current, { yPercent: -100, duration: 0.65, ease: 'power3.inOut' }, 'exit+=0.05')
+        const tl = gsap.timeline({
+          onComplete: () => {
+            setPreloaderPhase('done')
+            requestAnimationFrame(() => ScrollTrigger.refresh())
+          },
+        })
+        tl.to(progress, { v: 100, duration: 0.3, ease: 'power1.inOut', onUpdate: render }).to('[data-steam] path', { y: 0, opacity: 1, duration: 0.3, stagger: 0.07, ease: EASE.out }, 0.1)
+        if (calm) tl.to('[data-pop]', { autoAlpha: 1, duration: 0.25 }, 0.12)
+        else tl.fromTo('[data-pop]', { scale: 0, rotation: -20, autoAlpha: 0 }, { scale: 1, rotation: 0, autoAlpha: 1, duration: 0.4, ease: EASE.bouncy }, 0.12)
+        tl.addLabel('exit', '+=0.18').call(() => setPreloaderPhase('revealing'), [], 'exit')
+        if (calm) tl.to(root.current, { autoAlpha: 0, duration: 0.4, ease: 'power1.out' }, 'exit')
+        else tl.to('[data-content]', { y: -70, autoAlpha: 0, duration: 0.45, ease: 'power3.in' }, 'exit').to(root.current, { yPercent: -100, duration: 0.65, ease: 'power3.inOut' }, 'exit+=0.05')
       })
 
       const fonts = Promise.race([document.fonts?.ready ?? Promise.resolve(), sleep(FONT_WAIT_MS)])
-      void Promise.all([count.then(), whenHomeReady(MAX_WAIT_MS), fonts]).then(() => finish?.())
+      void Promise.all([count.then(), whenPageReady(MAX_WAIT_MS), fonts]).then(() => finish?.())
       return () => {
         run.cancelled = true
       }

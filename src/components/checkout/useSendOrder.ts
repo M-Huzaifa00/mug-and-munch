@@ -8,6 +8,7 @@ import { createOrderNumber } from '@/lib/orderNumber'
 import { getOrderTotals } from '@/lib/orderTotals'
 import type { PickupPlan } from '@/lib/pickupSlots'
 import { buildWhatsAppOrderMessage, getWhatsAppOrderUrl } from '@/lib/whatsapp'
+import { syncCart } from '@/lib/cartSync'
 import { useCart } from '@/store/cart'
 import { FIELD_ID, FIELD_ORDER } from './fieldStyles'
 import { rememberCustomer } from './useCheckoutForm'
@@ -33,13 +34,14 @@ export function useSendOrder(form: UseFormReturn<CheckoutForm, unknown, Checkout
   }
 
   const send = () => {
-    const cart = useCart.getState()
-    cart.reprice()
+    // Never send a line that isn't orderable from the current data (syncCart removes it, with a notice).
+    const { removed } = syncCart()
     const items = useCart.getState().items
     const values = form.getValues()
     const parsed = checkoutSchema.safeParse(values)
 
     const extra: string[] = []
+    if (removed.length) extra.push('Some items were taken out because they are not on the menu right now. Check your order, then send again.')
     if (items.length === 0) extra.push('Your cart is empty.')
     if (items.some((i) => i.unavailable)) extra.push('Remove the items that are no longer available.')
     const slotBad = values.orderType === 'takeaway' && !plan.slots.some((s) => s.value === values.pickupTime)

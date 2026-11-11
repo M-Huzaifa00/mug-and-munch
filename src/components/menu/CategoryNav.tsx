@@ -5,13 +5,12 @@ import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { useScrollState } from '@/hooks/useScrollState'
 import { cn } from '@/lib/utils'
 import { Chip } from '@/components/ui/Chip'
-import { MENU_TOP_ID, sectionId } from './menuIds'
+import { JUMP_OFFSET, MENU_TOP_ID, sectionId } from './menuIds'
 
 type NavKey = 'all' | Category
 
 /** Section is "current" once its top passes this line (px from viewport top). */
 const SPY_LINE = 200
-const JUMP_OFFSET = -150
 
 /**
  * Sticky chip bar: All + every category. Horizontally scrollable on mobile,

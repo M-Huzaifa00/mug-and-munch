@@ -6,15 +6,36 @@ function lazyNamed<M extends Record<string, unknown>, K extends keyof M & string
   return lazy(async () => ({ default: (await loader())[name] as ComponentType }))
 }
 
-const Home = lazyNamed(() => import('@/pages/Home'), 'Home')
-const Menu = lazyNamed(() => import('@/pages/Menu'), 'Menu')
-const ItemDetail = lazyNamed(() => import('@/pages/ItemDetail'), 'ItemDetail')
-const Deals = lazyNamed(() => import('@/pages/Deals'), 'Deals')
-const Checkout = lazyNamed(() => import('@/pages/Checkout'), 'Checkout')
-const OrderSuccess = lazyNamed(() => import('@/pages/OrderSuccess'), 'OrderSuccess')
-const OurStory = lazyNamed(() => import('@/pages/OurStory'), 'OurStory')
-const FindUs = lazyNamed(() => import('@/pages/FindUs'), 'FindUs')
-const NotFound = lazyNamed(() => import('@/pages/NotFound'), 'NotFound')
+/** Page chunk loaders (shared by React.lazy and prefetchPages). */
+const LOADERS = {
+  Home: () => import('@/pages/Home'),
+  Menu: () => import('@/pages/Menu'),
+  ItemDetail: () => import('@/pages/ItemDetail'),
+  Deals: () => import('@/pages/Deals'),
+  Checkout: () => import('@/pages/Checkout'),
+  OrderSuccess: () => import('@/pages/OrderSuccess'),
+  OurStory: () => import('@/pages/OurStory'),
+  FindUs: () => import('@/pages/FindUs'),
+  NotFound: () => import('@/pages/NotFound'),
+}
+
+const Home = lazyNamed(LOADERS.Home, 'Home')
+const Menu = lazyNamed(LOADERS.Menu, 'Menu')
+const ItemDetail = lazyNamed(LOADERS.ItemDetail, 'ItemDetail')
+const Deals = lazyNamed(LOADERS.Deals, 'Deals')
+const Checkout = lazyNamed(LOADERS.Checkout, 'Checkout')
+const OrderSuccess = lazyNamed(LOADERS.OrderSuccess, 'OrderSuccess')
+const OurStory = lazyNamed(LOADERS.OurStory, 'OurStory')
+const FindUs = lazyNamed(LOADERS.FindUs, 'FindUs')
+const NotFound = lazyNamed(LOADERS.NotFound, 'NotFound')
+
+/**
+ * Warm every page chunk in the background (after the preloader, on idle) so in-app navigation never waits on a
+ * download: there is no Suspense loading screen any more, only the page wipe.
+ */
+export function prefetchPages() {
+  for (const load of Object.values(LOADERS)) void load().catch(() => {})
+}
 
 /**
  * Page routes, rendered by RootLayout via useRoutes(PAGE_ROUTES, backgroundLocation ?? location)

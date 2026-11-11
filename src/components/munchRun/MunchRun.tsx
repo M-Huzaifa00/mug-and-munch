@@ -1,3 +1,5 @@
+import { site } from '@/config/site'
+import { menuCategoryHref } from '@/components/menu/menuIds'
 import { useRef } from 'react'
 import { useNavigate } from 'react-router'
 import { MUNCH_SIZE_CLASS, MUNCH_STOPS } from '@/data/munchRun'
@@ -23,7 +25,8 @@ export function MunchRun() {
     const stop = MUNCH_STOPS[stopIndex]
     if (!stop) return
     track('munch_run_tap', { form: stop.form })
-    void navigate(`/${stop.craftHash}`)
+    // Maker switched off (site.craftMakers) → that category on the menu instead.
+    void navigate(site.craftMakers[stop.form] ? `/${stop.craftHash}` : menuCategoryHref(stop.form))
   })
 
   if (reduced) return <MunchStatic />
@@ -44,7 +47,7 @@ export function MunchRun() {
                 data-mr="button"
                 tabIndex={-1}
                 data-cursor="view"
-                data-cursor-label="Make one"
+                data-cursor-label="Hungry?"
                 onClick={() => api.current?.tap()}
                 className="absolute inset-0 cursor-pointer rounded-full"
                 style={{ pointerEvents: 'none' }}

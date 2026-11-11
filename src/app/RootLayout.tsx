@@ -1,7 +1,8 @@
-import { Suspense, useEffect } from 'react'
+import { Suspense, useEffect, useRef } from 'react'
 import { AnimatePresence } from 'motion/react'
 import { useLocation, useRoutes } from 'react-router'
-import { removeBootScreen, usePreloaderPhase } from '@/lib/preloader'
+import { syncCart } from '@/lib/cartSync'
+import { markPageReady, removeBootScreen, usePreloaderPhase } from '@/lib/preloader'
 import { getBackgroundLocation, getModalSlug } from '@/lib/routing'
 import { ItemModal } from '@/components/item/ItemModal'
 import { CartDrawer } from '@/components/layout/CartDrawer'
@@ -11,12 +12,17 @@ import { Footer } from '@/components/layout/Footer'
 import { JsonLd } from '@/components/layout/JsonLd'
 import { MobileBottomBar } from '@/components/layout/MobileBottomBar'
 import { Navbar } from '@/components/layout/Navbar'
-import { PageLoader } from '@/components/layout/PageLoader'
 import { Preloader } from '@/components/layout/Preloader'
 import { ScrollToTop } from '@/components/layout/ScrollToTop'
 import { WhatsAppFab } from '@/components/layout/WhatsAppFab'
 import { Cursor } from './providers/Cursor'
-import { PAGE_ROUTES } from './routes'
+import { PAGE_ROUTES, prefetchPages } from './routes'
+
+/** Renders inside the page Suspense boundary → its effect runs once the routed page has mounted. */
+function PageReady() {
+  useEffect(() => markPageReady(), [])
+  return null
+}
 
 export function RootLayout() {
   const location = useLocation()
@@ -24,10 +30,19 @@ export function RootLayout() {
   const modalSlug = getModalSlug(location)
   // With a background location, keep rendering that page underneath the item modal.
   const page = useRoutes(PAGE_ROUTES, modalSlug && background ? background : location)
-  // First Home visit: the 0→100 preloader is the ONLY loading screen (no Suspense logo before it).
+  // Every full load: the 0→100 preloader is the ONLY loading screen (no Suspense loader anywhere).
   const preloader = usePreloaderPhase()
+  const booted = useRef(false)
   useEffect(() => {
-    if (preloader === 'done') removeBootScreen()
+    if (preloader !== 'done' || booted.current) return
+    booted.current = true
+    removeBootScreen()
+    // A saved cart may hold items that are no longer on the menu (or have no price yet): drop them now (the
+    // badge / pill never count them), with one notice, after the curtain so the toast isn't hidden behind it.
+    syncCart()
+    // Warm the other page chunks on idle so in-app navigation never waits.
+    const idle = window.requestIdleCallback?.bind(window) ?? ((cb: () => void) => window.setTimeout(cb, 1200))
+    idle(() => prefetchPages())
   }, [preloader])
 
   return (
@@ -42,7 +57,11 @@ export function RootLayout() {
       <ScrollToTop />
       <Navbar />
       <main id="main" className="flex-1">
-        <Suspense fallback={preloader === 'done' ? <PageLoader /> : null}>{page}</Suspense>
+        {/* No loading screen here: first load = the preloader; later chunks are prefetched (blank oat at worst). */}
+        <Suspense fallback={<div className="min-h-dvh" />}>
+          {page}
+          <PageReady />
+        </Suspense>
       </main>
       {preloader !== 'done' && <Preloader />}
       <Footer />

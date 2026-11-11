@@ -6,6 +6,7 @@ const FILL: Record<Category, string> = {
   coffee: 'fill-caramel',
   matcha: 'fill-pickle',
   drinks: 'fill-bubblegum',
+  starters: 'fill-cheese',
   burger: 'fill-chili',
   steak: 'fill-cheese',
   wrap: 'fill-pickle',

@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { MapPinned } from 'lucide-react'
-import { site } from '@/config/site'
+import { addressLine, site } from '@/config/site'
 import { Button } from '@/components/ui/Button'
 import { StylisedMap } from '@/components/ui/StylisedMap'
 
-const EMBED = `https://www.google.com/maps?q=${site.address.lat},${site.address.lng}&z=16&output=embed`
+// Exact pin when the owner sets lat/lng; until then search the address.
+const QUERY = site.address.lat !== null && site.address.lng !== null ? `${site.address.lat},${site.address.lng}` : encodeURIComponent(addressLine)
+const EMBED = `https://www.google.com/maps?q=${QUERY}&z=15&output=embed`
 
 /** Click-to-load map: the stylised map until "Load map" is tapped, then the Google Maps iframe (no third-party load before). */
 export function MapFacade() {

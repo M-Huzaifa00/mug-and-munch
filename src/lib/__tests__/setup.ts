@@ -50,3 +50,10 @@ vi.mock('@/data/deals', async (importOriginal) => {
   }
   return { ...real, deals: [...real.deals, testDeal] }
 })
+
+// Makers the owner has switched off are still covered by tests: turn every maker on here.
+// (Tests that need the "off" behaviour flip a flag on this mutable copy and restore it.)
+vi.mock('@/config/site', async (importOriginal) => {
+  const real = await importOriginal<typeof import('@/config/site')>()
+  return { ...real, site: { ...real.site, craftMakers: { coffee: true, burger: true, wrap: true } } }
+})

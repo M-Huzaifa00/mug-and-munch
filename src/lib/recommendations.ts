@@ -10,9 +10,11 @@ import type { CartItem } from '@/store/cart'
 
 const RULES: Partial<Record<Category, string[]>> = {
   coffee: ['strawberry-matcha', 'peach-iced-tea', 'blue-mint-mojito'],
-  burger: ['blue-mint-mojito', 'green-apple-mojito', 'peach-iced-tea'],
+  // Fries first: skipped automatically until they have a price.
+  burger: ['simple-fries', 'loaded-fries', 'blue-mint-mojito', 'green-apple-mojito', 'peach-iced-tea'],
+  starters: ['blue-mint-mojito', 'peach-iced-tea', 'green-apple-mojito'],
   steak: ['green-apple-mojito', 'raspberry-iced-tea', 'blue-mint-mojito'],
-  wrap: ['peach-iced-tea', 'blue-mint-mojito', 'raspberry-iced-tea'],
+  wrap: ['simple-fries', 'peach-iced-tea', 'blue-mint-mojito', 'raspberry-iced-tea'],
   matcha: ['spanish-latte', 'tiramisu-latte'],
   drinks: ['spanish-latte', 'caramel-latte'],
 }

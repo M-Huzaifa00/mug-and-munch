@@ -1,14 +1,16 @@
 import { site } from '@/config/site'
-import { useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router'
+import { useEffect, useMemo, useState } from 'react'
+import { useLocation, useSearchParams } from 'react-router'
+import { useLenis } from 'lenis/react'
 import { LayoutGroup } from 'motion/react'
 import { CATEGORY_ORDER, menu, type Category } from '@/data/menu'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
+import { usePreloaderPhase } from '@/lib/preloader'
 import { FILTER_LABELS, filterMenu, type MenuFilter } from '@/lib/menuFilter'
 import { Chip } from '@/components/ui/Chip'
 import { Seo } from '@/components/layout/Seo'
 import { CategoryNav } from '@/components/menu/CategoryNav'
-import { MENU_TOP_ID } from '@/components/menu/menuIds'
+import { JUMP_OFFSET, MENU_TOP_ID } from '@/components/menu/menuIds'
 import { MenuEmpty } from '@/components/menu/MenuEmpty'
 import { MenuSearch } from '@/components/menu/MenuSearch'
 import { MenuSection } from '@/components/menu/MenuSection'
@@ -21,6 +23,21 @@ export function Menu() {
   const [query, setQuery] = useState(() => (params.get('q') ?? '').slice(0, 60))
   const [filters, setFilters] = useState<ReadonlySet<MenuFilter>>(new Set())
   const debouncedQuery = useDebouncedValue(query, 300)
+  const { hash } = useLocation()
+  const lenis = useLenis()
+  const ready = usePreloaderPhase() === 'done'
+
+  // /menu#cat-burger → jump to that category once the preloader is gone and the page (scroll-to-top + wipe) settled.
+  useEffect(() => {
+    if (!ready || !hash.startsWith('#cat-')) return
+    const t = window.setTimeout(() => {
+      const el = document.getElementById(hash.slice(1))
+      if (!el) return
+      if (lenis) lenis.scrollTo(el, { offset: JUMP_OFFSET, duration: 1 })
+      else window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY + JUMP_OFFSET })
+    }, 450)
+    return () => window.clearTimeout(t)
+  }, [hash, lenis, ready])
 
   const results = useMemo(() => filterMenu(debouncedQuery, filters), [debouncedQuery, filters])
   const grouped = useMemo(

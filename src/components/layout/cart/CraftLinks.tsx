@@ -1,11 +1,13 @@
 import { Link } from 'react-router'
+import { site } from '@/config/site'
 import { cn } from '@/lib/utils'
 
-const LINKS = [
+/** Only makers the owner switched on (site.craftMakers). */
+const LINKS = ([
   { tab: 'burger', label: 'Build a burger 🍔', tone: 'bg-chili' },
   { tab: 'coffee', label: 'Make your coffee ☕', tone: 'bg-caramel' },
   { tab: 'wrap', label: 'Roll a wrap 🌯', tone: 'bg-pickle' },
-] as const
+] as const).filter((l) => site.craftMakers[l.tab])
 
 /** Empty-cart shortcuts into the Craft section (Home #craft-<tab>). */
 export function CraftLinks({ onNavigate, className }: { onNavigate?: () => void; className?: string }) {

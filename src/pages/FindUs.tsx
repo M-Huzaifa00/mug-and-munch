@@ -1,5 +1,5 @@
 import { MapPin, MessageCircle, Navigation, Phone } from 'lucide-react'
-import { site } from '@/config/site'
+import { addressLine, site } from '@/config/site'
 import { formatPKR } from '@/lib/utils'
 import { isWhatsappConfigured, whatsappLink, WHATSAPP_GREETING } from '@/lib/whatsapp'
 import { Seo } from '@/components/layout/Seo'
@@ -13,7 +13,7 @@ import { MapFacade } from '@/sections/findus/MapFacade'
 /** /find-us: live open badge, address + notes, directions / call / WhatsApp, weekly hours, click-to-load map, delivery areas. */
 export function FindUs() {
   const c = site.commerce
-  const address = [site.address.line1, site.address.area, site.address.city].join(', ')
+  const address = addressLine
 
   return (
     <>

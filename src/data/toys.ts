@@ -20,7 +20,7 @@ export const VIBES: Vibe[] = [
   { id: 'hangry', label: 'Hangry', emoji: '😤', line: 'go big or go home 🍔', picks: ['smash-beast', 'munch-hellfire', 'munch-signature-steak'] },
   { id: 'study', label: 'Study grind', emoji: '📚', line: 'fuel for the all-nighter', picks: ['flat-white', 'classic-matcha', 'jalapeno-jolt'] },
   { id: 'chill', label: 'Thirsty', emoji: '🧊', line: 'instant cool-down sorted', picks: ['blue-mint-mojito', 'peach-iced-tea', 'green-apple-mojito'] },
-  { id: 'midnight', label: 'Midnight munchies', emoji: '🌙', line: 'late-night munchies sorted', picks: ['munch-zinger-burger', 'tea-chai', 'bbq-blaze'] },
+  { id: 'midnight', label: 'Midnight munchies', emoji: '🌙', line: 'late-night munchies sorted', picks: ['munch-zinger-burger', 'loaded-fries', 'tea-chai'] },
 ]
 
 /* ---------- Snack Roulette ---------- */

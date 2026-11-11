@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { AnimatePresence } from 'motion/react'
 import { X } from 'lucide-react'
+import { syncCart } from '@/lib/cartSync'
 import { notify } from '@/lib/notify'
 import { useCart, useCartCount, type CartItem } from '@/store/cart'
 import { ButtonLink } from '@/components/ui/Button'
@@ -19,9 +20,9 @@ export function CartContents({ onClose }: { onClose: () => void }) {
   const count = useCartCount()
   const blocked = items.some((i) => i.unavailable)
 
-  // Persisted carts may hold old prices → re-price from the current data on open (one honest notice).
+  // Persisted carts may hold old prices / items: sync with the current menu on open (one honest notice).
   useEffect(() => {
-    if (useCart.getState().reprice()) notify('Some prices were updated.', { id: 'prices-updated' })
+    syncCart()
   }, [])
 
   const remove = (item: CartItem) => {

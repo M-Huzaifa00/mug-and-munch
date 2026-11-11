@@ -2,16 +2,17 @@ import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 're
 import { AnimatePresence, motion } from 'motion/react'
 import { useLocation } from 'react-router'
 import { useLenis } from 'lenis/react'
+import { site } from '@/config/site'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { track } from '@/lib/events'
 import { gsap, refreshScrollTriggersSoon, ScrollTrigger } from '@/lib/gsap'
 import { EASE } from '@/lib/motion-presets'
 import { cn } from '@/lib/utils'
-import { BurgerMaker } from './BurgerMaker'
 import { CraftSwitch, type CraftSwitchTab, type CraftTab } from './CraftSwitch'
 import { MakerLoading } from './MakerLoading'
 
-// Coffee + Wrap load only when their tab is first opened.
+// Each maker loads only when its tab is first opened (disabled makers never load).
+const BurgerMaker = lazy(() => import('./BurgerMaker').then((m) => ({ default: m.BurgerMaker })))
 const CoffeeMaker = lazy(() => import('./CoffeeMaker').then((m) => ({ default: m.CoffeeMaker })))
 const WrapMaker = lazy(() => import('./WrapMaker').then((m) => ({ default: m.WrapMaker })))
 
@@ -20,23 +21,30 @@ const TABS: (CraftSwitchTab & { word: string; wordClass: string; note: string; c
   { id: 'burger', label: 'Burger', emoji: '🍔', activeBg: 'bg-chili', activeText: 'text-espresso', word: 'burger', wordClass: 'text-chili', note: 'garma garam, fresh off the grill 🔥', cta: 'Add my burger', glow: 'bg-chili' },
   { id: 'wrap', label: 'Wrap', emoji: '🌯', activeBg: 'bg-pickle', activeText: 'text-espresso', word: 'wrap', wordClass: 'text-pickle', note: 'wrapped fresh, eaten faster 🌯', cta: 'Add my wrap', glow: 'bg-pickle' },
 ]
+/** Only the makers the owner switched on (site.craftMakers); coffee configures real menu coffees. */
+const ENABLED = TABS.filter((t) => site.craftMakers[t.id])
+const FIRST: CraftTab = ENABLED[0]?.id ?? 'coffee'
+const isOn = (t: CraftTab) => ENABLED.some((e) => e.id === t)
 export const CRAFT_ID = 'craft'
+/** #craft-<tab> → that tab; a disabled maker's link falls back to the first enabled one. */
 const tabFromHash = (hash: string): CraftTab | null => {
   const m = /^#craft-(coffee|burger|wrap)$/.exec(hash)
-  return (m?.[1] as CraftTab | undefined) ?? null
+  if (!m) return null
+  const t = m[1] as CraftTab
+  return isOn(t) ? t : FIRST
 }
 
-/** ONE "Craft your own" section: Coffee / Burger / Wrap makers behind a switch. State is kept per tab. */
+/** ONE "Craft your own" section: the enabled makers (site.craftMakers) behind a switch; no switch when only one. State is kept per tab. */
 export function CraftSection() {
   const location = useLocation()
   const lenis = useLenis()
   const reduced = useReducedMotion()
-  const [tab, setTab] = useState<CraftTab>(() => tabFromHash(window.location.hash) ?? 'burger')
-  const [mounted, setMounted] = useState<Record<CraftTab, boolean>>(() => ({ coffee: tab === 'coffee', burger: true, wrap: tab === 'wrap' }))
+  const [tab, setTab] = useState<CraftTab>(() => tabFromHash(window.location.hash) ?? FIRST)
+  const [mounted, setMounted] = useState<Record<CraftTab, boolean>>(() => ({ coffee: tab === 'coffee', burger: tab === 'burger', wrap: tab === 'wrap' }))
   const root = useRef<HTMLElement>(null)
   const switching = useRef(false)
   const firstRender = useRef(true)
-  const meta = TABS.find((t) => t.id === tab) ?? TABS[1]!
+  const meta = ENABLED.find((t) => t.id === tab) ?? ENABLED[0] ?? TABS[0]!
 
   useEffect(() => refreshScrollTriggersSoon(300), [])
 
@@ -76,7 +84,7 @@ export function CraftSection() {
   }, [location.key, location.hash, lenis, reduced])
 
   const change = (next: CraftTab) => {
-    if (next === tab || switching.current) return
+    if (next === tab || switching.current || !isOn(next)) return
     track('craft_tab_switch', { tab: next })
     setMounted((m) => ({ ...m, [next]: true }))
     window.history.replaceState(window.history.state, '', `#craft-${next}`)
@@ -114,7 +122,7 @@ export function CraftSection() {
 
   return (
     <section ref={root} id={CRAFT_ID} aria-labelledby="craft-title" className="grain relative overflow-hidden bg-espresso px-4 py-16 text-oat sm:px-6 md:py-24">
-      {TABS.map((t) => (
+      {ENABLED.map((t) => (
         <span key={t.id} aria-hidden="true" className={cn('absolute top-1/3 left-1/4 -z-10 size-[28rem] rounded-full blur-3xl transition-opacity duration-500', t.glow, t.id === tab ? 'opacity-25' : 'opacity-0')} />
       ))}
 
@@ -137,16 +145,22 @@ export function CraftSection() {
 
         {/* grid-cols-1 = minmax(0,1fr): stops wide scroll trays from stretching the mobile column */}
         <div className="mt-6 grid grid-cols-1 gap-x-10 gap-y-5 [grid-template-areas:'stage'_'switch'_'controls'] md:grid-cols-2 md:items-center md:[grid-template-areas:'switch_switch'_'stage_controls']">
-          <div className="[grid-area:switch]">
-            <CraftSwitch tabs={TABS} active={tab} onChange={change} />
-          </div>
-          <BurgerMaker active={tab === 'burger'} ctaLabel={TABS[1]!.cta} />
-          {mounted.coffee && (
+          {ENABLED.length > 1 && (
+            <div className="[grid-area:switch]">
+              <CraftSwitch tabs={ENABLED} active={tab} onChange={change} />
+            </div>
+          )}
+          {isOn('burger') && mounted.burger && (
+            <Suspense fallback={<MakerLoading show={tab === 'burger'} />}>
+              <BurgerMaker active={tab === 'burger'} ctaLabel={TABS[1]!.cta} />
+            </Suspense>
+          )}
+          {isOn('coffee') && mounted.coffee && (
             <Suspense fallback={<MakerLoading show={tab === 'coffee'} />}>
               <CoffeeMaker active={tab === 'coffee'} ctaLabel={TABS[0]!.cta} />
             </Suspense>
           )}
-          {mounted.wrap && (
+          {isOn('wrap') && mounted.wrap && (
             <Suspense fallback={<MakerLoading show={tab === 'wrap'} />}>
               <WrapMaker active={tab === 'wrap'} ctaLabel={TABS[2]!.cta} />
             </Suspense>

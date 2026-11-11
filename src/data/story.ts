@@ -44,7 +44,7 @@ export const STORY_PANELS: StoryPanel[] = [
   {
     id: 'burger',
     title: 'Smashed, not stacked lazy',
-    body: 'Crispy zinger burgers with one patty or two, and beef smash burgers all the way up to the triple-patty Smash Monster. Or build your own, layer by layer.',
+    body: 'Crispy zinger burgers with one patty or two, and beef smash burgers all the way up to the triple-patty Smash Monster.',
     bg: 'bg-chili',
     image: '/images/burgers/munch-smash.webp',
     emoji: '🍔',
@@ -65,7 +65,7 @@ export const STORY_PANELS: StoryPanel[] = [
 
 /** "How we make it". Owner: edit to match your kitchen exactly. */
 export const STORY_STEPS = [
-  { emoji: '📝', title: 'You choose', body: 'Pick from the menu or craft your own coffee, burger or wrap.' },
+  { emoji: '📝', title: 'You choose', body: 'Pick from the menu, or craft your own coffee your way.' },
   { emoji: '💬', title: 'We confirm', body: 'Your order lands with us on WhatsApp and we confirm it there.' },
   { emoji: '🔥', title: 'We make it', body: 'Brewed, smashed and wrapped after you order.' },
   { emoji: '🛵', title: 'You munch', body: 'Delivered, ready at the counter, or brought to your table.' },

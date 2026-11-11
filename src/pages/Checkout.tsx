@@ -3,7 +3,7 @@ import { FormProvider } from 'react-hook-form'
 import { site } from '@/config/site'
 import { track } from '@/lib/events'
 import { getOpenStatus } from '@/lib/hours'
-import { notify } from '@/lib/notify'
+import { syncCart } from '@/lib/cartSync'
 import { getPickupPlan } from '@/lib/pickupSlots'
 import { isWhatsappConfigured } from '@/lib/whatsapp'
 import { formatPKR } from '@/lib/utils'
@@ -40,7 +40,7 @@ export function Checkout() {
 
   // Re-price persisted lines on arrival (one honest notice) + analytics.
   useEffect(() => {
-    if (useCart.getState().reprice()) notify('Some prices were updated.', { id: 'prices-updated' })
+    syncCart()
     const n = useCart.getState().items.length
     if (n > 0) track('begin_checkout', { items: n })
   }, [])

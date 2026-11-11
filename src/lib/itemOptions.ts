@@ -1,3 +1,4 @@
+import { site } from '@/config/site'
 import { BURGER_BUILDER, type BurgerLayerId } from '@/data/builder'
 import { deals } from '@/data/deals'
 import { getItemById, isPriced, SPICE_LABELS, SWEETNESS_DEFAULT, type ItemOptions, type MenuItem, type OptionChoice, type PricedItem, type SpiceLevel } from '@/data/menu'
@@ -97,11 +98,13 @@ const validSingle = (choices: OptionChoice[] | undefined, id: string | undefined
 export function priceLine(line: Pick<CartItem, 'itemId' | 'category' | 'options'>): LinePrice {
   const o = line.options
   if (line.itemId === 'custom-burger') {
+    if (!site.craftMakers.burger) return { available: false }
     const layers = o.layers ?? []
     if (!layers.every((id) => has(BURGER_BUILDER.ingredients, id))) return { available: false }
     return { available: true, unitPrice: burgerPrice(layers as BurgerLayerId[]) }
   }
   if (line.itemId === 'custom-wrap') {
+    if (!site.craftMakers.wrap) return { available: false }
     const w = o.wrap
     const M = WRAP_MAKER
     const ok =

@@ -85,11 +85,13 @@ export function Footer() {
                   <InstagramIcon size={18} /> @{site.socials.instagram}
                 </a>
               </li>
-              <li>
-                <a href={tiktokUrl} target="_blank" rel="noopener noreferrer" className={linkCls}>
-                  <TikTokIcon size={18} /> TikTok
-                </a>
-              </li>
+              {tiktokUrl && (
+                <li>
+                  <a href={tiktokUrl} target="_blank" rel="noopener noreferrer" className={linkCls}>
+                    <TikTokIcon size={18} /> TikTok
+                  </a>
+                </li>
+              )}
               <li>
                 <a href={site.address.mapsUrl} target="_blank" rel="noopener noreferrer" className={linkCls}>
                   <MapPin size={18} aria-hidden="true" /> {site.address.area}, {site.address.city}

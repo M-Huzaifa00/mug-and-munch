@@ -120,7 +120,9 @@ interface CartState {
   /** Replace a line in place (Edit / Tweak). Merges into an identical existing line. Returns the new lineId. */
   replaceItem: (lineId: string, input: AddItemInput) => string
   /** Re-price every line from the current data files. Returns true when a price changed (→ one honest notice). */
-  reprice: () => boolean
+  /** Re-price every line from the current data and DROP lines that can't be ordered any more (removed item /
+   *  option, no price yet, disabled maker, gone deal). Returns what changed so the UI can say so once. */
+  reprice: () => { priceChanged: boolean; removed: string[] }
   startEditing: (target: EditTarget) => void
   stopEditing: () => void
 }
@@ -213,8 +215,9 @@ export const useCart = create<CartState>()(
 
       reprice: () => {
         const { items, changed, priceChanged } = repriceLines(get().items)
-        if (changed) set({ items })
-        return priceChanged
+        const removed = items.filter((i) => i.unavailable)
+        if (changed || removed.length) set({ items: items.filter((i) => !i.unavailable) })
+        return { priceChanged, removed: removed.map((i) => i.name) }
       },
 
       startEditing: (editing) => set({ editing, isOpen: false }),

@@ -25,16 +25,14 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="%SITE_URL%/brand/og-image.png" />
     <!--
-      Static first frame of the Home preloader, painted before any JS so a first visit never shows a blank
-      page or a second loader. Same check as shouldShowPreloader() in src/lib/preloader.ts (key mm-preloaded);
-      the React <Preloader> draws the identical frame on top and removes this. Colours = oat / espresso tokens.
+      Static first frame of the 0→100 preloader, painted before any JS on EVERY full load (any route), so
+      nothing (blank page, other loader) ever shows before it. The React <Preloader> (src/components/layout)
+      draws the identical frame on top and removes this. Colours = oat token. No JS → hidden (noscript below).
     -->
     <script>
-      try {
-        if (location.pathname === '/' && !sessionStorage.getItem('mm-preloaded') && matchMedia('(prefers-reduced-motion: no-preference)').matches)
-          document.documentElement.classList.add('mm-boot')
-      } catch (e) {}
+      document.documentElement.classList.add('mm-boot')
     </script>
+    <noscript><style>#mm-boot { display: none !important; } .mm-boot, .mm-boot body { overflow: auto !important; }</style></noscript>
     <style>
       #mm-boot { display: none; }
       .mm-boot, .mm-boot body { background: #fff4e6; overflow: hidden; }

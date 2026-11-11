@@ -1,5 +1,5 @@
 import { MapPin, Phone } from 'lucide-react'
-import { site } from '@/config/site'
+import { addressLine, site } from '@/config/site'
 import { formatDayHours, getTodayKey } from '@/lib/hours'
 import { buttonClasses } from '@/components/ui/buttonClasses'
 import { OpenBadge } from '@/components/ui/OpenBadge'
@@ -30,7 +30,7 @@ export function FindUsTeaser() {
             <p className="mt-4 flex items-start gap-2 font-semibold">
               <MapPin size={20} className="mt-0.5 shrink-0" aria-hidden="true" />
               <span>
-                {site.address.line1}, {site.address.area}, {site.address.city}
+                {addressLine}
               </span>
             </p>
             <div className="mt-6 flex flex-wrap gap-3">

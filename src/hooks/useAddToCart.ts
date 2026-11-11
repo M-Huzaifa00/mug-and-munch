@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import { confettiBurst } from '@/lib/celebrate'
+import { priceLine } from '@/lib/itemOptions'
 import { notify } from '@/lib/notify'
 import { useCart, type AddItemInput } from '@/store/cart'
 import { useFlyToCart } from './useFlyToCart'
@@ -23,7 +24,14 @@ export function useAddToCart() {
   const reduced = useReducedMotion()
 
   return useCallback(
-    (input: AddItemInput, { qty = 1, source, replaceLineId }: AddOptions = {}) => {
+    (raw: AddItemInput, { qty = 1, source, replaceLineId }: AddOptions = {}) => {
+      // Last line of defence: only things orderable from the CURRENT data reach the cart, at the data's price.
+      const check = priceLine(raw)
+      if (!check.available) {
+        notify(`Sorry, ${raw.name} isn't available to order right now.`, { id: 'cart-add' })
+        return
+      }
+      const input: AddItemInput = { ...raw, unitPrice: check.unitPrice }
       const { addItem, replaceItem, undoLastAdd, isOpen, items } = useCart.getState()
       if (replaceLineId && items.some((i) => i.lineId === replaceLineId)) {
         replaceItem(replaceLineId, input)

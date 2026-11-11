@@ -1,12 +1,12 @@
 /**
- * Menu data: the café's real list (from Syed Ahmed, 2026-11-07). Owner-editable.
+ * Menu data: the café's real list (from Syed Ahmed, 2026-11-07; Starters added 2026-11-11). Owner-editable.
  * - `price: null` = the owner hasn't given a price yet → the site shows "Price coming soon" and the item
  *   can't be added to the cart. Fill the number in to make it orderable. (TODO(owner): every null below.)
  * - Descriptions only state what the list says (patties, shape, flavour); no invented ingredients or claims.
  * Images live in /public/images/<folder>/<slug>.webp; until real photos exist the UI shows a styled fallback.
  */
 
-export type Category = 'coffee' | 'matcha' | 'drinks' | 'burger' | 'steak' | 'wrap'
+export type Category = 'coffee' | 'matcha' | 'drinks' | 'starters' | 'burger' | 'steak' | 'wrap'
 export type Badge = 'bestseller' | 'new' | 'spicy' | 'veg'
 export type SpiceLevel = 'mild' | 'medium' | 'desi-hot'
 
@@ -66,6 +66,7 @@ const FOLDER: Record<Category, string> = {
   coffee: 'coffee',
   matcha: 'drinks',
   drinks: 'drinks',
+  starters: 'sides',
   burger: 'burgers',
   steak: 'burgers',
   wrap: 'wraps',
@@ -104,6 +105,13 @@ export const menu: MenuItem[] = [
   drink({ slug: 'green-apple-mojito', name: 'Green Apple Mojito', category: 'drinks', price: 750, emoji: '🍏', description: 'Green apple mojito over ice.' }),
   drink({ slug: 'blue-mint-mojito', name: 'Blue Mint Mojito', category: 'drinks', price: 750, emoji: '💙', featured: true, note: 'instant cool-down', description: 'Blue mint mojito over ice.' }),
   drink({ slug: 'passion-fruit-mojito', name: 'Passion Fruit Mojito', category: 'drinks', price: null, emoji: '🍹', description: 'Passion fruit mojito over ice.' }),
+
+  /* ---------- Starters (TODO(owner): prices) ---------- */
+  make({ slug: 'simple-fries', name: 'Simple Fries', category: 'starters', price: null, emoji: '🍟', isVeg: true, description: 'Fries, kept simple.' }),
+  make({ slug: 'loaded-fries', name: 'Loaded Fries', category: 'starters', price: null, emoji: '🧀', description: 'Fries, fully loaded.' }),
+  make({ slug: 'munch-club', name: 'Munch Club', category: 'starters', price: null, emoji: '🥪', featured: true, note: 'the club sandwich', description: 'Our club sandwich.' }),
+  make({ slug: 'golden-munch-wings', name: 'Golden Munch Wings', category: 'starters', price: null, emoji: '🍗', description: 'Golden wings, Munch style.' }),
+  make({ slug: 'nuggets', name: 'Nuggets', category: 'starters', price: null, emoji: '🍗', description: 'Nuggets for sharing. Or not.' }),
 
   /* ---------- Zinger burgers (TODO(owner): prices) ---------- */
   make({ slug: 'munch-zinger-burger', name: 'Munch Zinger Burger', category: 'burger', price: null, emoji: '🍔', description: 'Single-patty zinger burger.' }),
@@ -156,6 +164,11 @@ export const CATEGORY_META: Record<Category, CategoryMeta> = {
     gradient: 'bg-linear-to-br from-bubblegum via-bubblegum/60 to-pickle/40',
     glow: 'hover:shadow-[7px_7px_0_0_var(--color-bubblegum)]',
   },
+  starters: {
+    id: 'starters', label: 'Starters', emoji: '🍟', bg: 'bg-cheese', text: 'text-espresso', ring: 'ring-cheese',
+    gradient: 'bg-linear-to-br from-cheese via-cheese/60 to-chili/30',
+    glow: 'hover:shadow-[7px_7px_0_0_var(--color-cheese)]',
+  },
   burger: {
     id: 'burger', label: 'Burgers', emoji: '🍔', bg: 'bg-chili', text: 'text-espresso', ring: 'ring-chili',
     gradient: 'bg-linear-to-br from-chili via-chili/60 to-cheese/60',
@@ -173,7 +186,7 @@ export const CATEGORY_META: Record<Category, CategoryMeta> = {
   },
 }
 
-export const CATEGORY_ORDER: Category[] = ['coffee', 'burger', 'wrap', 'steak', 'matcha', 'drinks']
+export const CATEGORY_ORDER: Category[] = ['coffee', 'starters', 'burger', 'wrap', 'steak', 'matcha', 'drinks']
 
 export const SPICE_LABELS: Record<SpiceLevel, string> = {
   mild: 'Mild',

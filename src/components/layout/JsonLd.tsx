@@ -13,16 +13,16 @@ const data = {
   logo: site.url + site.logoUrl,
   image: site.url + site.ogImage,
   telephone: site.contact.phoneHref.replace('tel:', ''),
-  servesCuisine: ['Coffee', 'Burgers', 'Wraps'],
-  priceRange: 'Rs 300 – Rs 3,500',
+  servesCuisine: ['Coffee', 'Burgers', 'Wraps', 'Steaks', 'Matcha'],
   address: {
     '@type': 'PostalAddress',
-    streetAddress: site.address.line1,
+    ...(site.address.line1 ? { streetAddress: site.address.line1 } : {}),
     addressLocality: `${site.address.area}, ${site.address.city}`,
     addressCountry: 'PK',
   },
-  geo: { '@type': 'GeoCoordinates', latitude: site.address.lat, longitude: site.address.lng },
-  sameAs: [instagramUrl, tiktokUrl],
+  // Only with a real pin (owner fills lat/lng).
+  ...(site.address.lat !== null && site.address.lng !== null ? { geo: { '@type': 'GeoCoordinates', latitude: site.address.lat, longitude: site.address.lng } } : {}),
+  sameAs: [instagramUrl, ...(tiktokUrl ? [tiktokUrl] : [])],
 }
 
 export function JsonLd() {

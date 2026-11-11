@@ -1,8 +1,8 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense } from 'react'
 import { useIdleMount } from '@/hooks/useIdleMount'
 import { useLocation } from 'react-router'
 import { site } from '@/config/site'
-import { markHomeReady, usePreloaderPhase } from '@/lib/preloader'
+import { usePreloaderPhase } from '@/lib/preloader'
 import { LazyMount } from '@/components/ui/LazyMount'
 import { Seo } from '@/components/layout/Seo'
 import { Bestsellers } from '@/sections/home/Bestsellers'
@@ -28,9 +28,8 @@ const MunchRun = lazy(() => import('@/components/munchRun/MunchRun').then((m) =>
  * → Vibe Picker → Snack Roulette → Deals → Reviews → Find Us → (Footer).
  */
 export function Home() {
-  // The preloader lives in the app shell; Home tells it when it's mounted, and starts its intro as the curtain lifts.
+  // The preloader lives in the app shell (RootLayout tells it when this page mounted); the intro starts as the curtain lifts.
   const preloading = usePreloaderPhase() === 'loading'
-  useEffect(() => markHomeReady(), [])
   const { hash } = useLocation()
   const munchReady = useIdleMount(!preloading)
 

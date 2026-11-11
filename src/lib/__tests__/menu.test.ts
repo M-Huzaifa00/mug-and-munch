@@ -54,3 +54,21 @@ describe('flavoured lattes: Hot / Cold / Blended', () => {
     expect(priceLine(toLine(blended))).toEqual({ available: true, unitPrice: latte.price })
   })
 })
+
+describe('craft makers switched off (site.craftMakers)', () => {
+  it('custom burger / wrap lines become unavailable (removed from saved carts, never sent)', async () => {
+    const { site } = await import('@/config/site')
+    const { bigBurger, fullWrap } = await import('./fixtures')
+    const makers = site.craftMakers as { burger: boolean; wrap: boolean }
+    expect(priceLine(toLine(bigBurger())).available).toBe(true)
+    makers.burger = false
+    makers.wrap = false
+    try {
+      expect(priceLine(toLine(bigBurger()))).toEqual({ available: false })
+      expect(priceLine(toLine(fullWrap()))).toEqual({ available: false })
+    } finally {
+      makers.burger = true
+      makers.wrap = true
+    }
+  })
+})

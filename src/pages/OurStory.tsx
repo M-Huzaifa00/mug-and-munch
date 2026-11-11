@@ -5,6 +5,8 @@ import { Seo } from '@/components/layout/Seo'
 import { Mascot } from '@/components/mascot/Mascot'
 import { LogoStamp } from '@/components/brand/LogoStamp'
 import { ButtonLink } from '@/components/ui/Button'
+import { DriftType } from '@/components/ui/DriftType'
+import { EditorialLabel } from '@/components/ui/EditorialLabel'
 import { ProductImage } from '@/components/ui/ProductImage'
 import { RevealHeading } from '@/components/ui/RevealHeading'
 import { StoryPanels } from '@/sections/story/StoryPanels'
@@ -20,7 +22,9 @@ export function OurStory() {
 
       <section aria-labelledby="story-title" className="grain relative overflow-hidden bg-oat px-4 pt-28 pb-16 sm:px-6 md:pt-36 md:pb-24">
         <LogoStamp size={120} className="absolute! top-24 right-6 hidden md:inline-flex" />
-        <div className="mx-auto max-w-5xl">
+        <DriftType text="SIP ✦ BITE ✦ REPEAT ✦ " position="bottom-6" className="text-[22vw] text-espresso/[0.06] md:text-[15vw]" />
+        <div className="relative mx-auto max-w-5xl">
+          <EditorialLabel index={1} className="mb-6 text-espresso">Our story</EditorialLabel>
           <p className="-rotate-2 font-hand text-2xl text-chili">{STORY_INTRO.kicker}</p>
           <RevealHeading as="h1" id="story-title" className="text-display max-w-4xl font-extrabold text-espresso">
             {STORY_INTRO.line}
@@ -45,6 +49,7 @@ export function OurStory() {
 
       <section aria-labelledby="story-photos" className="grain bg-oat px-4 py-16 sm:px-6 md:py-24">
         <div className="mx-auto max-w-6xl">
+          <EditorialLabel index={3} className="mb-4 text-espresso">Behind the counter</EditorialLabel>
           <h2 id="story-photos" className="text-display font-extrabold text-espresso">
             Behind the counter
           </h2>

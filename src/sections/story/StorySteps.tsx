@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { STORY_STEPS } from '@/data/story'
 import { gsap, MQ, useGSAP } from '@/lib/gsap'
 import { EASE } from '@/lib/motion-presets'
+import { EditorialLabel } from '@/components/ui/EditorialLabel'
 
 /** "How we make it": steps joined by a hand-drawn connector that draws itself on scroll (DrawSVG). */
 export function StorySteps() {
@@ -21,6 +22,7 @@ export function StorySteps() {
   return (
     <section ref={root} aria-labelledby="story-how" className="grain bg-espresso px-4 py-16 text-oat sm:px-6 md:py-24">
       <div className="mx-auto max-w-6xl">
+        <EditorialLabel index={2} className="mb-4 text-cheese">How we make it</EditorialLabel>
         <h2 id="story-how" className="text-display font-extrabold text-oat">
           How we make it
         </h2>

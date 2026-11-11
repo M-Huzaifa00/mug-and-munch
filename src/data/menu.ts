@@ -100,7 +100,7 @@ export const menu: MenuItem[] = [
   /* ---------- Iced teas, beyond caffeine, mojitos ---------- */
   drink({ slug: 'peach-iced-tea', name: 'Peach Iced Tea', category: 'drinks', price: 650, emoji: '🍑', description: 'Iced tea with peach.' }),
   drink({ slug: 'raspberry-iced-tea', name: 'Raspberry Iced Tea', category: 'drinks', price: 650, emoji: '🧊', description: 'Iced tea with raspberry.' }),
-  drink({ slug: 'tea-chai', name: 'Tea / Chai', category: 'drinks', price: 300, emoji: '🫖', description: 'Tea or chai, the everyday classic.' }),
+  drink({ slug: 'tea-chai', name: 'Tea / Chai', category: 'drinks', price: 300, emoji: '☕', description: 'Tea or chai, the everyday classic.' }),
   drink({ slug: 'green-tea', name: 'Green Tea', category: 'drinks', price: null, emoji: '🍵', description: 'A light cup of green tea.' }),
   drink({ slug: 'green-apple-mojito', name: 'Green Apple Mojito', category: 'drinks', price: 750, emoji: '🍏', description: 'Green apple mojito over ice.' }),
   drink({ slug: 'blue-mint-mojito', name: 'Blue Mint Mojito', category: 'drinks', price: 750, emoji: '💙', featured: true, note: 'instant cool-down', description: 'Blue mint mojito over ice.' }),

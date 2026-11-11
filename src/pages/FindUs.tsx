@@ -5,6 +5,8 @@ import { isWhatsappConfigured, whatsappLink, WHATSAPP_GREETING } from '@/lib/wha
 import { Seo } from '@/components/layout/Seo'
 import { Mascot } from '@/components/mascot/Mascot'
 import { buttonClasses } from '@/components/ui/buttonClasses'
+import { DriftType } from '@/components/ui/DriftType'
+import { EditorialLabel } from '@/components/ui/EditorialLabel'
 import { OpenBadge } from '@/components/ui/OpenBadge'
 import { RevealHeading } from '@/components/ui/RevealHeading'
 import { HoursTable } from '@/sections/findus/HoursTable'
@@ -18,13 +20,16 @@ export function FindUs() {
   return (
     <>
       <Seo title="Find Us" description={`${site.brandName} in ${site.address.area}, ${site.address.city}: opening hours, directions, call or WhatsApp, and delivery areas.`} path="/find-us" />
-      <section aria-labelledby="findus-page-title" className="grain bg-oat px-4 pt-28 pb-20 sm:px-6 md:pt-36">
-        <div className="mx-auto max-w-6xl">
+      <section aria-labelledby="findus-page-title" className="grain relative overflow-hidden bg-oat px-4 pt-28 pb-20 sm:px-6 md:pt-36">
+        <DriftType text={`${site.address.area.toUpperCase()} ✦ ${site.address.city.toUpperCase()} ✦ `} position="top-40 md:top-52" className="text-[20vw] text-espresso/[0.06] md:text-[13vw]" />
+        <div className="relative mx-auto max-w-6xl">
+          <EditorialLabel index={1} className="mb-6 text-espresso">Find us</EditorialLabel>
           <p className="-rotate-2 font-hand text-2xl text-chili">pull up, yaar</p>
           <RevealHeading as="h1" id="findus-page-title" className="text-mega font-extrabold text-espresso">
             Find us
           </RevealHeading>
-          <OpenBadge className="mt-3" />
+          <p className="mt-3 max-w-3xl font-display text-2xl leading-tight font-extrabold text-espresso/80 md:text-4xl">{address}</p>
+          <OpenBadge className="mt-4" />
 
           <div className="mt-10 grid gap-10 md:grid-cols-2 md:gap-12">
             <div className="space-y-8">
@@ -51,6 +56,7 @@ export function FindUs() {
               </div>
 
               <div>
+                <EditorialLabel index={2} className="mb-3 text-espresso">Opening hours</EditorialLabel>
                 <h2 className="font-display text-3xl font-extrabold text-espresso">Hours</h2>
                 <div className="sticker mt-3 overflow-hidden rounded-3xl bg-oat">
                   <HoursTable />
@@ -61,6 +67,7 @@ export function FindUs() {
             <div className="space-y-8">
               <MapFacade />
               <div>
+                <EditorialLabel index={3} className="mb-3 text-espresso">Delivery</EditorialLabel>
                 <h2 className="font-display text-3xl font-extrabold text-espresso">We deliver to</h2>
                 <ul className="mt-3 flex flex-wrap gap-2">
                   {site.deliveryAreas.map((a) => (

@@ -30,111 +30,81 @@ export interface Deal {
 }
 
 /**
- * Deals (2026-11-12). TODO(owner): PROPOSED combos + prices by the developer, not yet approved by the café.
- * Priced from the menu where it has prices and from Islamabad market research for the rest (zinger ~Rs 500–600,
- * single smash ~Rs 850–1,375, double smash ~Rs 1,150–1,250, loaded fries ~Rs 630–1,195, wings ~Rs 470–1,095;
- * Foodpanda / MenuPak listings, Nov 2026). Confirm or edit with Syed Ahmed before launch.
- * A deal is ordered at ITS OWN price, so items without an individual menu price are fine inside a deal;
- * "Save Rs X" only shows when every item has a real menu price (never computed from guesses).
+ * Deals (2026-11-12). TODO(owner): combos + prices proposed by the developer; confirm with Syed Ahmed.
+ * Owner rule: deals use ONLY menu items that have a real price, so every deal shows an honest, computed
+ * "Save Rs X · -Y%" (getDealSavings / getDealSavingsPercent). Food deals can follow once burgers/wraps are priced.
  * Format: { id, slug, name, tagline, emoji, items: [{ itemId, qty }], price, type, availability?, window? }.
  */
 export const deals: Deal[] = [
   {
-    id: 'student-saver',
-    slug: 'student-saver',
-    name: 'Student Saver',
-    tagline: 'exam week fuel, wallet approved',
-    emoji: '🎒',
-    items: [
-      { itemId: 'munch-zinger-burger', qty: 1 },
-      { itemId: 'simple-fries', qty: 1 },
-      { itemId: 'tea-chai', qty: 1 },
-    ],
-    price: 999,
-    type: 'solo',
-  },
-  {
-    id: 'coffee-and-club',
-    slug: 'coffee-and-club',
-    name: 'Coffee & Club',
-    tagline: 'the study-session classic',
-    emoji: '🥪',
-    items: [
-      { itemId: 'munch-club', qty: 1 },
-      { itemId: 'spanish-latte', qty: 1 },
-    ],
-    price: 1349,
+    id: 'study-buddy',
+    slug: 'study-buddy',
+    name: 'Study Buddy',
+    tagline: 'two americanos, zero sleep',
+    emoji: '📚',
+    items: [{ itemId: 'americano', qty: 2 }],
+    price: 849,
     type: 'coffee',
   },
   {
-    id: 'wing-it',
-    slug: 'wing-it',
-    name: 'Wing It',
-    tagline: 'wings, fries, cold mojito. done.',
-    emoji: '🍗',
-    items: [
-      { itemId: 'golden-munch-wings', qty: 1 },
-      { itemId: 'simple-fries', qty: 1 },
-      { itemId: 'green-apple-mojito', qty: 1 },
-    ],
-    price: 1449,
-    type: 'solo',
+    id: 'latte-love',
+    slug: 'latte-love',
+    name: 'Latte Love',
+    tagline: 'one Spanish, one caramel, for you two',
+    emoji: '💕',
+    items: [{ itemId: 'spanish-latte', qty: 1 }, { itemId: 'caramel-latte', qty: 1 }],
+    price: 1249,
+    type: 'sharing',
+  },
+  {
+    id: 'chai-time',
+    slug: 'chai-time',
+    name: 'Chai Time',
+    tagline: '3 cups, endless gup-shup',
+    emoji: '☕',
+    items: [{ itemId: 'tea-chai', qty: 3 }],
+    price: 749,
+    type: 'sharing',
+  },
+  {
+    id: 'midnight-brew',
+    slug: 'midnight-brew',
+    name: 'Midnight Brew',
+    tagline: 'mocha + tiramisu for the 1 AM grind',
+    emoji: '🌙',
+    items: [{ itemId: 'mocha', qty: 1 }, { itemId: 'tiramisu-latte', qty: 1 }],
+    price: 1199,
+    type: 'late-night',
+    window: { start: '23:00', end: '02:00' },
   },
   {
     id: 'matcha-duo',
     slug: 'matcha-duo',
     name: 'Matcha Duo',
-    tagline: 'one pink, one vanilla, both for you two',
+    tagline: 'one pink, one vanilla',
     emoji: '🍵',
-    items: [
-      { itemId: 'strawberry-matcha', qty: 1 },
-      { itemId: 'vanilla-matcha', qty: 1 },
-    ],
-    price: 1749,
+    items: [{ itemId: 'strawberry-matcha', qty: 1 }, { itemId: 'vanilla-matcha', qty: 1 }],
+    price: 1649,
     type: 'coffee',
   },
   {
-    id: 'midnight-munch',
-    slug: 'midnight-munch',
-    name: 'Midnight Munch',
-    tagline: 'for the 1 AM cravings',
-    emoji: '🌙',
-    items: [
-      { itemId: 'smash-beast', qty: 1 },
-      { itemId: 'loaded-fries', qty: 1 },
-      { itemId: 'blue-mint-mojito', qty: 1 },
-    ],
-    price: 2199,
-    type: 'late-night',
-    window: { start: '23:00', end: '02:00' },
-  },
-  {
-    id: 'hellfire-duo',
-    slug: 'hellfire-duo',
-    name: 'Hellfire Duo',
-    tagline: 'two brave souls, one spicy night',
-    emoji: '🔥',
-    items: [
-      { itemId: 'munch-hellfire', qty: 2 },
-      { itemId: 'loaded-fries', qty: 1 },
-      { itemId: 'blue-mint-mojito', qty: 2 },
-    ],
-    price: 3399,
+    id: 'chill-pack',
+    slug: 'chill-pack',
+    name: 'Chill Pack',
+    tagline: 'two mojitos + a peach iced tea',
+    emoji: '🧊',
+    items: [{ itemId: 'green-apple-mojito', qty: 1 }, { itemId: 'blue-mint-mojito', qty: 1 }, { itemId: 'peach-iced-tea', qty: 1 }],
+    price: 1799,
     type: 'sharing',
   },
   {
-    id: 'squad-box',
-    slug: 'squad-box',
-    name: 'Squad Box',
-    tagline: 'the whole gang, sorted',
-    emoji: '📦',
-    items: [
-      { itemId: 'munch-overload', qty: 2 },
-      { itemId: 'bbq-blaze', qty: 2 },
-      { itemId: 'loaded-fries', qty: 2 },
-      { itemId: 'peach-iced-tea', qty: 4 },
-    ],
-    price: 5999,
+    id: 'squad-sips',
+    slug: 'squad-sips',
+    name: 'Squad Sips',
+    tagline: '2 Spanish lattes + 2 Blue Mint mojitos',
+    emoji: '🎉',
+    items: [{ itemId: 'spanish-latte', qty: 2 }, { itemId: 'blue-mint-mojito', qty: 2 }],
+    price: 2499,
     type: 'sharing',
   },
 ]
@@ -155,5 +125,14 @@ export function getDealSavings(deal: Deal): number {
   const original = getDealOriginalPrice(deal)
   return original === null ? 0 : Math.max(0, original - deal.price)
 }
+
+/** Whole-percent saving (0 when it can't be computed). */
+export function getDealSavingsPercent(deal: Deal): number {
+  const original = getDealOriginalPrice(deal)
+  return original ? Math.round((getDealSavings(deal) / original) * 100) : 0
+}
+
+/** The deal with the biggest % saving (the "Best value" ribbon). */
+export const getBestValueDeal = (): Deal | undefined => [...deals].sort((x, y) => getDealSavingsPercent(y) - getDealSavingsPercent(x))[0]
 
 export const getDealBySlug = (slug: string): Deal | undefined => deals.find((d) => d.slug === slug)

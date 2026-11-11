@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { motion } from 'motion/react'
 import { Link, useLocation } from 'react-router'
 import { getItemById } from '@/data/menu'
-import { getDealOriginalPrice, getDealSavings, type Deal } from '@/data/deals'
+import { getBestValueDeal, getDealOriginalPrice, getDealSavings, getDealSavingsPercent, type Deal } from '@/data/deals'
 import { useAddToCart } from '@/hooks/useAddToCart'
 import { getDealWindow } from '@/lib/dealWindow'
 import { modalStateFrom } from '@/lib/routing'
@@ -17,6 +17,8 @@ export function DealCard({ deal, index }: { deal: Deal; index: number }) {
   const art = useRef<HTMLDivElement>(null)
   const original = getDealOriginalPrice(deal)
   const savings = getDealSavings(deal)
+  const percent = getDealSavingsPercent(deal)
+  const best = getBestValueDeal()?.id === deal.id
   const lines = deal.items.map((l) => `${l.qty}× ${getItemById(l.itemId)?.name ?? l.itemId}`)
   const location = useLocation()
   const [win] = useState(() => getDealWindow(deal))
@@ -43,9 +45,17 @@ export function DealCard({ deal, index }: { deal: Deal; index: number }) {
       transition={SPRING.bouncy}
       className="sticker relative flex h-full flex-col rounded-blob bg-oat p-4 sm:p-5"
     >
+      {/* Honest savings stamp: computed from real menu prices (only shown when every item is priced). */}
       {savings > 0 && (
-        <span className="sticker absolute -top-4 -right-3 z-10 rotate-6 rounded-full bg-chili px-3 py-1 font-display text-sm font-extrabold text-espresso">
-          Save {formatPKR(savings)}
+        <span className="sticker absolute -top-6 -right-4 z-10 flex size-24 rotate-12 flex-col items-center justify-center rounded-full bg-chili text-center leading-none text-espresso">
+          <span className="text-[0.65rem] font-extrabold tracking-[0.2em]">SAVE</span>
+          <span className="font-display text-lg font-extrabold">{formatPKR(savings)}</span>
+          <span className="mt-0.5 rounded-full bg-oat px-1.5 py-0.5 text-[0.7rem] font-extrabold">−{percent}%</span>
+        </span>
+      )}
+      {best && (
+        <span className="sticker absolute -top-3 left-4 z-10 -rotate-3 rounded-full bg-cheese px-3 py-1 font-display text-sm font-extrabold text-espresso">
+          ★ Best value
         </span>
       )}
       <div ref={art} className="aspect-[16/10] overflow-hidden rounded-2xl border-2 border-espresso">

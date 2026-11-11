@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { COFFEE_DRINKS } from '@/data/coffeeBuilder'
-import { deals, getDealOriginalPrice, getDealSavings } from '@/data/deals'
+import { deals, getBestValueDeal, getDealOriginalPrice, getDealSavings, getDealSavingsPercent } from '@/data/deals'
 import { getFeatured, getItemById, isPriced, menu } from '@/data/menu'
 import { ROULETTE_ITEMS, VIBES } from '@/data/toys'
 import { describeLine } from '@/lib/lineDescription'
@@ -85,12 +85,21 @@ describe('deals (proposed combos)', () => {
     }
   })
 
-  it('a deal with unpriced items is orderable at its own price, with NO invented savings', () => {
-    const saver = deals.find((d) => d.id === 'student-saver')!
-    expect(getDealOriginalPrice(saver)).toBeNull()
-    expect(getDealSavings(saver)).toBe(0)
-    const line = { itemId: saver.id, category: 'deal' as const, options: {} }
-    expect(priceLine(line)).toEqual({ available: true, unitPrice: saver.price })
+  it('owner rule: every real deal uses only priced items and genuinely saves money (so the tag is honest)', () => {
+    for (const d of real) {
+      expect(getDealOriginalPrice(d), d.id).not.toBeNull()
+      expect(getDealSavings(d), d.id).toBeGreaterThan(0)
+      expect(getDealSavingsPercent(d), d.id).toBeGreaterThan(0)
+      expect(priceLine({ itemId: d.id, category: 'deal', options: {} })).toEqual({ available: true, unitPrice: d.price })
+    }
+    expect(getBestValueDeal()).toBeDefined()
+  })
+
+  it('a deal with an unpriced item shows NO invented savings', () => {
+    const fake = { ...real[0]!, items: [{ itemId: 'munch-smash', qty: 1 }] }
+    expect(getDealOriginalPrice(fake)).toBeNull()
+    expect(getDealSavings(fake)).toBe(0)
+    expect(getDealSavingsPercent(fake)).toBe(0)
   })
 
   it('savings are real when every item has a menu price (Matcha Duo)', () => {

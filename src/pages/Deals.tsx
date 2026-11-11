@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { site } from '@/config/site'
-import { DEAL_TYPE_LABELS, deals, getDealSavings, type DealType } from '@/data/deals'
+import { DEAL_TYPE_LABELS, deals, getDealSavings, getDealSavingsPercent, type DealType } from '@/data/deals'
 import { SPRING } from '@/lib/motion-presets'
 import { formatPKR } from '@/lib/utils'
 import { Seo } from '@/components/layout/Seo'
 import { Mascot } from '@/components/mascot/Mascot'
 import { Chip } from '@/components/ui/Chip'
+import { DriftType } from '@/components/ui/DriftType'
+import { EditorialLabel } from '@/components/ui/EditorialLabel'
 import { ButtonLink } from '@/components/ui/Button'
 import { RevealHeading } from '@/components/ui/RevealHeading'
 import { Sticker } from '@/components/ui/Sticker'
@@ -15,6 +17,7 @@ import { DealCard } from '@/sections/home/deals/DealCard'
 type Filter = DealType | 'all'
 const TYPES = [...new Set(deals.map((d) => d.type))]
 const BEST = Math.max(0, ...deals.map(getDealSavings))
+const BEST_PCT = Math.max(0, ...deals.map(getDealSavingsPercent))
 
 /** /deals: every combo with real savings, filter chips (Motion layout grid), honest Karachi-time windows. */
 export function Deals() {
@@ -30,14 +33,25 @@ export function Deals() {
       />
       <section aria-labelledby="deals-page-title" className="grain relative overflow-hidden bg-cheese px-4 pt-28 pb-20 sm:px-6 md:pt-36">
         <Sticker kind="sparkle" className="top-28 right-[12%] hidden md:block" tilt={12} />
-        <div className="mx-auto max-w-7xl">
+        <DriftType text="SAVE ✦ COMBOS ✦ DEALS ✦ " className="text-[24vw] text-espresso/[0.07] md:text-[17vw]" />
+        <div className="relative mx-auto max-w-7xl">
+          <EditorialLabel index={1} className="mb-6 text-espresso">The combos</EditorialLabel>
           <div className="flex items-end justify-between gap-4">
             <div>
               <RevealHeading as="h1" id="deals-page-title" className="text-mega font-extrabold text-espresso">
                 Deals
               </RevealHeading>
               <p className="-rotate-1 font-hand text-2xl text-espresso sm:text-3xl">Paise bachao, pet bharo 💸</p>
-              {BEST > 0 && <p className="mt-2 font-semibold text-espresso">Save up to {formatPKR(BEST)} vs ordering separately.</p>}
+              {BEST > 0 && (
+                <ul className="mt-5 flex flex-wrap gap-2" aria-label="Deal highlights">
+                  {[`${deals.length} combos`, `Save up to ${formatPKR(BEST)}`, `Up to ${BEST_PCT}% off`].map((t, i) => (
+                    <li key={t} className={`sticker rounded-full px-4 py-1.5 font-display text-sm font-extrabold text-espresso ${i === 1 ? 'bg-chili' : 'bg-oat'}`}>
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {BEST > 0 && <p className="mt-3 text-sm font-semibold text-espresso/80">Savings worked out from our normal menu prices. No fake timers.</p>}
             </div>
             <Mascot mood="idle" reactive className="h-32 shrink-0 sm:h-44" label="Munchy cheering for deals" />
           </div>

@@ -10,6 +10,9 @@ import { EASE } from '@/lib/motion-presets'
 import { cn } from '@/lib/utils'
 import { CraftSwitch, type CraftSwitchTab, type CraftTab } from './CraftSwitch'
 import { MakerLoading } from './MakerLoading'
+import { BURGER_PRICES_CONFIRMED } from '@/data/builder'
+import { WRAP_PRICES_CONFIRMED } from '@/data/wrapBuilder'
+import { BuilderModeContext, type BuilderMode } from '@/components/builder/builderMode'
 
 // Each maker loads only when its tab is first opened (disabled makers never load).
 const BurgerMaker = lazy(() => import('./BurgerMaker').then((m) => ({ default: m.BurgerMaker })))
@@ -21,9 +24,16 @@ const TABS: (CraftSwitchTab & { word: string; wordClass: string; note: string; c
   { id: 'burger', label: 'Burger', emoji: '🍔', activeBg: 'bg-chili', activeText: 'text-espresso', word: 'burger', wordClass: 'text-chili', note: 'garma garam, fresh off the grill 🔥', cta: 'Add my burger', glow: 'bg-chili' },
   { id: 'wrap', label: 'Wrap', emoji: '🌯', activeBg: 'bg-pickle', activeText: 'text-espresso', word: 'wrap', wordClass: 'text-pickle', note: 'wrapped fresh, eaten faster 🌯', cta: 'Add my wrap', glow: 'bg-pickle' },
 ]
-/** Only the makers the owner switched on (site.craftMakers); coffee configures real menu coffees. */
-const ENABLED = TABS.filter((t) => site.craftMakers[t.id])
-const FIRST: CraftTab = ENABLED[0]?.id ?? 'coffee'
+/** Makers not switched 'off' (site.craftMakers); coffee configures real menu coffees. */
+const ENABLED = TABS.filter((t) => site.craftMakers[t.id] !== 'off')
+/** Per maker: can its creation be ordered, and are its prices real? (coffee = real menu prices) */
+const MODE: Record<CraftTab, BuilderMode> = {
+  coffee: { ordering: site.craftMakers.coffee === 'order', showPrices: true },
+  burger: { ordering: site.craftMakers.burger === 'order', showPrices: BURGER_PRICES_CONFIRMED },
+  wrap: { ordering: site.craftMakers.wrap === 'order', showPrices: WRAP_PRICES_CONFIRMED },
+}
+// Opens on Burger (as originally built) when it's shown, else the first shown maker.
+const FIRST: CraftTab = ENABLED.find((t) => t.id === 'burger')?.id ?? ENABLED[0]?.id ?? 'coffee'
 const isOn = (t: CraftTab) => ENABLED.some((e) => e.id === t)
 export const CRAFT_ID = 'craft'
 /** #craft-<tab> → that tab; a disabled maker's link falls back to the first enabled one. */
@@ -34,7 +44,8 @@ const tabFromHash = (hash: string): CraftTab | null => {
   return isOn(t) ? t : FIRST
 }
 
-/** ONE "Craft your own" section: the enabled makers (site.craftMakers) behind a switch; no switch when only one. State is kept per tab. */
+/** ONE "Craft your own" section: the shown makers (site.craftMakers) behind a switch; no switch when only one. State is kept per tab.
+ *  Each maker gets its BuilderMode (play = "Add to cart · coming soon", hidden placeholder prices). */
 export function CraftSection() {
   const location = useLocation()
   const lenis = useLenis()
@@ -152,17 +163,23 @@ export function CraftSection() {
           )}
           {isOn('burger') && mounted.burger && (
             <Suspense fallback={<MakerLoading show={tab === 'burger'} />}>
-              <BurgerMaker active={tab === 'burger'} ctaLabel={TABS[1]!.cta} />
+              <BuilderModeContext.Provider value={MODE.burger}>
+                <BurgerMaker active={tab === 'burger'} ctaLabel={TABS[1]!.cta} />
+              </BuilderModeContext.Provider>
             </Suspense>
           )}
           {isOn('coffee') && mounted.coffee && (
             <Suspense fallback={<MakerLoading show={tab === 'coffee'} />}>
-              <CoffeeMaker active={tab === 'coffee'} ctaLabel={TABS[0]!.cta} />
+              <BuilderModeContext.Provider value={MODE.coffee}>
+                <CoffeeMaker active={tab === 'coffee'} ctaLabel={TABS[0]!.cta} />
+              </BuilderModeContext.Provider>
             </Suspense>
           )}
           {isOn('wrap') && mounted.wrap && (
             <Suspense fallback={<MakerLoading show={tab === 'wrap'} />}>
-              <WrapMaker active={tab === 'wrap'} ctaLabel={TABS[2]!.cta} />
+              <BuilderModeContext.Provider value={MODE.wrap}>
+                <WrapMaker active={tab === 'wrap'} ctaLabel={TABS[2]!.cta} />
+              </BuilderModeContext.Provider>
             </Suspense>
           )}
         </div>

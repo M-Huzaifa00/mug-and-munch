@@ -55,5 +55,5 @@ vi.mock('@/data/deals', async (importOriginal) => {
 // (Tests that need the "off" behaviour flip a flag on this mutable copy and restore it.)
 vi.mock('@/config/site', async (importOriginal) => {
   const real = await importOriginal<typeof import('@/config/site')>()
-  return { ...real, site: { ...real.site, craftMakers: { coffee: true, burger: true, wrap: true } } }
+  return { ...real, site: { ...real.site, craftMakers: { coffee: 'order', burger: 'order', wrap: 'order' } } }
 })

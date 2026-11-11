@@ -98,13 +98,13 @@ const validSingle = (choices: OptionChoice[] | undefined, id: string | undefined
 export function priceLine(line: Pick<CartItem, 'itemId' | 'category' | 'options'>): LinePrice {
   const o = line.options
   if (line.itemId === 'custom-burger') {
-    if (!site.craftMakers.burger) return { available: false }
+    if (site.craftMakers.burger !== 'order') return { available: false }
     const layers = o.layers ?? []
     if (!layers.every((id) => has(BURGER_BUILDER.ingredients, id))) return { available: false }
     return { available: true, unitPrice: burgerPrice(layers as BurgerLayerId[]) }
   }
   if (line.itemId === 'custom-wrap') {
-    if (!site.craftMakers.wrap) return { available: false }
+    if (site.craftMakers.wrap !== 'order') return { available: false }
     const w = o.wrap
     const M = WRAP_MAKER
     const ok =

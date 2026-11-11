@@ -9,6 +9,7 @@ import { gsap } from '@/lib/gsap'
 import { TOYS } from '@/lib/motion-presets'
 import { cn, formatPKR } from '@/lib/utils'
 import { BuilderActions } from '@/components/builder/BuilderActions'
+import { useBuilderMode } from '@/components/builder/builderMode'
 import { IngredientTile } from '@/components/builder/IngredientTile'
 import { TileGroup } from '@/components/builder/TileGroup'
 import { BurgerLayer } from './BurgerLayer'
@@ -50,6 +51,7 @@ export function BurgerMaker({ active, ctaLabel }: { active: boolean; ctaLabel: s
 
   const ids = layers.map((l) => l.id)
   const price = burgerPrice(ids)
+  const { showPrices } = useBuilderMode()
   const fillings = ids.filter((id) => id !== 'bun').length
   const closed = ids.includes('bun')
 
@@ -59,7 +61,7 @@ export function BurgerMaker({ active, ctaLabel }: { active: boolean; ctaLabel: s
     nextKey.current += 1
     setLayers((prev) => [...prev, { key, id }])
     const label = B.ingredients.find((i) => i.id === id)?.label ?? id
-    setAnnounce(`${label} added. Total ${formatPKR(burgerPrice([...ids, id]))}`)
+    setAnnounce(showPrices ? `${label} added. Total ${formatPKR(burgerPrice([...ids, id]))}` : `${label} added.`)
   }
 
   /** Remove the top-most layer of this kind. */

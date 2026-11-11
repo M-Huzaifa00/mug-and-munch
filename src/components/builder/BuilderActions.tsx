@@ -3,6 +3,7 @@ import { Dices } from 'lucide-react'
 import { formatPKR } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
 import { RollingNumber } from '@/components/ui/RollingNumber'
+import { useBuilderMode } from './builderMode'
 
 interface BuilderActionsProps {
   /** e.g. "Add my burger" / "Update my creation". */
@@ -19,9 +20,14 @@ interface BuilderActionsProps {
   onRollName?: () => void
 }
 
-/** CTA with live RollingNumber price, Reset, and an optional "Name it" field (max 30 chars). */
+/**
+ * CTA with live RollingNumber price, Reset, and an optional "Name it" field (max 30 chars).
+ * Play mode (BuilderModeContext.ordering = false): the CTA is a disabled "Add to cart · coming soon" and nothing
+ * reaches the cart; the (real) price shows beside it only when prices are confirmed.
+ */
 export function BuilderActions({ ctaLabel, price, onAdd, addDisabled, onReset, resetDisabled, name, onNameChange, onRollName }: BuilderActionsProps) {
   const nameId = useId()
+  const { ordering, showPrices } = useBuilderMode()
 
   return (
     <div className="mt-5 space-y-4">
@@ -50,13 +56,31 @@ export function BuilderActions({ ctaLabel, price, onAdd, addDisabled, onReset, r
         </div>
       )}
       <div className="flex flex-wrap items-center gap-3">
-        <Button size="lg" onClick={onAdd} disabled={addDisabled} className="flex-1 whitespace-nowrap sm:flex-none">
-          {ctaLabel} · <RollingNumber value={price} format={formatPKR} />
-        </Button>
+        {ordering ? (
+          <Button size="lg" onClick={onAdd} disabled={addDisabled} className="flex-1 whitespace-nowrap sm:flex-none">
+            {ctaLabel} · <RollingNumber value={price} format={formatPKR} />
+          </Button>
+        ) : (
+          <>
+            <Button size="lg" disabled aria-describedby={nameId + "-soon"} className="flex-1 whitespace-nowrap sm:flex-none">
+              Add to cart · coming soon
+            </Button>
+            {showPrices && (
+              <span className="rounded-full border-[2.5px] border-oat px-3 py-1 font-display text-lg font-extrabold">
+                <RollingNumber value={price} format={formatPKR} />
+              </span>
+            )}
+          </>
+        )}
         <Button variant="outline" size="md" onClick={onReset} disabled={resetDisabled}>
           Reset
         </Button>
       </div>
+      {!ordering && (
+        <p id={nameId + "-soon"} className="text-sm font-semibold text-oat/80">
+          Play all you want. Ordering creations online is coming soon; the full menu is orderable now.
+        </p>
+      )}
     </div>
   )
 }

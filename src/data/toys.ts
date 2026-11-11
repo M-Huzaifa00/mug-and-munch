@@ -24,15 +24,15 @@ export const VIBES: Vibe[] = [
 ]
 
 /* ---------- Snack Roulette ---------- */
-/** Menu item ids on the wheel (6–10 works best). Honest: normal prices, no fake discounts.
- *  Only items WITH a price land on the wheel (unpriced ids are skipped), so add burgers/wraps once priced. */
+/** Menu item ids on the wheel (6–10 works best). Any item can land; adding from the wheel follows
+ *  site.spinOrdering (off = "Add to cart · coming soon") and needs a price. No fake discounts. */
 export const ROULETTE_ITEMS = [
+  'munch-hellfire',
   'spanish-latte',
+  'smash-beast',
   'strawberry-matcha',
-  'mocha',
+  'jalapeno-jolt',
   'blue-mint-mojito',
-  'caramel-latte',
-  'peach-iced-tea',
+  'munch-club',
   'tiramisu-latte',
-  'green-apple-mojito',
 ]

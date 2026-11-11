@@ -1,4 +1,6 @@
 // PLACEHOLDER PRICES — owner to update
+/** Set true once the owner confirms the wrap maker prices below (until then the maker hides every price). */
+export const WRAP_PRICES_CONFIRMED = false
 /** Wrap maker data. Owner can edit every group, price and fun name here. */
 import type { SpiceLevel } from './menu'
 import type { BuilderChoice } from './builder'

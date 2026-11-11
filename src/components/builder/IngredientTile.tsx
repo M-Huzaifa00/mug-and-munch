@@ -5,6 +5,7 @@ import type { IconSpec } from '@/data/builder'
 import { SPRING, TAP_SQUISH } from '@/lib/motion-presets'
 import { cn, formatPKR } from '@/lib/utils'
 import { IngredientIcon } from './IngredientIcon'
+import { useBuilderMode } from './builderMode'
 
 interface TileBase {
   label: string
@@ -34,7 +35,11 @@ const priceText = (p?: number, sub?: string) => sub ?? (p ? `+${formatPKR(p)}` :
  * cheese tint + ✓), toggle (aria-pressed, ✓), included (static). Same look as the original burger tiles.
  */
 export function IngredientTile(props: TileProps) {
-  const { label, icon, price, sub, disabled, accent, compact } = props
+  const { label, icon, disabled, accent, compact } = props
+  // Prices hidden while the maker's prices aren't real yet (BuilderModeContext).
+  const { showPrices } = useBuilderMode()
+  const price = showPrices ? props.price : undefined
+  const sub = showPrices ? props.sub : undefined
   const selected = (props.mode === 'radio' && props.checked) || (props.mode === 'toggle' && props.on) || props.mode === 'included'
   const surface = cn(
     'relative flex w-full items-center gap-2 rounded-2xl border-[2.5px] border-oat px-3 text-left text-espresso shadow-hard-oat',
@@ -48,7 +53,7 @@ export function IngredientTile(props: TileProps) {
       <IngredientIcon icon={icon} className={compact ? 'size-6' : undefined} />
       <span className="min-w-0 leading-tight">
         <span className="block truncate text-sm font-bold">{label}</span>
-        {!compact && <span className="block text-xs font-semibold text-ink/80">{priceText(price, sub)}</span>}
+        {!compact && showPrices && <span className="block text-xs font-semibold text-ink/80">{priceText(price, sub)}</span>}
         {compact && price ? <span className="block text-[0.7rem] font-semibold text-ink/80">+{formatPKR(price)}</span> : null}
       </span>
     </>

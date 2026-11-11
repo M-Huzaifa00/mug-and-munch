@@ -22,8 +22,8 @@ describe('menu data (owner list)', () => {
     expect(getFeatured().length).toBeGreaterThan(0)
   })
 
-  it('roulette + coffee maker only use items with a price (both end in "Add")', () => {
-    for (const id of [...ROULETTE_ITEMS, ...COFFEE_DRINKS]) expect(isPriced(getItemById(id)!), id).toBe(true)
+  it('coffee maker only offers items with a price (it configures real menu coffees)', () => {
+    for (const id of COFFEE_DRINKS) expect(isPriced(getItemById(id)!), id).toBe(true)
   })
 })
 
@@ -55,20 +55,20 @@ describe('flavoured lattes: Hot / Cold / Blended', () => {
   })
 })
 
-describe('craft makers switched off (site.craftMakers)', () => {
+describe('craft makers in play / off mode (site.craftMakers)', () => {
   it('custom burger / wrap lines become unavailable (removed from saved carts, never sent)', async () => {
     const { site } = await import('@/config/site')
     const { bigBurger, fullWrap } = await import('./fixtures')
-    const makers = site.craftMakers as { burger: boolean; wrap: boolean }
+    const makers = site.craftMakers as Record<'burger' | 'wrap', 'order' | 'play' | 'off'>
     expect(priceLine(toLine(bigBurger())).available).toBe(true)
-    makers.burger = false
-    makers.wrap = false
+    makers.burger = 'play' // playable, ordering coming soon
+    makers.wrap = 'off'
     try {
       expect(priceLine(toLine(bigBurger()))).toEqual({ available: false })
       expect(priceLine(toLine(fullWrap()))).toEqual({ available: false })
     } finally {
-      makers.burger = true
-      makers.wrap = true
+      makers.burger = 'order'
+      makers.wrap = 'order'
     }
   })
 })

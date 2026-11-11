@@ -1,35 +1,43 @@
 import { useRef, useState } from 'react'
+import { Link, useLocation } from 'react-router'
+import { site } from '@/config/site'
 import { AnimatePresence, motion } from 'motion/react'
-import { getItemBySlug, isPriced, type PricedItem } from '@/data/menu'
+import { getItemBySlug, isPriced, type MenuItem } from '@/data/menu'
 import { ROULETTE_ITEMS } from '@/data/toys'
 import { useAddToCart } from '@/hooks/useAddToCart'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { Draggable, gsap, MQ, useGSAP } from '@/lib/gsap'
 import { toCartInput } from '@/lib/itemOptions'
 import { SPRING, TOYS } from '@/lib/motion-presets'
+import { modalStateFrom } from '@/lib/routing'
 import { formatPKR } from '@/lib/utils'
+import { PriceComingSoon } from '@/components/ui/PriceComingSoon'
 import { Button } from '@/components/ui/Button'
 import { ProductImage } from '@/components/ui/ProductImage'
 import { RevealHeading } from '@/components/ui/RevealHeading'
 import { Mascot } from '@/components/mascot/Mascot'
 import { RouletteWheel } from './RouletteWheel'
 
-// Only items with a price (the result offers 'Add it').
-const ITEMS: PricedItem[] = ROULETTE_ITEMS.map((id) => getItemBySlug(id)).filter((i): i is PricedItem => Boolean(i && isPriced(i)))
+// Any menu item can land (burgers included): the wheel is for fun. Adding is gated below.
+const ITEMS: MenuItem[] = ROULETTE_ITEMS.map((id) => getItemBySlug(id)).filter((i): i is MenuItem => Boolean(i))
 const SEG = 360 / ITEMS.length
 /** Rotation r puts segment i under the top pointer when (i·seg + seg/2 + r) ≡ 0 (mod 360). */
 const indexAt = (r: number) => (((Math.round(-(r + SEG / 2) / SEG) % ITEMS.length) + ITEMS.length) % ITEMS.length)
 const snapToSegment = (r: number) => Math.round((r + SEG / 2) / SEG) * SEG - SEG / 2
 
-/** Spin (button, or flick the wheel on desktop) → lands on a random item → "Add it" / "Spin again". Normal prices only. */
+/**
+ * Spin (button, or flick the wheel on desktop) → lands on a random menu item → "Spin again" + a look at the item.
+ * "Add it" only when site.spinOrdering is on AND the item has a price; otherwise "Add to cart · coming soon".
+ */
 export function SnackRoulette() {
   const [spinning, setSpinning] = useState(false)
-  const [result, setResult] = useState<PricedItem | null>(null)
+  const [result, setResult] = useState<MenuItem | null>(null)
   const wheel = useRef<SVGGElement>(null)
   const rotation = useRef(0)
   const resultArt = useRef<HTMLDivElement>(null)
   const addToCart = useAddToCart()
   const reduced = useReducedMotion()
+  const location = useLocation()
 
   const land = (r: number) => {
     rotation.current = r
@@ -74,7 +82,8 @@ export function SnackRoulette() {
     { scope: wheel },
   )
 
-  const add = () => result && addToCart(toCartInput(result), { source: resultArt.current })
+  const canAdd = Boolean(result && site.spinOrdering && isPriced(result))
+  const add = () => result && isPriced(result) && site.spinOrdering && addToCart(toCartInput(result), { source: resultArt.current })
 
   return (
     <section aria-labelledby="roulette-title" className="grain relative overflow-hidden bg-espresso px-4 py-20 text-oat sm:px-6 md:py-28">
@@ -84,7 +93,7 @@ export function SnackRoulette() {
             Can't decide?
           </RevealHeading>
           <p className="mt-1 -rotate-1 font-hand text-2xl text-cheese sm:text-3xl">let the snack roulette choose 🎰</p>
-          <p className="mt-4 max-w-sm text-oat/80">Spin it (or flick the wheel). Whatever it lands on is tonight's pick, at the normal menu price.</p>
+          <p className="mt-4 max-w-sm text-oat/80">Spin it (or flick the wheel). Whatever it lands on is tonight's pick.</p>
 
           <div className="mt-8 min-h-48" aria-live="polite">
             <AnimatePresence mode="wait">
@@ -96,15 +105,24 @@ export function SnackRoulette() {
                   <div className="min-w-0 flex-1">
                     <p className="font-hand text-xl">it's…</p>
                     <p className="font-display text-2xl leading-tight font-extrabold">{result.name}!</p>
-                    <p className="font-bold">{formatPKR(result.price)}</p>
+                    {isPriced(result) ? <p className="font-bold">{formatPKR(result.price)}</p> : <PriceComingSoon className="mt-1" />}
                     <div className="mt-3 flex flex-wrap gap-2">
-                      <Button size="sm" onClick={add}>
-                        Add it
-                      </Button>
+                      {canAdd ? (
+                        <Button size="sm" onClick={add}>
+                          Add it
+                        </Button>
+                      ) : (
+                        <Button size="sm" disabled>
+                          Add · coming soon
+                        </Button>
+                      )}
                       <Button size="sm" variant="outline" onClick={spin}>
                         Spin again
                       </Button>
                     </div>
+                    <Link to={"/menu/" + result.slug} state={modalStateFrom(location)} className="mt-2 inline-flex min-h-11 items-center text-sm font-extrabold underline decoration-2 underline-offset-4">
+                      See it on the menu →
+                    </Link>
                   </div>
                 </motion.div>
               ) : (

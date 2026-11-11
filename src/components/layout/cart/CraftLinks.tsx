@@ -2,15 +2,16 @@ import { Link } from 'react-router'
 import { site } from '@/config/site'
 import { cn } from '@/lib/utils'
 
-/** Only makers the owner switched on (site.craftMakers). */
+/** Only makers whose creations can be ordered (site.craftMakers = 'order'); empty → nothing rendered. */
 const LINKS = ([
   { tab: 'burger', label: 'Build a burger 🍔', tone: 'bg-chili' },
   { tab: 'coffee', label: 'Make your coffee ☕', tone: 'bg-caramel' },
   { tab: 'wrap', label: 'Roll a wrap 🌯', tone: 'bg-pickle' },
-] as const).filter((l) => site.craftMakers[l.tab])
+] as const).filter((l) => site.craftMakers[l.tab] === 'order')
 
 /** Empty-cart shortcuts into the Craft section (Home #craft-<tab>). */
 export function CraftLinks({ onNavigate, className }: { onNavigate?: () => void; className?: string }) {
+  if (LINKS.length === 0) return null
   return (
     <ul className={cn('flex flex-wrap justify-center gap-2', className)} aria-label="Or craft your own">
       {LINKS.map((l) => (

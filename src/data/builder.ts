@@ -1,4 +1,6 @@
 // PLACEHOLDER PRICES — owner to update
+/** Set true once the owner confirms the burger maker prices below (until then the maker hides every price). */
+export const BURGER_PRICES_CONFIRMED = false
 /**
  * Shared builder types + the Burger maker data. Owner-editable.
  * Icons are small inline SVGs (see components/builder/IngredientIcon.tsx): `{ shape, tone }`.

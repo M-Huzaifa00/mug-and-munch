@@ -2,6 +2,7 @@
 export const HERO_PHOTO = {
   base: '/images/brand/hero-golden-hour',
   widths: [480,720,960,1189],
+  blur: '/images/brand/hero-golden-hour-blur.webp',
   width: 1189,
   height: 892,
 } as const

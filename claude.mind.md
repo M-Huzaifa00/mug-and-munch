@@ -254,11 +254,11 @@ REMOVED                         sections/home/Preloader.tsx (→ layout/Preloade
 ```
 
 ## 6. Owner TODOs (data still missing)
-1. ~~WhatsApp number~~ DONE 2026-11-12 (0347 5253550). Still placeholder: .
+1. ~~WhatsApp number~~ DONE 2026-11-12 (0347 5253550). Still placeholder: `site.contact.email`.
 2. **Prices for every `price: null`** in `data/menu.ts` (18 items: all burgers, steak, wraps, starters, Green Tea, Passion Fruit Mojito). Confirm Raspberry Iced Tea = 650. Real ingredients/descriptions if wanted.
 3. **Address details:** shop # / street (`address.line1`), Google Maps share link (`mapsUrl`), exact pin (`lat`/`lng`, also enables JSON-LD geo), parking/landmark (`addressNotes`).
 4. **Real opening hours** (`site.hours`, currently placeholders), **delivery areas** (current list is invented and far from Ghouri Town), delivery fee, free-delivery threshold, tax rate, min delivery order, ETA, table count, order prefix, real domain (`site.url`).
-5. **Deals: CONFIRM the 7 proposed combos + prices** in  (Student Saver 999, Coffee & Club 1,349, Wing It 1,449, Matcha Duo 1,749, Midnight Munch 2,199 [11 PM–2 AM], Hellfire Duo 3,399, Squad Box 5,999). They were set by the developer from Islamabad market research (zinger ~Rs 500–600, smash ~Rs 850–1,375, double ~Rs 1,150–1,250, loaded fries ~Rs 630–1,195, wings ~Rs 470–1,095), NOT approved by the café yet, and are orderable via WhatsApp now.
+5. **Deals: CONFIRM the 7 proposed combos + prices** in `src/data/deals.ts` (Student Saver 999, Coffee & Club 1,349, Wing It 1,449, Matcha Duo 1,749, Midnight Munch 2,199 [11 PM–2 AM], Hellfire Duo 3,399, Squad Box 5,999). They were set by the developer from Islamabad market research (zinger ~Rs 500–600, smash ~Rs 850–1,375, double ~Rs 1,150–1,250, loaded fries ~Rs 630–1,195, wings ~Rs 470–1,095), NOT approved by the café yet, and are orderable via WhatsApp now.
 6. **Custom burger / wrap orders?** If yes: real ingredient prices in `data/builder.ts` / `wrapBuilder.ts`, set `BURGER_PRICES_CONFIRMED` / `WRAP_PRICES_CONFIRMED = true` and `site.craftMakers.burger/wrap = 'order'`. Same for coffee creations (`craftMakers.coffee = 'order'`) and the Spin (`spinOrdering = true`) when the owner wants them orderable.
 7. TikTok handle (optional), real reviews with permission (`data/reviews.ts`, `isPlaceholder: false`), real Instagram posts for `InstaGrid`, Our Story facts + photos (`data/story.ts`, `public/images/brand/{kitchen,team,counter}.webp`), product photos (`public/images/<folder>/<slug>.webp`, ~1200px).
 8. Replace logo → `public/brand/logo.png` + `npm run brand`. Replace hero photo → `assets/photos/hero-golden-hour.png` + `npm run photos`.

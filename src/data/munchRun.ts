@@ -12,6 +12,7 @@ export interface MunchStopConfig {
   section: 'hero' | 'menuPreview' | 'bestsellers'
   corner: 'top-right' | 'top-left'
   form: MunchForm
+  /** Caveat note beside the parked character (>=768px); '' = none. */
   note: string
   craftHash: `#craft-${MunchForm}`
   /** Where the note sits relative to the parked character. */
@@ -29,7 +30,8 @@ export const MUNCH_STOPS: readonly MunchStopConfig[] = [
     section: 'hero',
     corner: 'top-right',
     form: 'burger',
-    note: 'follow me 👇',
+    // No note in the hero: the "psst… order here!" bubble is the one call-out there (less clutter).
+    note: '',
     craftHash: '#craft-burger',
     noteSide: 'right',
     // Inline slot right after "REPEAT." in the hero headline (HeroHeadline): the burger parks like part of the type.

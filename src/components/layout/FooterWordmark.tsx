@@ -18,13 +18,10 @@ export function FooterWordmark() {
       const mm = gsap.matchMedia()
       mm.add(MQ.motionOk, () => {
         const split = SplitText.create(el.querySelectorAll('[data-letters]'), { type: 'chars', mask: 'chars' })
-        gsap.from([...split.chars, ...el.querySelectorAll('[data-script]')], {
-          yPercent: 110,
-          rotate: 8,
-          ease: 'none',
-          stagger: 0.08,
-          scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom bottom-=40', scrub: 1 },
-        })
+        const st = { trigger: el, start: 'top bottom', end: 'bottom bottom-=40', scrub: 1 }
+        gsap.from(split.chars, { yPercent: 110, rotate: 8, ease: 'none', stagger: 0.08, scrollTrigger: st })
+        // The script "n" has NO clip mask (its slanted glyph overhangs its box and got cut): it fades + rises in.
+        gsap.from(el.querySelectorAll('[data-script]'), { yPercent: 40, rotate: -12, opacity: 0, ease: 'none', scrollTrigger: st })
         return () => split.revert()
       })
     },
@@ -40,11 +37,9 @@ export function FooterWordmark() {
       {middle ? (
         <>
           <span data-letters aria-hidden="true">{words[0]?.toUpperCase()}</span>
-          {/* reveal mask: side padding (cancelled by negative margins) so the slanted script "n" isn't clipped */}
-          <span aria-hidden="true" className="-mx-[0.12em] inline-block overflow-hidden px-[0.16em]">
-            <span data-script className="inline-block font-hand text-[1.15em] leading-none font-bold text-chili">
-              {middle}
-            </span>
+          {/* no overflow mask here: the slanted script glyph overhangs its box (a mask clipped its right edge) */}
+          <span data-script aria-hidden="true" className="inline-block px-[0.06em] font-hand text-[1.15em] leading-none font-bold text-chili">
+            {middle}
           </span>
           <span data-letters aria-hidden="true">{words[2]?.toUpperCase()}</span>
         </>

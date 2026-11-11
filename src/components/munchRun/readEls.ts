@@ -21,7 +21,8 @@ export function readEls(root: HTMLElement): MunchEls | null {
     svg,
     dust,
     sparkle,
-    notes: [1, 2, 3].map((n) => one<HTMLElement>(`note-${n}`)).filter((n): n is HTMLElement => n !== null),
+    // Positional (index = stop - 1); a stop without a note is null, so indexes never shift.
+    notes: [1, 2, 3].map((n) => one<HTMLElement>(`note-${n}`)),
     crumbs: Array.from(root.querySelectorAll<HTMLElement>('[data-mr="crumb"]')),
   }
 }

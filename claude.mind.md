@@ -291,6 +291,12 @@ Node/Supabase backend + orders DB · JazzCash / Easypaisa / card payments (need 
 ---
 
 ## 10. Changelog (Asia/Karachi dates)
+### 2026-11-12 (3): Hero decluttered; footer "n" fixed for good
+- Hero: removed the two floating stickers (one collided with the BITE pill at 1920px, the star crowded the bubble) and the Munch Run "follow me" note at Stop 1 (it competed with "psst… order here!"). One call-out in the hero now. `MUNCH_STOPS[].note` may be '' (no note); `readEls` keeps notes positional (null gaps) so stop indexes never shift.
+- Footer wordmark: the script "n" no longer sits in an overflow mask (its slanted glyph overhangs its box, so any mask clipped its right edge at some widths); it fades + rises in on scroll instead. Verified at 1920 / 1440.
+- Home deals section: the ticket sheen tween is only created when the teaser ticket exists (with real deals it logged "GSAP target [data-sheen] not found").
+- Verified: 0 console messages at 360 / 768 / 1440 / 1920, Munch Stop 1 delta 0, no overflow; 96 tests, lint, build green.
+
 ### 2026-11-12 (2): Priced-only deals with save stamps; editorial Deals / Our Story / Find Us
 - Deals rebuilt from priced menu items only (7 combos, 15–20% off); `getDealSavingsPercent`, `getBestValueDeal`. DealCard: round chili "SAVE Rs X · −Y%" stamp + "★ Best value" ribbon. Deals page hero: `DriftType` "SAVE ✦ COMBOS ✦ DEALS", `EditorialLabel` "( 01 ) — The combos", stat chips (N combos · Save up to Rs X · Up to Y% off). Tests: every real deal must be fully priced and save money (96 tests).
 - New shared UI: `components/ui/DriftType.tsx` (giant drifting background type, paused off-screen) and `components/ui/EditorialLabel.tsx` ("( 01 ) — Label" + hairline). Our Story: drift "SIP ✦ BITE ✦ REPEAT", labels 01 Our story / 02 How we make it / 03 Behind the counter. Find Us: drift "GHOURI TOWN PHASE 5B ✦ ISLAMABAD", big address line, labels 01 Find us / 02 Opening hours / 03 Delivery.

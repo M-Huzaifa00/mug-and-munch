@@ -36,7 +36,7 @@ export function MunchRun() {
       <MunchPuffs />
       <div data-mr="outer" className={cn('invisible absolute top-0 left-0', MUNCH_SIZE_CLASS)}>
         {MUNCH_STOPS.map((s) => (
-          <MunchNote key={s.stop} id={`note-${s.stop}`} text={s.note} side={s.noteSide} />
+          s.note ? <MunchNote key={s.stop} id={`note-${s.stop}`} text={s.note} side={s.noteSide} /> : null
         ))}
         <div data-mr="mid" className="size-full">
           <div data-mr="float" className="size-full">

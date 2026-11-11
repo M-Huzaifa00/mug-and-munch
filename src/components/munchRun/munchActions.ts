@@ -9,7 +9,8 @@ export interface MunchEls {
   act: HTMLDivElement
   button: HTMLButtonElement
   svg: SVGSVGElement
-  notes: HTMLElement[]
+  /** Positional per stop (index = stop - 1); null when that stop has no note. */
+  notes: (HTMLElement | null)[]
   crumbs: HTMLElement[]
   dust: HTMLElement
   sparkle: HTMLElement

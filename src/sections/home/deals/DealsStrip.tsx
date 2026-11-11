@@ -27,8 +27,10 @@ export function DealsStrip() {
       const mm = gsap.matchMedia()
       mm.add(MQ.motionOk, () => {
         const drift = gsap.to('[data-backdrop]', { xPercent: -50, duration: 40, ease: 'none', repeat: -1 })
-        const sheen = gsap.fromTo('[data-sheen]', { xPercent: 0 }, { xPercent: 500, duration: 1.4, ease: 'power2.inOut', repeat: -1, repeatDelay: 2.4 })
-        ScrollTrigger.create({ trigger: ref.current, start: 'top bottom', end: 'bottom top', onToggle: (self) => [drift, sheen].forEach((t) => (self.isActive ? t.play() : t.pause())) })
+        const loops: gsap.core.Tween[] = [drift]
+        // The sheen only exists on the teaser ticket (no deals); with real deals there's nothing to sweep.
+        if (ref.current?.querySelector('[data-sheen]')) loops.push(gsap.fromTo('[data-sheen]', { xPercent: 0 }, { xPercent: 500, duration: 1.4, ease: 'power2.inOut', repeat: -1, repeatDelay: 2.4 }))
+        ScrollTrigger.create({ trigger: ref.current, start: 'top bottom', end: 'bottom top', onToggle: (self) => loops.forEach((t) => (self.isActive ? t.play() : t.pause())) })
       })
     },
     { scope: ref },

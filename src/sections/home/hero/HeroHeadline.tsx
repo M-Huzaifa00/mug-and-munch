@@ -1,27 +1,24 @@
 import { useRef } from 'react'
 import { MUNCH_SIZE_CLASS } from '@/data/munchRun'
-import { gsap, MQ, ScrollTrigger, SplitText, useGSAP } from '@/lib/gsap'
+import { gsap, MQ, SplitText, useGSAP } from '@/lib/gsap'
 import { DUR, EASE, STAGGER } from '@/lib/motion-presets'
 import { cn } from '@/lib/utils'
 import { MunchStop } from '@/components/munchRun/MunchStop'
-import { HeroReelPill, HeroTickerPill, REEL_FRAMES } from './HeroCapsule'
+import { BitePill, SipPill } from './HeroPills'
 
 const WORDS = [
-  { text: 'SIP.', ink: 'stroke-caramel', className: 'text-espresso', after: 'reel' },
-  { text: 'BITE.', ink: 'stroke-chili', className: 'text-chili', after: 'ticker' },
+  { text: 'SIP.', ink: 'stroke-caramel', className: 'text-espresso', after: 'sip' },
+  { text: 'BITE.', ink: 'stroke-chili', className: 'text-chili', after: 'bite' },
   { text: 'REPEAT.', ink: 'stroke-pickle', className: 'text-espresso', after: 'munch' },
 ] as const
 
-/** Seconds each reel frame holds before sliding to the next. */
-const REEL_HOLD = 1.8
-
 /**
- * "SIP. (photo reel) BITE. (menu ticker) REPEAT. (burger)": picture-typography.
+ * "SIP. (sipping coffee) BITE. (chomping burger) REPEAT. (burger)": cartoon-typography.
  * Intro (when `play`): chars pop in with an elastic stagger, the pills grow open, underlines draw (DrawSVG).
- * Loops: the reel steps frappe → mosque → box; the ticker scrolls the real menu words.
+ * The pills animate themselves (HeroPills: sip / chomp loops, faster on hover, paused off-screen).
  * Desktop extras: letters hop on hover; SIP and BITE drift apart on scroll (REPEAT. stays still: it holds
  * the Munch Run Stop 1 anchor, which must not move while the burger is parked).
- * Reduced motion: static, pills open (first reel frame), underlines drawn.
+ * Reduced motion: static, pills open, underlines drawn.
  */
 export function HeroHeadline({ play }: { play: boolean }) {
   const ref = useRef<HTMLHeadingElement>(null)
@@ -50,15 +47,6 @@ export function HeroHeadline({ play }: { play: boolean }) {
             .to(capsules, { scaleX: 1, duration: DUR.slow, ease: EASE.snappy, stagger: 0.12 }, 0.35)
             .to(lines, { drawSVG: '100%', duration: DUR.base, ease: EASE.out, stagger: 0.15 }, '-=0.9')
         }
-
-        // Photo reel: hold, slide one frame up, … last frame = first → snap back to 0 (seamless).
-        const reel = gsap.timeline({ repeat: -1, delay: 1.2 })
-        for (let i = 1; i < REEL_FRAMES; i++) reel.to('[data-reel]', { yPercent: (-100 * i) / REEL_FRAMES, duration: 0.7, ease: EASE.snappy }, `+=${REEL_HOLD}`)
-        reel.set('[data-reel]', { yPercent: 0 })
-        // Menu ticker: two identical halves → 0 → -50% loops seamlessly.
-        const ticker = gsap.to('[data-ticker]', { xPercent: -50, duration: 9, ease: 'none', repeat: -1 })
-        // Loops only run while the headline is on screen (saves frames on phones further down the page).
-        ScrollTrigger.create({ trigger: el, start: 'top bottom', end: 'bottom top', onToggle: (self) => [reel, ticker].forEach((t) => (self.isActive ? t.play() : t.pause())) })
 
         if (desktop) {
           const st = { trigger: el, start: 'top 30%', end: 'bottom top', scrub: true }
@@ -105,10 +93,10 @@ export function HeroHeadline({ play }: { play: boolean }) {
             <span aria-hidden="true" className={cn('relative ml-[0.1em] inline-block align-middle', MUNCH_SIZE_CLASS)}>
               <MunchStop stop={1} />
             </span>
-          ) : w.after === 'reel' ? (
-            <HeroReelPill />
+          ) : w.after === 'sip' ? (
+            <SipPill />
           ) : (
-            <HeroTickerPill />
+            <BitePill />
           )}
         </span>
       ))}

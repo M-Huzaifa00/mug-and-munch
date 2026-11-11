@@ -3,16 +3,16 @@ import { site } from '@/config/site'
 import { Button, ButtonLink } from '@/components/ui/Button'
 import { MagneticButton } from '@/components/ui/MagneticButton'
 import { HeroBackdrop } from './HeroBackdrop'
-import { HERO_CINEMA_ID, HeroCinema } from './HeroCinema'
+import { HeroCinema } from './HeroCinema'
 import { HeroHeadline } from './HeroHeadline'
-import { HeroMascot } from './HeroMascot'
 import { HeroMeta } from './HeroMeta'
-import { HeroSpinBadge } from './HeroSpinBadge'
+import { HeroOrderPeek } from './HeroOrderPeek'
 import { SECTION_IDS } from '../sectionIds'
 
 /**
  * Home hero, "Golden Hour Stage": live info row → "Bhook lagi?" → picture-typography headline (photo capsules
- * inside SIP. BITE. REPEAT., the Munch Run burger parked after REPEAT.) → line + CTAs → the golden-hour cinema
+ * inside SIP. BITE. REPEAT., the Munch Run burger parked after REPEAT.) → line + CTAs (Munchy peeks from behind
+ * Order Now: "psst… order here!") → the golden-hour cinema
  * panel that grows to full width on scroll. Warm photo-colour wash behind it all.
  * `play` = false while the preloader is on screen (intro waits for it).
  */
@@ -35,17 +35,17 @@ export function Hero({ play }: { play: boolean }) {
         <p className="mt-6 mb-2 -rotate-2 font-hand text-3xl text-ink sm:text-4xl md:mt-8 md:mb-4">Bhook lagi? We got you.</p>
         <div className="relative">
           <HeroHeadline play={play} />
-          {/* fills the empty right side of the headline on desktop */}
-          <HeroSpinBadge targetId={HERO_CINEMA_ID} className="absolute top-1/2 right-0 hidden -translate-y-1/2 xl:flex" />
         </div>
         <div className="mt-8 flex flex-col gap-6 md:mt-10 md:flex-row md:items-end md:justify-between">
           <p className="max-w-md text-lg font-medium text-ink sm:text-xl">{site.heroLine}</p>
           <div className="flex flex-wrap items-center gap-3">
-            <MagneticButton>
-              <Button size="lg" onClick={toMenu}>
-                Order Now
-              </Button>
-            </MagneticButton>
+            <HeroOrderPeek play={play}>
+              <MagneticButton>
+                <Button size="lg" onClick={toMenu}>
+                  Order Now
+                </Button>
+              </MagneticButton>
+            </HeroOrderPeek>
             <ButtonLink to="/menu" size="lg" variant="outline">
               See the Menu
             </ButtonLink>
@@ -54,7 +54,6 @@ export function Hero({ play }: { play: boolean }) {
         <HeroCinema play={play} />
       </div>
 
-      {play && <HeroMascot />}
     </section>
   )
 }
